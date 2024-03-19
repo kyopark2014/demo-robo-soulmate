@@ -47,5 +47,4 @@
 
 ```text
 cd ~/environment/demo-ai-dansing-robot/cdk-rag-enhanced-searching/ && cdk destroy --all
-cd ~/environment/demo-ai-dansing-robot/ && cdk destroy --all
 ```
