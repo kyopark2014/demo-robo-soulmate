@@ -2,7 +2,7 @@
 
 여기에서는 AI Dansing Robot에 대한 프로젝트를 준비합니다.
 
-구현하는 전체적인 Architecture는 아래와 같습니다. 
+전체적인 Architecture는 아래와 같습니다. 
 - Voice interpreter와 IoT Controller는 AWS IoT Greengrass에 Component로 설치되고, AI Controller는 로봇의 Chrome 브라우저에 javascript로 구성됩니다.
 - 방문자의 음성은 Voice interpreter를 이용하여 텍스트로 변환합합니다. Voice interpreter는 지연시간을 최소화하기 위하여 Amazon Transcribe를 이용하여 음성을 텍스트로 변환합니다.
 - 이후 텍스트는 CloudFront - API Gateway - Lambda(redis) - Amazon ElastiCache를 이용해 pubsub 방식으로 AI controller로 전달됩니다.
@@ -16,6 +16,7 @@
 - IoT 관련 정보는 IoT SiteWise등을 이용해 별도의 Dashboard에 각종 IoT 정보와 함께 방문객이 확인할 수 있습니다.
 
 ![image](./pictures/main-architecture.png)
+
 
 ## 데모 준비
 
