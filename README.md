@@ -39,11 +39,13 @@
 
 더이상 인프라를 사용하지 않는 경우에 아래처럼 모든 리소스를 삭제할 수 있습니다. 
 
-1) [API Gateway Console](https://ap-northeast-1.console.aws.amazon.com/apigateway/main/apis?region=ap-northeast-1)로 접속하여 "api-chatbot-for-rag-enhanced-searching", "api-rag-enhanced-searching"을 삭제합니다.
+1) [API Gateway Console](https://ap-northeast-2.console.aws.amazon.com/apigateway/main/apis?region=ap-northeast-2)로 접속하여 "rest-api-for-demo-dansing-robotl",
+"ws-api-for-demo-dansing-robotl", "voice-ws-api-for-demo-dansing-robotl"을 삭제합니다.
 
-2) [Cloud9 console](https://ap-northeast-1.console.aws.amazon.com/cloud9control/home?region=ap-northeast-1#/)에 접속하여 아래의 명령어로 전체 삭제를 합니다.
+2) [Cloud9 console](https://ap-northeast-2.console.aws.amazon.com/cloud9control/home?region=ap-northeast-2#/)에 접속하여 아래의 명령어로 전체 삭제를 합니다.
 
 
 ```text
-cd ~/environment/rag-enhanced-searching/cdk-rag-enhanced-searching/ && cdk destroy --all
+cd ~/environment/demo-ai-dansing-robot/cdk-rag-enhanced-searching/ && cdk destroy --all
+cd ~/environment/demo-ai-dansing-robot/ && cdk destroy --all
 ```
