@@ -38,49 +38,6 @@ doc_prefix = s3_prefix+'/'
     
 profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
 selected_LLM = 0
-
-intents = [
-    {
-        "id": "dansing",
-        "action": "춤을 춰주세요.",
-        "message": "[Action] 네 멋진 춤을 출테니 기쁘게 봐주세요."        
-    },
-    {
-        "id": "quiz",
-        "action": "퀴즈 풀어주세요",
-        "message": "[Action] 네 그러면 재미있는 문제를 낼테니 잘 맞춰보세요."
-    },
-    {
-        "id": "game-feeding",
-        "action": "간석 먹고 싶어?",
-        "message": "[Action] 주인님 최고! 제가 좋아하는 간식 아시나요?"
-    },
-    {
-        "id": "gesture",
-        "action": "제스처 게임하고 싶어",
-        "message": "[Action] 이제 제스처 게임을 하겠습니다. 카메라를 보며 하트를 한번 해보세요."
-    },
-    {
-        "id": "greeting",
-        "action": "인사해봐",
-        "message": "[Action] 사진에서 고객님의 기분을 파악하여 적절한 인사말을 합니다."
-    },
-    {
-        "id": "reading",
-        "action": "다음을 읽어줘",
-        "message": "[Action] 사진 속의 문장을 텍스트로 읽어옵니다."
-    },
-    {
-        "id": "translation",
-        "action": "번역해줘",
-        "message": "[Action] 사진의 문장을 한국어로 번역합니다."
-    },
-    {
-        "id": "stop_action",
-        "action": "그만",
-        "message": "[Action] Action을 멈추고 다시 일반적인 대화를 시작합니다."
-    }
-]
    
 # websocket
 connection_url = os.environ.get('connection_url')
@@ -153,7 +110,6 @@ def get_embedding(profile_of_LLMs, selected_LLM):
     return bedrock_embedding
 
 map_chain = dict() 
-action_dict = dict()
 MSG_LENGTH = 100
 
 # load documents from s3 for pdf and txt
@@ -383,22 +339,20 @@ def sendMessage(body):
         print('err_msg: ', err_msg)
         raise Exception ("Not able to send a message")
     
-def deliveryVoiceMessage(action, msg):    
+def deliveryVoiceMessage(msg):    
     requestId = uuid.uuid4()
     print('requestId: ', requestId)
     result = {
         'request_id': str(requestId),
-        'action': action,
         'msg': msg,
         'status': 'redirected'
     }
     #print('debug: ', json.dumps(debugMsg))
     sendMessage(result)      
 
-def sendResultMessage(action, msg):    
+def sendResultMessage(msg):    
     result = {
         'request_id': requestId,
-        'action': action,
         'msg': msg,
         'status': 'completed'
     }
@@ -478,38 +432,6 @@ def translate_text(chat, text):
         raise Exception ("Not able to request to LLM")
 
     return msg[msg.find('<result>')+8:len(msg)-9] # remove <result> tag
-
-def check_grammer(chat, text):
-    if isKorean(text)==True:
-        system = (
-            "다음의 <article> tag안의 문장의 오류를 찾아서 설명하고, 오류가 수정된 문장을 답변 마지막에 추가하여 주세요."
-        )
-    else: 
-        system = (
-            "Here is pieces of article, contained in <article> tags. Find the error in the sentence and explain it, and add the corrected sentence at the end of your answer."
-        )
-        
-    human = "<article>{text}</article>"
-    
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
-    print('prompt: ', prompt)
-    
-    chain = prompt | chat    
-    try: 
-        result = chain.invoke(
-            {
-                "text": text
-            }
-        )
-        
-        msg = result.content
-        print('result of grammer correction: ', msg)
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
-        raise Exception ("Not able to request to LLM")
-    
-    return msg
 
 def extract_sentiment(chat, text):
     if isKorean(text)==True:
@@ -593,211 +515,6 @@ def extract_information(chat, text):
         raise Exception ("Not able to request to LLM")
     
     return msg
-
-def remove_pii(chat, text):
-    if isKorean(text)==True:
-        system = (
-            """아래의 <text>에서 개인식별정보(PII)를 모두 제거하여 외부 계약자와 안전하게 공유할 수 있도록 합니다. 이름, 전화번호, 주소, 이메일을 XXX로 대체합니다. 또한 결과는 <result> tag를 붙여주세요."""
-        )
-    else: 
-        system = (
-            """We want to de-identify some text by removing all personally identifiable information from this text so that it can be shared safely with external contractors.
-            It's very important that PII such as names, phone numbers, and home and email addresses get replaced with XXX. Put it in <result> tags."""
-        )
-        
-    human = "<text>{text}</text>"
-    
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
-    print('prompt: ', prompt)
-    
-    chain = prompt | chat    
-    try: 
-        result = chain.invoke(
-            {
-                "text": text
-            }
-        )        
-        output = result.content        
-        msg = output[output.find('<result>')+8:len(output)-9] # remove <result> 
-        
-        print('result of removing PII : ', msg)
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
-        raise Exception ("Not able to request to LLM")
-    
-    return msg
-
-def do_step_by_step(chat, text):
-    if isKorean(text)==True:
-        system = (
-            """다음은 Human과 Assistant의 친근한 대화입니다. Assistant은 상황에 맞는 구체적인 세부 정보를 충분히 제공합니다. 아래 문맥(context)을 참조했음에도 답을 알 수 없다면, 솔직히 모른다고 말합니다. 여기서 Assistant의 이름은 서연입니다.
-
-            Assistant: 단계별로 생각할까요?
-
-            Human: 예, 그렇게하세요."""
-        )
-    else: 
-        system = (
-            """Using the following conversation, answer friendly for the newest question. If you don't know the answer, just say that you don't know, don't try to make up an answer. You will be acting as a thoughtful advisor. 
-            
-            Assistant: Can I think step by step?
-
-            Human: Yes, please do."""
-        )
-        
-    human = "<text>{text}</text>"
-    
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
-    print('prompt: ', prompt)
-    
-    chain = prompt | chat    
-    try: 
-        result = chain.invoke(
-            {
-                "text": text
-            }
-        )        
-        msg = result.content        
-        
-        print('result of sentiment extraction: ', msg)
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
-        raise Exception ("Not able to request to LLM")
-    
-    return msg
-
-def extract_timestamp(chat, text):
-    system = (
-        """Human: 아래의 <text>는 시간을 포함한 텍스트입니다. 친절한 AI Assistant로서 시간을 추출하여 아래를 참조하여 <example>과 같이 정리해주세요.
-            
-        - 년도를 추출해서 <year>/<year>로 넣을것 
-        - 월을 추출해서 <month>/<month>로 넣을것
-        - 일을 추출해서 <day>/<day>로 넣을것
-        - 시간을 추출해서 24H으로 정리해서 <hour>/<hour>에 넣을것
-        - 분을 추출해서 <minute>/<minute>로 넣을것
-
-        이때의 예제는 아래와 같습니다.
-        <example>
-        2022년 11월 3일 18시 26분
-        </example>
-        <result>
-            <year>2022</year>
-            <month>11</month>
-            <day>03</day>
-            <hour>18</hour>
-            <minute>26</minute>
-        </result>
-
-        결과에 개행문자인 "\n"과 글자 수와 같은 부가정보는 절대 포함하지 마세요."""
-    )    
-        
-    human = "<text>{text}</text>"
-    
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
-    print('prompt: ', prompt)
-    
-    chain = prompt | chat    
-    try: 
-        result = chain.invoke(
-            {
-                "text": text
-            }
-        )        
-        output = result.content        
-        msg = output[output.find('<result>')+8:len(output)-9] # remove <result> 
-        
-        print('result of sentiment extraction: ', msg)
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
-        raise Exception ("Not able to request to LLM")
-    
-    return msg
-
-def search_intent_using_prompt_engineering(chat, intents, query):
-    context = ""
-    for i, intent in enumerate(intents):
-        idx = i+1
-        context += f"{idx}. {intent['action']}\n"
-    print('context: ', context)
-    
-    system = (
-        """다음의 <context> tag의 예제에서 질문과 가장 가까운 항목을 선택해 주세요.
-            
-        <context>
-        {context}
-        </context>
-
-        질문과 관련있는 항목이 없으면 None이라고 답변합니다. <result> tag를 붙여주세요."""
-    )    
-        
-    human = "{input}"
-    
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
-    print('prompt: ', prompt)
-    
-    chain = prompt | chat    
-    try: 
-        result = chain.invoke(
-            {
-                "context": context,
-                "input": query
-            }
-        )        
-        output = result.content        
-        output_without_tag = output[output.find('<result>')+8:len(output)-9] # remove <result> 
-        
-        action = output_without_tag[output_without_tag.find('.')+2:]
-        print('action: ', action)
-        
-        for intent in intents:
-            if intent['action'] == action:
-                print('result of intent search: ', json.dumps(intent))
-                return True, intent
-        
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
-        raise Exception ("Not able to request to LLM")
-    
-    return False, {}
-
-def search_intent_using_similarity_search(intents, query):
-    global vectorstore
-        
-    embedding = get_embedding(profile_of_LLMs, selected_LLM)
-    for intent in intents:
-        doc = []
-        doc.append(
-            Document(
-                page_content=intent['action'],
-                metadata={
-                    'id': intent['id'],
-                    'message': intent['message'],
-                }
-            )
-        ) 
-
-        vectorstore = FAISS.from_documents(
-            doc,  # documents
-            embedding  # embeddings            
-        )
-        
-    top_k = 3
-    rel_documents = vectorstore.similarity_search_with_score(
-        query=query,
-        k=top_k        
-    )
-        
-    for i, document in enumerate(rel_documents):
-        print(f'## Document(intent search) {i+1}: {document}')
-
-        id = document[0].metadata['id']
-        message = document[0].metadata['message']
-        action = document[0].page_content
-        print(f"similarity search: {id}: {message}: {action}")
 
 def use_multimodal(chat, img_base64, query):    
     if query == "":
@@ -936,14 +653,7 @@ def getResponse(jsonBody):
         allowTime = getAllowTime()
         load_chat_history(userId, allowTime)
         print('history was loaded')
-                
-    # load action
-    if userId in action_dict:
-        print("Action: ", action_dict[userId])
-    else:
-        print('There is no action that was previously defined.')
-        action_dict[userId] = 'general'
-    
+                    
     start = int(time.time())    
 
     msg = ""
@@ -971,50 +681,16 @@ def getResponse(jsonBody):
             querySize = len(text)
             textCount = len(text.split())
             print(f"query size: {querySize}, words: {textCount}")
-            
-            # Intent Search
-            # LLM search
-            # similarity search
-            search_intent_using_similarity_search(intents, text)
-            
-            isAction, intent = search_intent_using_prompt_engineering(chat, intents, text)
-            if isAction:
-                msg = intent['message']
-                print('Intent message: ', msg)
-                
-                if intent['id'] == 'stop_action':
-                    action_dict[userId] = 'general'
-                else:
-                    action_dict[userId] = intent['id']
-                    
-                print('current intent: ', action_dict[userId])
-                
-            else:
-                if text == 'clearMemory':
-                    memory_chain.clear()
-                    map_chain[userId] = memory_chain
+                            
+            if text == 'clearMemory':
+                memory_chain.clear()
+                map_chain[userId] = memory_chain
                         
-                    print('initiate the chat memory!')
-                    msg  = "The chat memory was intialized in this session."
-                else:            
-                    if convType == "normal":
-                        msg = general_conversation(chat, text)    
-                    elif convType == "translation":
-                        msg = translate_text(chat, text) 
-                    elif convType == "grammar":
-                        msg = check_grammer(chat, text)  
-                    elif convType == "sentiment":
-                        msg = extract_sentiment(chat, text)
-                    elif convType == "extraction": # infomation extraction
-                        msg = extract_information(chat, text)  
-                    elif convType == "pii":
-                        msg = remove_pii(chat, text)   
-                    elif convType == "step-by-step":
-                        msg = do_step_by_step(chat, text)  
-                    elif convType == "timestamp-extraction":
-                        msg = extract_timestamp(chat, text)  
-                    else:
-                        msg = general_conversation(chat, text)  
+                print('initiate the chat memory!')
+                msg  = "The chat memory was intialized in this session."
+            else:            
+                if convType == "normal":
+                    msg = general_conversation(chat, text)    
                         
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
@@ -1137,7 +813,7 @@ def getResponse(jsonBody):
     else:
         selected_LLM = selected_LLM + 1
     
-    sendResultMessage(action_dict[userId], msg)  
+    sendResultMessage(msg)  
     
     return msg
 

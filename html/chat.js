@@ -180,31 +180,11 @@ function connect(endpoint, type) {
 
             if(response.status == 'completed') {          
                 feedback.style.display = 'none';       
-                console.log('current: '+action+'next: '+response.msg);
                    
                 addReceivedMessage(response.request_id, response.msg);  
                 
                 playAudio(response.msg);
                 // playWords(words);                       
-
-                if (action == 'general' && response.action != 'general') { // do action
-                    action = response.action                      
-                    console.log('start action: ', action)                    
-                    do_action(action)
-                }
-                else if(action != 'general' && response.action == 'general') {   // clear action
-                    console.log('stop action: ', action)
-                    clear_timer()
-                }
-                else if(action != response.action) { // exchange action
-                    console.log('exchange action from' + action + ' to '+ response.action)
-                    clear_timer()
-                    action = response.action  
-                    do_action(action)
-                }
-                else {  // remain action
-                    console.log('remain current action: ', response.action)
-                }
             }          
             else if(response.status == 'istyping') {
                 feedback.style.display = 'inline';
@@ -377,27 +357,6 @@ function voiceConnect(voiceEndpoint, type) {
     return ws;
 }
 
-// action
-let tm_action;
-function do_action(action) {
-    console.log('->action: ', action);
-
-    // image_processing(action);
-    clear_timer();
-
-    if(action != 'general') {
-        tm_action = setTimeout(function () {
-            console.log('action agin');            
-            do_action(action)
-    
-        }, 6000);
-    }    
-}
-function clear_timer() {
-    console.log('clear action: ', action);   
-    clearTimeout(tm_action);
-}
-
 // Documents
 const title = document.querySelector('#title');
 const sendBtn = document.querySelector('#sendBtn');
@@ -414,7 +373,6 @@ let maxMsgItems = 200;
 let msgHistory = new HashMap();
 let callee = "AWS";
 let index=0;
-let action = "general"
 
 let conversationType = localStorage.getItem('convType'); // set convType if exists 
 if(conversationType=="") {
@@ -934,8 +892,7 @@ function sendRequest(text, requestId, requestTime) {
         "request_id": requestId,
         "request_time": requestTime,
         "type": "text",
-        "body":text,
-        'action': action
+        "body":text
     }
     console.log("request: " + JSON.stringify(requestObj));
 
@@ -1107,236 +1064,3 @@ function deleteItems(userId) {
 
     xhr.send(blob);            
 }
-
-
-
-// Camaera UI
-let audio_file = "";
-let previewlist = [];
-let fileList = [];
-const maxImgItems = 1;
-let drawingIndex = 0;
-let emotionValue;
-let generation;
-let gender;
-
-const previewPlayer = document.querySelector("#preview");
-let canvas = document.getElementById('canvas');
-canvas.width = previewPlayer.width;
-canvas.height = previewPlayer.height;
-
-let count = 0;
-function videoStart() {    
-    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-        .then(stream => {
-            previewPlayer.srcObject = stream;
-            console.log('video started!')
-        })
-}
-
-function audioStart() {    
-    navigator.mediaDevices.getUserMedia({ video: false, audio: true })
-        .then(stream => {
-            console.log('audio started!')
-
-            // use MediaStream Recording API
-            const recorder = new MediaRecorder(stream);
-            recorder.mimeType = 'audio/ogg'
-            recorder.ondataavailable = event => {   // fires every one second and passes an BlobEvent
-                const blob = event.data;  // get the Blob from the event
-
-                console.log('recored event #', count);
-                count = count + 1;
-
-                // Create anchor tag
-                var blobURL = URL.createObjectURL(blob);
-                // document.write('<a href="' + blobURL + '">' + blobURL + '</a>');
-                console.log('blobURL: ', blobURL)
-
-                let downloadLink = document.createElement('a')
-                downloadLink.download = 'audio'+count+'.ogg'
-                downloadLink.href = blobURL
-                downloadLink.click() 
-
-                // let audio = new Audio(blob);
-                // audio.play();
-
-                // and send that blob to the server...
-            };            
-            recorder.start(10000); // make data available event fire every one second 
-        })
-}
-
-function preview() {
-    canvas.getContext('2d').drawImage(previewPlayer, 0, 0, canvas.width, canvas.height);
-
-    canvas.toBlob(function (blob) {
-        const img = new Image();
-        img.src = URL.createObjectURL(blob);
-
-        console.log(blob);
-
-        // downloadButton.href=img.src;
-        // console.log(downloadButton.href);
-        // downloadButton.download =`capture_${new Date()}.jpeg`; 
-    }, 'image/png');
-}
-
-function image_processing(action) {
-    canvas.getContext('2d').drawImage(previewPlayer, 0, 0, canvas.width, canvas.height);
-    drawingIndex = 0;
-    console.log('event for ', action);
-
-    const uri = action;
-    const xhr = new XMLHttpRequest();
-
-    xhr.open("POST", uri, true);
-
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            let result = JSON.parse(xhr.responseText);
-            console.log("result: " + JSON.stringify(result));
-
-            requestId = uuidv4();
-
-            notification = '\n\n[도움말] Action을 멈추려면 \'그만\'이라고 하세요.'
-            addReceivedMessage(requestId, result.msg+notification);   
-        }
-    };
-    
-    canvas.toBlob(function (blob) {
-        xhr.send(blob);
-    }, {type: 'image/png'});
-}
-
-// Camera
-const startButton = document.querySelector(".start-button");
-// const previewButton = document.querySelector(".preview-button");
-const imageButton = document.querySelector(".image-button");
-const playButton = document.querySelector(".play-button");
-
-//event
-startButton.addEventListener("click", videoStart);
-imageButton.addEventListener("click", image_processing('greeting'));
-playButton.addEventListener("click", playSpeech);
-
-function getEmotion() {
-    // const uri = cloudfrntUrl + "emotion";
-    const uri = "greeting";
-    const xhr = new XMLHttpRequest();
-
-    xhr.open("POST", uri, true);
-
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            let response = JSON.parse(xhr.responseText);
-            console.log("response: " + JSON.stringify(response));
-
-            userId = response.id;
-            console.log("userId: " + userId);
-
-            gender = response.gender;
-            console.log("gender: " + gender);
-
-            generation = response.generation;
-            console.log("generation: " + generation);
-
-            let ageRangeLow = JSON.parse(response.ageRange.Low);
-            let ageRangeHigh = JSON.parse(response.ageRange.High);
-            let ageRange = `Age: ${ageRangeLow} ~ ${ageRangeHigh}`; // age   
-            console.log('ages: ' + ageRange);
-
-            let smile = response.smile;
-            console.log("smile: " + smile);
-
-            let eyeglasses = response.eyeglasses;
-            console.log("eyeglasses: " + eyeglasses);
-
-            let sunglasses = response.sunglasses;
-            console.log("sunglasses: " + sunglasses);
-
-            let beard = response.beard;
-            console.log("beard: " + beard);
-
-            let mustache = response.mustache;
-            console.log("mustache: " + mustache);
-
-            let eyesOpen = response.eyesOpen;
-            console.log("eyesOpen: " + eyesOpen);
-
-            let mouthOpen = response.mouthOpen;
-            console.log("mouthOpen: " + mouthOpen);
-
-            emotionValue = response.emotions.toLowerCase();
-            console.log("emotion: " + emotionValue);
-
-            let emotionText = "Emotion: ";
-            if (emotionValue == "happy") emotionText += "행복";
-            else if (emotionValue == "surprised") emotionText += "놀람";
-            else if (emotionValue == "calm") emotionText += "평온";
-            else if (emotionValue == "angry") emotionText += "화남";
-            else if (emotionValue == "fear") emotionText += "공포";
-            else if (emotionValue == "confused") emotionText += "혼란스러움";
-            else if (emotionValue == "disgusted") emotionText += "역겨움";
-            else if (emotionValue == "sad") emotionText += "슬픔";
-
-            let features = "Features:";
-            if (smile) features += ' 웃음';
-            if (eyeglasses) features += ' 안경';
-            if (sunglasses) features += ' 썬글라스'; 
-            if (beard) features += ' 수염';
-            if (mustache) features += ' 콧수염';
-            if (eyesOpen) features += ' 눈뜨고있음';
-            if (mouthOpen) features += ' 입열고있음';
-            console.log("features: " + features);
-
-            let genderText;
-            if (gender == 'male') genderText = '남자'
-            else genderText = '여자'
-            let profileText = ageRange + ' (' + genderText + ')';
-            console.log("profileText: " + profileText);
-
-            canvas.toBlob(function (blob) {
-                const img = new Image();
-                img.src = URL.createObjectURL(blob);
-
-                console.log(blob);
-
-                //    downloadButton.href = img.src;
-                //    console.log(downloadButton.href);
-                //    downloadButton.download = `capture_${emotionValue}_${gender}_${middleAge}_${new Date()}.jpeg`;
-            }, 'image/png');
-
-            console.log("emotion: ", emotionValue);
-
-            getMessage();
-        }
-        else {
-            // profileInfo_features.innerHTML = ""
-        }
-    };
-
-    // console.log('uuid: ', uuid);
-
-    canvas.toBlob(function (blob) {
-        xhr.send(blob);
-    });
-}
-
-function getDate(current) {    
-    return current.toISOString().slice(0,10);
-}
-
-function getTime(current) {
-    let time_map = [current.getHours(), current.getMinutes(), current.getSeconds()].map((a)=>(a < 10 ? '0' + a : a));
-    return time_map.join(':');
-}
-
-
-function playSpeech() {
-    console.log('event for play');
-
-    let audio = new Audio(audio_file);
-    audio.play();
-}
-
