@@ -2,7 +2,7 @@
 
 ## Bedrock 사용 권한 설정하기
 
-LLM으로 Anthropic의 Claude3을 사용하기 위하여, Amazon Bedrock의 Virginia(us-east-1) 리전을 사용합니다. [Model access - Virginia](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess)에 접속해서 [Edit]를 선택하여 모든 모델을 사용할 수 있도록 설정합니다. 
+LLM으로 Anthropic의 Claude3을 사용하기 위하여, Amazon Bedrock의 Virginia(us-east-1)와 Oregon(us-west-2) 리전을 사용합니다. [Model access - Virginia](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess)와  [Model access - Oregon](https://us-west-2.console.aws.amazon.com/bedrock/home?region=us-west-2#/modelaccess)에 접속한후, [Edit]를 선택하여 모든 모델을 사용할 수 있도록 설정합니다. 특히, Claude Sonet과 Haiku는 반드시 사용할 수 있어야 합니다. 
 
 ![image](https://github.com/kyopark2014/llm-demo-multimodal/assets/52392004/9b1159f8-4e1a-4e3a-a42b-5979d629c98a)
 
