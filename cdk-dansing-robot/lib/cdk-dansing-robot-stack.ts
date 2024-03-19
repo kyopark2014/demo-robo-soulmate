@@ -19,9 +19,7 @@ const debug = false;
 const stage = 'dev';
 const s3_prefix = 'docs';
 const projectName = `demo-dansing-robot`; 
-
 const bucketName = `storage-for-${projectName}-${region}`; 
-const bedrock_region = "us-east-1";  // "us-east-1" "us-west-2" 
 
 const claude3_sonnet = [
   {
@@ -533,7 +531,6 @@ export class CdkDansingRobotStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(300),
       role: roleLambdaWebsocket,  
       environment: {
-        bedrock_region: bedrock_region,
         s3_bucket: s3Bucket.bucketName,
         s3_prefix: s3_prefix,
         path: 'https://'+distribution.domainName+'/',   

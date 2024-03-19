@@ -32,7 +32,6 @@ s3 = boto3.client('s3')
 s3_bucket = os.environ.get('s3_bucket') # bucket name
 s3_prefix = os.environ.get('s3_prefix')
 callLogTableName = os.environ.get('callLogTableName')
-bedrock_region = os.environ.get('bedrock_region', 'us-west-2')
 path = os.environ.get('path')
 doc_prefix = s3_prefix+'/'
     
