@@ -640,7 +640,9 @@ function playAudio(text) {
             console.log("response: ", response);
             
             const audio = document.querySelector("audio");
-            audio.src = './speech/'+userId+'.mp3'
+            const fname = './speech/'+userId+'.mp3';
+            console.log('fname: ', fname);
+            audio.src = fname;
             audio.load();
             audio.play();  
         }
