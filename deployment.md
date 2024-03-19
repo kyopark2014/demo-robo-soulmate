@@ -65,7 +65,7 @@ cdk bootstrap aws://[account-id]/ap-northeast-2
 cdk deploy --all
 ```
 
-인프라가 설치가 되면 아래와 같은 Output을 확인할 수 있습니다. 
+인프라가 설치가 되면 아래와 같은 Output을 확인할 수 있습니다. 여기에서는 접속하는 URL인 WebUrlforstreamchatbot과 CloudFront 주소를 distributionDomainNamefordemodansingrobotl로 알 수 있습니다.
 
 ![image](https://github.com/kyopark2014/llm-demo-multimodal/assets/52392004/021a80ba-9313-4fc0-8e2e-d45644fa718a)
 
@@ -79,11 +79,11 @@ Voice Interpreter는 음성으로부터 Text를 추출합니다. 이때 [Amazon 
 pip install requirements.txt
 ```
 
-interpreter 폴더로 이동하여, [config.ini](./interpreter/config.ini) 파일을 연 후에 아래의 내용을 업데이트 합니다.
+interpreter 폴더로 이동하여, [config.ini](./interpreter/config.ini) 파일을 연 후에 아래의 내용을 업데이트 합니다. url은 Output의 distributionDomainNamefordemodansingrobotl의 주소로 업데이트 합니다.
 
 ```text
 [system]
-url = https://d3c6h2zak9z18h.cloudfront.net/redis
+url = https://d1r17qhj4m3dnc.cloudfront.net/redis
 userId = kyopark
 ```
 
