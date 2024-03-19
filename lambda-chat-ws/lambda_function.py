@@ -338,17 +338,6 @@ def sendMessage(body):
         print('err_msg: ', err_msg)
         raise Exception ("Not able to send a message")
     
-def deliveryVoiceMessage(msg):    
-    requestId = uuid.uuid4()
-    print('requestId: ', requestId)
-    result = {
-        'request_id': str(requestId),
-        'msg': msg,
-        'status': 'redirected'
-    }
-    #print('debug: ', json.dumps(debugMsg))
-    sendMessage(result)      
-
 def sendResultMessage(msg):    
     result = {
         'request_id': requestId,

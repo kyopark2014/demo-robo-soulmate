@@ -26,8 +26,7 @@ def subscribe_redis(redis_client, channel):
             # msg = msg[1:len(msg)-1]
             print('voice msg: ', msg)    
                     
-            #deliveryVoiceMessage(action_dict[userId], msg)
-            deliveryVoiceMessage("general", msg)
+            deliveryVoiceMessage(msg)
 
 def initiate_redis():
     global redis_client
@@ -63,12 +62,11 @@ def sendMessage(body):
         print('err_msg: ', err_msg)
         raise Exception ("Not able to send a message")
     
-def deliveryVoiceMessage(action, msg):    
+def deliveryVoiceMessage(msg):    
     requestId = uuid.uuid4()
     print('requestId: ', requestId)
     result = {
         'request_id': str(requestId),
-        'action': action,
         'msg': msg,
         'status': 'redirected'
     }
