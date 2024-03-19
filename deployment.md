@@ -69,7 +69,7 @@ cdk deploy --all
 
 ![image](https://github.com/kyopark2014/llm-demo-multimodal/assets/52392004/021a80ba-9313-4fc0-8e2e-d45644fa718a)
 
-9) Output의 WebUrlforstreamchatbot의 URL로 접속합니다. 
+9) Output의 WebUrlforstreamchatbot의 URL로 접속합니다. Voice Interpreter와 사용자 ID를 이용해 데이터를 교환합니다. 따라서 사용자 ID로 "robot"라고 입력합니다.
 
 ## Voice Interpreter 
 
@@ -84,7 +84,7 @@ interpreter 폴더로 이동하여, [config.ini](./interpreter/config.ini) 파�
 ```text
 [system]
 url = https://d1r17qhj4m3dnc.cloudfront.net/redis
-userId = kyopark
+userId = robot
 ```
 
 이후 아래와 같이 실행합니다.
