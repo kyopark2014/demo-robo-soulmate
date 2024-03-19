@@ -640,7 +640,6 @@ function playAudio(text) {
             console.log("response: ", response);
             
             const audio = document.querySelector("audio");
-            // audio.src = `./speech/kyopark.mp3`
             audio.src = './speech/'+userId+'.mp3'
             audio.load();
             audio.play();  

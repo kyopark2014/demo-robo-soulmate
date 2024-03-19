@@ -18,7 +18,7 @@ const region = process.env.CDK_DEFAULT_REGION;
 const debug = false;
 const stage = 'dev';
 const s3_prefix = 'docs';
-const projectName = `demo-dansing-robotl`; 
+const projectName = `demo-dansing-robot`; 
 
 const bucketName = `storage-for-${projectName}-${region}`; 
 const bedrock_region = "us-east-1";  // "us-east-1" "us-west-2" 
@@ -179,7 +179,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, `vpc-for-${projectName}`, {
       vpcName: `vpc-for-${projectName}`,
       maxAzs: 1,
-      cidr: "10.32.0.0/24",
+      cidr: "10.64.0.0/24",
       natGateways: 1,
       createInternetGateway: true,
       subnetConfiguration: [
