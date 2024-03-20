@@ -639,6 +639,8 @@ function playAudio(requestId, text) {
         if (xhr.readyState === 4 && xhr.status === 200) {
             response = JSON.parse(xhr.responseText);
             console.log("response: ", response);
+
+            audo_body = response.body;
             
             /*
             if(isPlaying==true) {
@@ -658,9 +660,9 @@ function playAudio(requestId, text) {
             console.log('[audio] finish');
             isPlaying = false; */
 
-          /*  var audioElement = new Audio();
-            audioElement.src = "data:audio/ogg;base64,T2dnUwACAAAAAAAAAAA+...";
-            audioElement.play(); */
+            var audioElement = new Audio();
+            audioElement.src = "data:audio/ogg;base64,"+audo_body;
+            audioElement.play(); 
 
             /*
             var audioCtx = new (window.AudioContext || window.webkitAudioContext)();

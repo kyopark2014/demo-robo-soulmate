@@ -33,16 +33,7 @@ def lambda_handler(event, context):
             # SpeechMarkTypes= # 'sentence'|'ssml'|'viseme'|'word'            
         )
         
-        """
-       s3_client.put_object(
-            Bucket=s3_bucket,
-            Key=key,
-            Body=response['AudioStream'].read()
-        )
-        """
-        data = response['AudioStream'].read()
-        
-        encoded_content = base64.b64encode(data).decode()
+        encoded_content = base64.b64encode(response['AudioStream'].read()).decode()
         print('encoded_content: ', encoded_content)
     except Exception:
         err_msg = traceback.format_exc()
