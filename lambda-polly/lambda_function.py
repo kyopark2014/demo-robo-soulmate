@@ -2,6 +2,7 @@ import json
 import boto3
 import traceback
 import os
+import base64
 
 polly_client = boto3.client('polly')
 s3_client = boto3.client('s3')
@@ -40,14 +41,19 @@ def lambda_handler(event, context):
         )
         """
         data = response['AudioStream'].read()
-        print('data: ', data)
+        
+        encoded_content = base64.b64encode(data).decode()
+        print('encoded_content: ', encoded_content)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
         raise Exception ("Not able to create a speech using polly")
     
     return {
-        "isBase64Encoded": False,
-        'statusCode': 200,
-        'body': data
+        'statusCode': 200,        
+        "isBase64Encoded": True,
+        "headers": {
+            "Content-Type": "audio/ogg"
+        },
+        'body': encoded_content
     }    
