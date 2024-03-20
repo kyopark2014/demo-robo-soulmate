@@ -34,7 +34,7 @@ def lambda_handler(event, context):
         )
         
         encoded_content = base64.b64encode(response['AudioStream'].read()).decode()
-        print('encoded_content: ', encoded_content)
+        # print('encoded_content: ', encoded_content)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        

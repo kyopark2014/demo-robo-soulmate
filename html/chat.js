@@ -638,43 +638,27 @@ function playAudio(requestId, text) {
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
             response = JSON.parse(xhr.responseText);
-            console.log("response: ", response);
+            // console.log("response: ", response);
 
-            audo_body = response.body;
+            audio_body = response.body;
+            console.log("audio_body: ", audio_body);
+
+            audio_body = response.body;
+            console.log("audio_body: ", audio_body);
             
-            /*
+            var audio = document.querySelector('audio');
+            var sound = "data:audio/ogg;base64,"+audio_body;
+
             if(isPlaying==true) {
-                console.log('stop] play');
-                audio.stop(); 
-            }    
-
-            const audio = document.querySelector("audio");
-            const fname = './speech/'+requestId+'.mp3';
-            console.log('fname: ', fname);
-            audio.src = fname;
+                console.log('[audio] pause');
+                audio.pause(); 
+            }   
+            audio.src = sound;
             delay(3000);
-            audio.load();
-            isPlaying = true;
             console.log('[audio] play');
-            audio.play();  
+            isPlaying = true;
+            audio.play();
             console.log('[audio] finish');
-            isPlaying = false; */
-
-            var audioElement = new Audio();
-            audioElement.src = "data:audio/ogg;base64,"+audo_body;
-            audioElement.play(); 
-
-            /*
-            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            var channels = 1;
-            audioCtx.sampleRate = 16000;
-            var frameCount = audioCtx.sampleRate * 10.0;
-            var myAudioBuffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
-
-            var source = audioCtx.createBufferSource();
-            source.buffer = myAudioBuffer;
-            source.connect(audioCtx.destination);
-            source.start(); */
         }
     };
     
