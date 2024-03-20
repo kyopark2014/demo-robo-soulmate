@@ -640,6 +640,7 @@ function playAudio(requestId, text) {
             response = JSON.parse(xhr.responseText);
             console.log("response: ", response);
             
+            /*
             if(isPlaying==true) {
                 console.log('stop] play');
                 audio.stop(); 
@@ -649,13 +650,29 @@ function playAudio(requestId, text) {
             const fname = './speech/'+requestId+'.mp3';
             console.log('fname: ', fname);
             audio.src = fname;
-            delay(1000);
+            delay(3000);
             audio.load();
             isPlaying = true;
             console.log('[audio] play');
             audio.play();  
             console.log('[audio] finish');
-            isPlaying = false;
+            isPlaying = false; */
+
+          /*  var audioElement = new Audio();
+            audioElement.src = "data:audio/ogg;base64,T2dnUwACAAAAAAAAAAA+...";
+            audioElement.play(); */
+
+            /*
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var channels = 1;
+            audioCtx.sampleRate = 16000;
+            var frameCount = audioCtx.sampleRate * 10.0;
+            var myAudioBuffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
+
+            var source = audioCtx.createBufferSource();
+            source.buffer = myAudioBuffer;
+            source.connect(audioCtx.destination);
+            source.start(); */
         }
     };
     
@@ -681,7 +698,7 @@ function addReceivedMessage(requestId, msg) {
     }
     else {
         index = indexList.get(requestId+':receive');
-        console.log("reused index="+index+', id='+requestId+':receive');        
+        // console.log("reused index="+index+', id='+requestId+':receive');        
     }
     // console.log("index:", index);   
 
