@@ -131,9 +131,8 @@ function voicePong() {
 }
 
 // chat session 
-sentance = "";
-words = [];
-idx_word = 0;
+let sentance = "";
+let line = "";
 function connect(endpoint, type) {
     const ws = new WebSocket(endpoint);
 
@@ -190,26 +189,22 @@ function connect(endpoint, type) {
                 feedback.style.display = 'inline';
                 // feedback.innerHTML = '<i>typing a message...</i>'; 
                 sentance = "";
-                // words = [];
-                // idx_word = 0;
             }
             else if(response.status == 'proceeding') {
                 feedback.style.display = 'none';
-
-                if(response.msg == ' ') {
-                    if (word != "") {
-                        // console.log(word);
-                        // generateVoiceWord(word);
-                    }
-                    word = "";
-                }
-                else {
-                    word = word + response.msg;                    
-                }
-
-                // console.log('response.msg: ', response.msg);
+                console.log('response.msg: ', response.msg);
+                
                 sentance += response.msg;
-                addReceivedMessage(response.request_id, sentance);                
+                line += response.msg;
+
+                if(response.msg == '.') {     
+                    console.log('line: ', line);
+                    // playAudio(response.request_id, line);               
+                    
+                    line = "";    
+                }
+                
+                addReceivedMessage(response.request_id, sentance);     
             }                
             else if(response.status == 'debug') {
                 feedback.style.display = 'none';
@@ -589,42 +584,8 @@ function playWords(words) {
     }    
 }
 
-function generateVoiceWord(text) {
-    const uri = "speech";
-    const xhr = new XMLHttpRequest();
-
-    let fname = userId+'_'+idx_word+'.mp3';
-    let voiceId = 'Seoyeon';
-    // voiceId: 'Aditi'|'Amy'|'Astrid'|'Bianca'|'Brian'|'Camila'|'Carla'|'Carmen'|'Celine'|'Chantal'|'Conchita'|'Cristiano'|'Dora'|'Emma'|'Enrique'|'Ewa'|'Filiz'|'Gabrielle'|'Geraint'|'Giorgio'|'Gwyneth'|'Hans'|'Ines'|'Ivy'|'Jacek'|'Jan'|'Joanna'|'Joey'|'Justin'|'Karl'|'Kendra'|'Kevin'|'Kimberly'|'Lea'|'Liv'|'Lotte'|'Lucia'|'Lupe'|'Mads'|'Maja'|'Marlene'|'Mathieu'|'Matthew'|'Maxim'|'Mia'|'Miguel'|'Mizuki'|'Naja'|'Nicole'|'Olivia'|'Penelope'|'Raveena'|'Ricardo'|'Ruben'|'Russell'|'Salli'|'Seoyeon'|'Takumi'|'Tatyana'|'Vicki'|'Vitoria'|'Zeina'|'Zhiyu'|'Aria'|'Ayanda'|'Arlet'|'Hannah'|'Arthur'|'Daniel'|'Liam'|'Pedro'|'Kajal'|'Hiujin'|'Laura'|'Elin'|'Ida'|'Suvi'|'Ola'|'Hala'|'Andres'|'Sergio'|'Remi'|'Adriano'|'Thiago'|'Ruth'|'Stephen'|'Kazuha'|'Tomoko'
-
-    let langCode = 'ko-KR';  // ko-KR en-US(영어)) ja-JP(일본어)) cmn-CN(중국어)) sv-SE(스페인어))
-
-    xhr.open("POST", uri, true);
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            response = JSON.parse(xhr.responseText);
-            console.log("response: ", response);
-            
-            words.push('./speech/'+fname);
-            idx_word++;
-        }
-    };
-    
-    var requestObj = {
-        "text": text,
-        "voiceId": voiceId,
-        "langCode": langCode,
-        "fname": fname
-    }
-    console.log("request: " + JSON.stringify(requestObj));
-
-    var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
-
-    xhr.send(blob);            
-}
-
 let isPlaying = false;
-playAudio(requestId, text)
+playAudio("a1234", "안녕 반가워요")
 function playAudio(requestId, text) {
     const uri = "speech";
     const xhr = new XMLHttpRequest();
@@ -642,10 +603,7 @@ function playAudio(requestId, text) {
             // console.log("response: ", response);
 
             audio_body = response.body;
-            console.log("audio_body: ", audio_body);
-
-            audio_body = response.body;
-            console.log("audio_body: ", audio_body);
+            //console.log("audio_body: ", audio_body);
             
             var audio = document.querySelector('audio');
             var sound = "data:audio/ogg;base64,"+audio_body;
