@@ -422,32 +422,18 @@ def translate_text(chat, text):
     return msg[msg.find('<result>')+8:len(msg)-9] # remove <result> tag
 
 def extract_sentiment(chat, text):
-    if isKorean(text)==True:
-        system = (
-            """아래의 <example> review와 Extracted Topic and sentiment 인 <result>가 있습니다.
-            <example>
-            객실은 작지만 깨끗하고 편안합니다. 프론트 데스크는 정말 분주했고 체크인 줄도 길었지만, 직원들은 프로페셔널하고 매우 유쾌하게 각 사람을 응대했습니다. 우리는 다시 거기에 머물것입니다.
-            </example>
-            <result>
-            청소: 긍정적, 
-            서비스: 긍정적
-            </result>
+    system = (
+        """아래의 <example> review와 Extracted Topic and sentiment 인 <result>가 있습니다.
+        <example>
+        객실은 작지만 깨끗하고 편안합니다. 프론트 데스크는 정말 분주했고 체크인 줄도 길었지만, 직원들은 프로페셔널하고 매우 유쾌하게 각 사람을 응대했습니다. 우리는 다시 거기에 머물것입니다.
+        </example>
+        <result>
+        청소: 긍정적, 
+        서비스: 긍정적
+        </result>
 
-            아래의 <review>에 대해서 위의 <result> 예시처럼 Extracted Topic and sentiment 을 만들어 주세요."""
-        )
-    else: 
-        system = (
-            """Here is <example> review and extracted topics and sentiments as <result>.
-
-            <example>
-            The room was small but clean and comfortable. The front desk was really busy and the check-in line was long, but the staff were professional and very pleasant with each person they helped. We will stay there again.
-            </example>
-
-            <result>
-            Cleanliness: Positive, 
-            Service: Positive
-            </result>"""
-        )
+        아래의 <review>에 대해서 위의 <result> 예시처럼 Extracted Topic and sentiment 을 만들어 주세요."""
+    )
         
     human = "<review>{text}</review>"
     
@@ -472,14 +458,9 @@ def extract_sentiment(chat, text):
     return msg
 
 def extract_information(chat, text):
-    if isKorean(text)==True:
-        system = (
-            """다음 텍스트에서 이메일 주소를 정확하게 복사하여 한 줄에 하나씩 적어주세요. 입력 텍스트에 정확하게 쓰여있는 이메일 주소만 적어주세요. 텍스트에 이메일 주소가 없다면, "N/A"라고 적어주세요. 또한 결과는 <result> tag를 붙여주세요."""
-        )
-    else: 
-        system = (
-            """Please precisely copy any email addresses from the following text and then write them, one per line.  Only write an email address if it's precisely spelled out in the input text. If there are no email addresses in the text, write "N/A".  Do not say anything else.  Put it in <result> tags."""
-        )
+    system = (
+        """다음 텍스트에서 이메일 주소를 정확하게 복사하여 한 줄에 하나씩 적어주세요. 입력 텍스트에 정확하게 쓰여있는 이메일 주소만 적어주세요. 텍스트에 이메일 주소가 없다면, "N/A"라고 적어주세요. 또한 결과는 <result> tag를 붙여주세요."""
+    )
         
     human = "<text>{text}</text>"
     

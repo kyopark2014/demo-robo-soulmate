@@ -183,7 +183,7 @@ function connect(endpoint, type) {
                    
                 addReceivedMessage(response.request_id, response.msg);  
                 
-                playAudio(response.msg);
+                playAudio(response.request_id, response.msg);
                 // playWords(words);                       
             }          
             else if(response.status == 'istyping') {
@@ -623,7 +623,7 @@ function generateVoiceWord(text) {
     xhr.send(blob);            
 }
 
-function playAudio(text) {
+function playAudio(requestId, text) {
     const uri = "speech";
     const xhr = new XMLHttpRequest();
 
@@ -640,7 +640,7 @@ function playAudio(text) {
             console.log("response: ", response);
             
             const audio = document.querySelector("audio");
-            const fname = './speech/'+userId+'.mp3';
+            const fname = './speech/'+requestId+'.mp3';
             console.log('fname: ', fname);
             audio.src = fname;
             audio.load();
@@ -652,7 +652,7 @@ function playAudio(text) {
         "text": text,
         "voiceId": voiceId,
         "langCode": langCode,
-        "fname": fname
+        "fname": requestId
     }
     console.log("request: " + JSON.stringify(requestObj));
 
