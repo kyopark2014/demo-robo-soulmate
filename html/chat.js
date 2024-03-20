@@ -624,6 +624,7 @@ function generateVoiceWord(text) {
 }
 
 let isPlaying = false;
+playAudio(requestId, text)
 function playAudio(requestId, text) {
     const uri = "speech";
     const xhr = new XMLHttpRequest();
@@ -665,8 +666,7 @@ function playAudio(requestId, text) {
     var requestObj = {
         "text": text,
         "voiceId": voiceId,
-        "langCode": langCode,
-        "fname": requestId+'.mp3'
+        "langCode": langCode
     }
     console.log("request: " + JSON.stringify(requestObj));
 
