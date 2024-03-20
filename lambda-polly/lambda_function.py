@@ -39,6 +39,7 @@ def lambda_handler(event, context):
             Body=response['AudioStream'].read()
         )
         """
+        data = response['AudioStream'].read()
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
@@ -48,6 +49,6 @@ def lambda_handler(event, context):
         "isBase64Encoded": False,
         'statusCode': 200,
         'body': json.dumps({      
-            "data": response['AudioStream'].read()
+            "data": data
         })
     }    
