@@ -649,6 +649,7 @@ function playAudio(requestId, text) {
             const fname = './speech/'+requestId+'.mp3';
             console.log('fname: ', fname);
             audio.src = fname;
+            delay(1000);
             audio.load();
             isPlaying = true;
             console.log('[audio] play');
