@@ -652,7 +652,7 @@ function playAudio(requestId, text) {
         "text": text,
         "voiceId": voiceId,
         "langCode": langCode,
-        "fname": requestId
+        "fname": requestId+'.mp3'
     }
     console.log("request: " + JSON.stringify(requestObj));
 
