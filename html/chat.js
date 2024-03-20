@@ -640,25 +640,21 @@ function playAudio(requestId, text) {
             response = JSON.parse(xhr.responseText);
             console.log("response: ", response);
             
+            if(isPlaying==true) {
+                console.log('stop] play');
+                audio.stop(); 
+            }    
+
             const audio = document.querySelector("audio");
             const fname = './speech/'+requestId+'.mp3';
             console.log('fname: ', fname);
             audio.src = fname;
-            
-            if(isPlaying==false) {                
-                audio.load();
-                isPlaying = true;
-                audio.play();  
-                isPlaying = false;
-            }
-            else { // when on playing, stop the old and then play the new.
-                audio.stop();  
-
-                audio.load();
-                isPlaying = true;
-                audio.play();  
-                isPlaying = false;
-            }            
+            audio.load();
+            isPlaying = true;
+            console.log('[audio] play');
+            audio.play();  
+            console.log('[audio] finish');
+            isPlaying = false;
         }
     };
     
