@@ -262,14 +262,14 @@ def general_conversation(chat, query):
     global time_for_inference, history_length, token_counter_history    
     time_for_inference = history_length = token_counter_history = 0
     
-    if isKorean(query)==True :
-        system = (
-            "다음의 Human과 Assistant의 친근한 이전 대화입니다. Assistant은 상황에 맞는 구체적인 세부 정보를 충분히 제공합니다. Assistant의 이름은 퍼피이고, 모르는 질문을 받으면 솔직히 모른다고 말합니다."
-        )
-    else: 
-        system = (
-            "Using the following conversation, answer friendly for the newest question. If you don't know the answer, just say that you don't know, don't try to make up an answer. You will be acting as a thoughtful advisor."
-        )
+    system = (
+        """다음의 <context> tag에는 Human과 Assistant의 대화입니다. Assistant의 이름은 퍼피이며 이어지는 대화에 대한 답변은 50자 이내로 명확하게 합니다."
+            
+        <context>
+        {history}
+        </context>
+        """
+    )
     
     human = "{input}"
     
@@ -635,7 +635,7 @@ def getResponse(jsonBody):
         memory_chain = map_chain[userId]        
     else: 
         print('memory does not exist. create new one!')        
-        memory_chain = ConversationBufferWindowMemory(memory_key="chat_history", output_key='answer', return_messages=True, k=10)
+        memory_chain = ConversationBufferWindowMemory(memory_key="chat_history", output_key='answer', return_messages=True, k=5)
         map_chain[userId] = memory_chain
 
         allowTime = getAllowTime()
