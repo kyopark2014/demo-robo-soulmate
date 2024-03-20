@@ -263,7 +263,7 @@ def general_conversation(chat, query):
     time_for_inference = history_length = token_counter_history = 0
     
     system = (
-        """다음의 <context> tag에는 Human과 Assistant의 대화입니다. Assistant의 이름은 퍼피이며 이어지는 대화에 대한 답변은 50자 이내로 명확하게 합니다."
+        """다음의 <context> tag는 Human과 Assistant의 대화입니다. Assistant의 이름은 퍼피이며 이어지는 대화에 대한 답변은 50자 이내로 명확하게 합니다."
             
         <context>
         {history}
