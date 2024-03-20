@@ -623,6 +623,7 @@ function generateVoiceWord(text) {
     xhr.send(blob);            
 }
 
+let isPlaying = false;
 function playAudio(requestId, text) {
     const uri = "speech";
     const xhr = new XMLHttpRequest();
@@ -643,8 +644,21 @@ function playAudio(requestId, text) {
             const fname = './speech/'+requestId+'.mp3';
             console.log('fname: ', fname);
             audio.src = fname;
-            audio.load();
-            audio.play();  
+            
+            if(isPlaying==false) {                
+                audio.load();
+                isPlaying = true;
+                audio.play();  
+                isPlaying = false;
+            }
+            else { // when on playing, stop the old and then play the new.
+                audio.stop();  
+
+                audio.load();
+                isPlaying = true;
+                audio.play();  
+                isPlaying = false;
+            }            
         }
     };
     
