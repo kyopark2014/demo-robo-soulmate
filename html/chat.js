@@ -69,6 +69,8 @@ HashMap.prototype = {
     }
 };
 
+var audio = document.querySelector('audio');
+
 // messag method 
 let undelivered = new HashMap();
 let retry_count = 0;
@@ -133,6 +135,7 @@ function voicePong() {
 // chat session 
 let sentance = "";
 let line = "";
+let playList = [];
 function connect(endpoint, type) {
     const ws = new WebSocket(endpoint);
 
@@ -183,7 +186,14 @@ function connect(endpoint, type) {
                 addReceivedMessage(response.request_id, response.msg);  
                 
                 playAudio(response.request_id, response.msg);
-                // playWords(words);                       
+                
+                // playWords(words);             
+                /* for(let i=0;i<playList.length;i++) {
+                    console.log('i: '+i+' body:'+playList[i]);
+                    PlayAudioLine(playList[i]);
+                    delay(3000);
+                }           
+                playList = []; */
             }          
             else if(response.status == 'istyping') {
                 feedback.style.display = 'inline';
@@ -192,15 +202,16 @@ function connect(endpoint, type) {
             }
             else if(response.status == 'proceeding') {
                 feedback.style.display = 'none';
-                console.log('response.msg: ', response.msg);
+                // console.log('response.msg: ', response.msg);
                 
                 sentance += response.msg;
                 line += response.msg;
 
-                if(response.msg == '.') {     
+                if(response.msg == '.' || response.msg == '?' || response.msg == '!') {     
                     console.log('line: ', line);
-                    // playAudio(response.request_id, line);               
-                    
+                    // playAudio(response.request_id, line);        
+                    loadAudio(line)
+
                     line = "";    
                 }
                 
@@ -585,12 +596,30 @@ function playWords(words) {
 }
 
 let isPlaying = false;
-playAudio("a1234", "안녕 반가워요")
+let rid;
+
+function PlayAudioLine(requestId, audio_body) {
+    var sound = "data:audio/ogg;base64,"+audio_body;
+
+    if(isPlaying==true && rid != requestId) {
+        console.log('rid: '+rid+' requestId: '+requestId);
+        console.log('[audio] pause');
+        audio.pause(); 
+    }   
+    
+    audio.src = sound;
+    delay(3000);
+    console.log('[audio] play');
+    isPlaying = true;
+    rid = requestId;
+    audio.play();
+    console.log('[audio] finish');
+}
+
 function playAudio(requestId, text) {
     const uri = "speech";
     const xhr = new XMLHttpRequest();
 
-    let fname = userId+'.mp3';
     let voiceId = 'Seoyeon';
     // voiceId: 'Aditi'|'Amy'|'Astrid'|'Bianca'|'Brian'|'Camila'|'Carla'|'Carmen'|'Celine'|'Chantal'|'Conchita'|'Cristiano'|'Dora'|'Emma'|'Enrique'|'Ewa'|'Filiz'|'Gabrielle'|'Geraint'|'Giorgio'|'Gwyneth'|'Hans'|'Ines'|'Ivy'|'Jacek'|'Jan'|'Joanna'|'Joey'|'Justin'|'Karl'|'Kendra'|'Kevin'|'Kimberly'|'Lea'|'Liv'|'Lotte'|'Lucia'|'Lupe'|'Mads'|'Maja'|'Marlene'|'Mathieu'|'Matthew'|'Maxim'|'Mia'|'Miguel'|'Mizuki'|'Naja'|'Nicole'|'Olivia'|'Penelope'|'Raveena'|'Ricardo'|'Ruben'|'Russell'|'Salli'|'Seoyeon'|'Takumi'|'Tatyana'|'Vicki'|'Vitoria'|'Zeina'|'Zhiyu'|'Aria'|'Ayanda'|'Arlet'|'Hannah'|'Arthur'|'Daniel'|'Liam'|'Pedro'|'Kajal'|'Hiujin'|'Laura'|'Elin'|'Ida'|'Suvi'|'Ola'|'Hala'|'Andres'|'Sergio'|'Remi'|'Adriano'|'Thiago'|'Ruth'|'Stephen'|'Kazuha'|'Tomoko'
 
@@ -602,22 +631,40 @@ function playAudio(requestId, text) {
             response = JSON.parse(xhr.responseText);
             // console.log("response: ", response);
 
-            audio_body = response.body;
-            //console.log("audio_body: ", audio_body);
-            
-            var audio = document.querySelector('audio');
-            var sound = "data:audio/ogg;base64,"+audio_body;
+            // playList.push(response.body);
+            PlayAudioLine(requestId, response.body)
+        }
+    };
+    
+    var requestObj = {
+        "text": text,
+        "voiceId": voiceId,
+        "langCode": langCode
+    }
+    console.log("request: " + JSON.stringify(requestObj));
 
-            if(isPlaying==true) {
-                console.log('[audio] pause');
-                audio.pause(); 
-            }   
-            audio.src = sound;
-            delay(3000);
-            console.log('[audio] play');
-            isPlaying = true;
-            audio.play();
-            console.log('[audio] finish');
+    var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
+
+    xhr.send(blob);            
+}
+
+function loadAudio(text) {
+    const uri = "speech";
+    const xhr = new XMLHttpRequest();
+
+    let voiceId = 'Seoyeon';
+    // voiceId: 'Aditi'|'Amy'|'Astrid'|'Bianca'|'Brian'|'Camila'|'Carla'|'Carmen'|'Celine'|'Chantal'|'Conchita'|'Cristiano'|'Dora'|'Emma'|'Enrique'|'Ewa'|'Filiz'|'Gabrielle'|'Geraint'|'Giorgio'|'Gwyneth'|'Hans'|'Ines'|'Ivy'|'Jacek'|'Jan'|'Joanna'|'Joey'|'Justin'|'Karl'|'Kendra'|'Kevin'|'Kimberly'|'Lea'|'Liv'|'Lotte'|'Lucia'|'Lupe'|'Mads'|'Maja'|'Marlene'|'Mathieu'|'Matthew'|'Maxim'|'Mia'|'Miguel'|'Mizuki'|'Naja'|'Nicole'|'Olivia'|'Penelope'|'Raveena'|'Ricardo'|'Ruben'|'Russell'|'Salli'|'Seoyeon'|'Takumi'|'Tatyana'|'Vicki'|'Vitoria'|'Zeina'|'Zhiyu'|'Aria'|'Ayanda'|'Arlet'|'Hannah'|'Arthur'|'Daniel'|'Liam'|'Pedro'|'Kajal'|'Hiujin'|'Laura'|'Elin'|'Ida'|'Suvi'|'Ola'|'Hala'|'Andres'|'Sergio'|'Remi'|'Adriano'|'Thiago'|'Ruth'|'Stephen'|'Kazuha'|'Tomoko'
+
+    let langCode = 'ko-KR';  // ko-KR en-US(영어)) ja-JP(일본어)) cmn-CN(중국어)) sv-SE(스페인어))
+
+    xhr.open("POST", uri, true);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            response = JSON.parse(xhr.responseText);
+            // console.log("response: ", response);
+
+            playList.push(response.body);
+            // PlayAudioLine(requestId, response.body)
         }
     };
     
