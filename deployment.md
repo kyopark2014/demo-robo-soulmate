@@ -4,7 +4,7 @@
 
 LLM으로 Anthropic의 Claude3을 사용하기 위하여, Amazon Bedrock의 Virginia(us-east-1)와 Oregon(us-west-2) 리전을 사용합니다. [Model access - Virginia](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess)와  [Model access - Oregon](https://us-west-2.console.aws.amazon.com/bedrock/home?region=us-west-2#/modelaccess)에 접속한후, [Edit]를 선택하여 모든 모델을 사용할 수 있도록 설정합니다. 특히, Claude Sonet과 Haiku는 반드시 사용할 수 있어야 합니다. 
 
-![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/9b1159f8-4e1a-4e3a-a42b-5979d629c98a)
+![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/8bd8978e-5906-4d8c-93b0-b316976307e2)
 
 
 ## CDK를 이용한 인프라 설치하기
@@ -13,11 +13,11 @@ LLM으로 Anthropic의 Claude3을 사용하기 위하여, Amazon Bedrock의 Virg
 
 1) [Cloud9 Console](https://ap-northeast-2.console.aws.amazon.com/cloud9control/home?region=ap-northeast-2#/create)에 접속하여 [Create environment]-[Name]에서 “chatbot”으로 이름을 입력하고, EC2 instance는 “m5.large”를 선택합니다. 나머지는 기본값을 유지하고, 하단으로 스크롤하여 [Create]를 선택합니다.
 
-![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/1e9f33b9-0776-4473-aedb-d3f51539a368)
+![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/807e3712-d98f-4359-9c79-0ea8359861ea)
 
 2) [Environment](https://ap-northeast-2.console.aws.amazon.com/cloud9control/home?region=ap-northeast-2#/)에서 “chatbot”를 [Open]한 후에 아래와 같이 터미널을 실행합니다.
 
-![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/e1c82ff1-447c-4044-8666-9eb0288a607a)
+![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/314d1acf-e5f6-4ba5-810c-9bc06bb4ef03)
 
 3) EBS 크기 변경
 
@@ -67,7 +67,8 @@ cdk deploy --all
 
 인프라가 설치가 되면 아래와 같은 Output을 확인할 수 있습니다. 여기에서는 접속하는 URL인 WebUrlforstreamchatbot과 CloudFront 주소를 distributionDomainNamefordemodansingrobotl로 알 수 있습니다.
 
-![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/021a80ba-9313-4fc0-8e2e-d45644fa718a)
+
+![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/f39623bc-6574-4e62-abfd-b0605d42436c)
 
 9) NAT 설정
 
