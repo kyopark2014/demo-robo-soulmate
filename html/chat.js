@@ -134,7 +134,7 @@ function voicePong() {
 let sentance = "";
 let lineText = "";
 let playList = [];
-let requestId;
+let requestId = ""
 function connect(endpoint, type) {
     const ws = new WebSocket(endpoint);
 
@@ -185,7 +185,7 @@ function connect(endpoint, type) {
                 addReceivedMessage(response.request_id, response.msg);  
                 
                 // playAudioList();
-                // playList = [];                
+                // playList = [];
             }          
             else if(response.status == 'istyping') {
                 feedback.style.display = 'inline';
@@ -403,6 +403,21 @@ function playAudioList() {
             next = false;
             break;
         }
+        else if(requestId != playList[i].requestId) {
+            playList[i].played = true;
+        }
+    }
+
+    // clear playList when completed 
+    let isCompleted = true;
+    for(let i=0; i<playList.length;i++) {
+        if(playList[i].played == false) {
+            isCompleted = false;
+            break;
+        }
+    }
+    if(isCompleted==true) {
+        playList = [];
     }
 }
 
