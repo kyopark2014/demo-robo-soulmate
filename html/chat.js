@@ -364,6 +364,10 @@ function loadAudio(requestId, text) {
 
     let langCode = 'ko-KR';  // ko-KR en-US(영어)) ja-JP(일본어)) cmn-CN(중국어)) sv-SE(스페인어))
 
+    if (conversationType=='trnaslation') {  // To-Do
+
+    }
+
     xhr.open("POST", uri, true);
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
