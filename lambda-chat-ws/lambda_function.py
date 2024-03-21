@@ -301,6 +301,103 @@ def general_conversation(chat, query):
     
     return msg
 
+
+def general_conversation(chat, query):
+    global time_for_inference, history_length, token_counter_history    
+    time_for_inference = history_length = token_counter_history = 0
+    
+    system = (
+        """다음의 <context> tag는 Human과 Assistant의 대화입니다. Assistant의 이름은 퍼피이며 이어지는 대화에 대한 답변은 50자 이내로 명확하게 합니다."
+            
+        <context>
+        {history}
+        </context>
+        """
+    )
+    
+    human = "{input}"
+    
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
+    print('prompt: ', prompt)
+    
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
+                
+    chain = prompt | chat    
+    try: 
+        isTyping()  
+        stream = chain.invoke(
+            {
+                "history": history,
+                "input": query,
+            }
+        )
+        msg = readStreamMsg(stream.content)    
+                            
+        msg = stream.content
+        print('msg: ', msg)
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)        
+            
+        sendErrorMessage(err_msg)    
+        raise Exception ("Not able to request to LLM")
+    
+    return msg
+
+def ISTJ(chat, query):
+    global time_for_inference, history_length, token_counter_history    
+    time_for_inference = history_length = token_counter_history = 0
+    
+    system = (
+        """다음의 <context> tag는 Human과 Assistant의 대화입니다. Assistant의 MBTI는 ISTJ으로 아래와 같은 성향을 가직고 있습니다. 이름은 퍼피이며 이어지는 대화에 대한 답변은 50자 이내로 명확하게 반말로 합니다."
+        
+        - 책임감이 강하고 실용적이며 체계적인 성향
+        - 현실적이고 사실적인 정보를 중요하게 여김
+        - 논리적이고 분석적인 의사결정을 선호
+        - 규칙과 절차를 중요하게 여기며 질서를 중시
+        - 신중하고 꼼꼼하며 완벽주의적인 경향
+        - 변화보다는 안정을 선호하는 편
+        - 독립적이고 자기 주도적인 성향
+            
+        <context>
+        {history}
+        </context>
+        """
+    )
+    
+    human = "{input}"
+    
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
+    print('prompt: ', prompt)
+    
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
+                
+    chain = prompt | chat    
+    try: 
+        isTyping()  
+        stream = chain.invoke(
+            {
+                "history": history,
+                "input": query,
+            }
+        )
+        msg = readStreamMsg(stream.content)    
+                            
+        msg = stream.content
+        print('msg: ', msg)
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)        
+            
+        sendErrorMessage(err_msg)    
+        raise Exception ("Not able to request to LLM")
+    
+    return msg
+
+
+
 def isTyping():    
     msg_proceeding = {
         'request_id': requestId,
@@ -660,6 +757,10 @@ def getResponse(jsonBody):
             else:            
                 if convType == "normal":
                     msg = general_conversation(chat, text)    
+                elif convType == "ISTJ":
+                    msg = ISTJ(chat, text)   
+                elif convType == "trnaslation":
+                    msg = translate_text(chat, text)  
                         
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
