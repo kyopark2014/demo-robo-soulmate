@@ -302,50 +302,6 @@ def general_conversation(chat, query):
     
     return msg
 
-
-def general_conversation(chat, query):
-    global time_for_inference, history_length, token_counter_history    
-    time_for_inference = history_length = token_counter_history = 0
-    
-    system = (
-        """다음의 <context> tag는 Human과 Assistant의 대화입니다. Assistant의 이름은 퍼피이며 이어지는 대화에 대한 답변은 50자 이내로 명확하게 합니다."
-            
-        <context>
-        {history}
-        </context>
-        """
-    )
-    
-    human = "{input}"
-    
-    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
-    print('prompt: ', prompt)
-    
-    history = memory_chain.load_memory_variables({})["chat_history"]
-    print('memory_chain: ', history)
-                
-    chain = prompt | chat    
-    try: 
-        isTyping()  
-        stream = chain.invoke(
-            {
-                "history": history,
-                "input": query,
-            }
-        )
-        msg = readStreamMsg(stream.content)    
-                            
-        msg = stream.content
-        print('msg: ', msg)
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)        
-            
-        sendErrorMessage(err_msg)    
-        raise Exception ("Not able to request to LLM")
-    
-    return msg
-
 def ISTJ(chat, query):
     global time_for_inference, history_length, token_counter_history    
     time_for_inference = history_length = token_counter_history = 0
