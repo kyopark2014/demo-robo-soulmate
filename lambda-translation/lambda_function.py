@@ -122,7 +122,7 @@ def translate_text(chat, text):
     prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
     print('prompt: ', prompt)
     
-    if isKorean(text)==False :
+    if isKorean(text)==False:
         input_language = "English"
         output_language = "Korean"
     else:

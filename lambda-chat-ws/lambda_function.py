@@ -282,6 +282,7 @@ def general_conversation(chat, query):
     chain = prompt | chat    
     try: 
         isTyping()  
+        print('query: ', query)
         stream = chain.invoke(
             {
                 "history": history,
