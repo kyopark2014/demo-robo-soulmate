@@ -710,7 +710,11 @@ def getResponse(jsonBody):
                 msg  = "The chat memory was intialized in this session."
             else:            
                 if convType == "normal":
-                    msg = general_conversation(chat, text)    
+                    msg = general_conversation(chat, text)   
+                elif convType == "normal":
+                    msg = ISTJ(chat, text)   
+                else: 
+                    msg = general_conversation(chat, text)   
                         
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
