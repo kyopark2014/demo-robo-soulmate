@@ -224,6 +224,12 @@ function connect(endpoint, type) {
                 lineText = lineText.replace('\n','');
                 if(lineText.length>3 && (response.msg == '.' || response.msg == '?' || response.msg == '!'|| response.msg == ':')) {     
                     console.log('lineText: ', lineText);
+                    playList.push({
+                        'played': false,
+                        'requestId': requestId,
+                        'text': text
+                    });
+        
                     loadAudio(response.request_id, lineText);
                     lineText = "";
                 }
@@ -377,6 +383,7 @@ function voiceConnect(voiceEndpoint, type) {
     return ws_voice;
 }
 
+let audioData = new HashMap();
 function loadAudio(requestId, text) {
     const uri = "speech";
     const xhr = new XMLHttpRequest();
@@ -392,13 +399,9 @@ function loadAudio(requestId, text) {
             response = JSON.parse(xhr.responseText);
             // console.log("response: ", response);
 
-            playList.push({
-                'played': false,
-                'requestId': requestId,
-                'text': text,
-                'body': response.body
-            });
-            console.log('successfully loaded. length ='+playList.length+' text: '+text);
+            audioData[requestId+text] = response.body;
+
+            console.log('successfully loaded. text= '+text);
         }
     };
     
@@ -415,22 +418,30 @@ function loadAudio(requestId, text) {
 } 
 
 function playAudioList() {
-    console.log('next = '+next+', required list to play: '+playList.length);
-    for(let i=0; i<playList.length;i++) {
-        if(next == true && playList[i].played == false && requestId == playList[i].requestId) {
-            console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
-            playAudioLine(playList[i].body);
-            playList[i].played = true;
-            next = false;
-            break;
-        }
-        else if(requestId != playList[i].requestId) {
-            playList[i].played = true;
+    if(audioData[requestId+playList[i].text]) {
+        console.log('next = '+next+', required list to play: '+playList.length+' '+'state: loaded');
+
+        for(let i=0; i<playList.length;i++) {
+            if(next == true && playList[i].played == false && requestId == playList[i].requestId) {
+                console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
+                playAudioLine(playList[i].body);
+                playList[i].played = true;
+                next = false;
+                break;
+            }
+            else if(requestId != playList[i].requestId) {
+                playList[i].played = true;
+            }
         }
     }
+    else {
+        console.log('next = '+next+', required list to play: '+playList.length+' '+'state: loading');
+    }
+    
+    
 
     // clear playList when completed 
-    let isCompleted = true;
+/*    let isCompleted = true;
     for(let i=0; i<playList.length;i++) {
         if(playList[i].played == false) {
             isCompleted = false;
@@ -439,7 +450,7 @@ function playAudioList() {
     }
     if(isCompleted==true) {
         playList = [];
-    }
+    } */
 }
 
 async function playAudioLine(audio_body){    
