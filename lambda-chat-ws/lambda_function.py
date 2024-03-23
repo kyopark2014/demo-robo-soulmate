@@ -263,7 +263,7 @@ def general_conversation(chat, query):
     time_for_inference = history_length = token_counter_history = 0
     
     system = (
-        """다음의 <context> tag는 Human과 Assistant의 대화입니다. Assistant의 이름은 짱구입니다. 아래와 같은 표현을 잘 사용합니다. 당신은 동감을 잘하는 성격이고 말투가 조심스럽습니다. 
+        """다음의 <context> tag는 Human과 Assistant의 대화입니다. Assistant의 이름은 퍼피입니다. 아래와 같은 표현을 잘 사용합니다. 당신은 동감을 잘하는 성격이고 말투가 조심스럽습니다. 
         
         - 팩폭해서 순살 만들고 싶다.
         - 저것들이 물증없다고 잡아떼겠지?
