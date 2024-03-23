@@ -135,13 +135,26 @@ function checkingDelayedPlayList() {
     console.log('->checking delayed played list ('+retryCounter+')');  
     playAudioList();
 
-    playTm = setTimeout(function () {           
-        retryCounter--;
-
-        if(retryCounter>0) {
-            checkingDelayedPlayList();
+    let isCompleted = true;
+    for(let i=0; i<playList.length;i++) {
+        if(playList[i].played == false) {
+            isCompleted = false;
+            break;
         }
-    }, 1000);
+    }
+    
+    if(isCompleted==true) {
+        playList = [];
+    } 
+    else {
+        playTm = setTimeout(function () {           
+            retryCounter--;
+    
+            if(retryCounter>0) {
+                checkingDelayedPlayList();
+            }
+        }, 1000);
+    }    
 }
 
 // chat session 
@@ -422,7 +435,7 @@ function loadAudio(requestId, text) {
 } 
 
 function playAudioList() {
-    console.log('next = '+next+', required list to play: '+playList.length);
+    console.log('next = '+next+', playList: '+playList.length);
     
     for(let i=0; i<playList.length;i++) {
         // console.log('audio data--> ', audioData[requestId+playList[i].text])
@@ -439,18 +452,6 @@ function playAudioList() {
             playList[i].played = true;
         }
     }
-
-        // clear playList when completed 
-/*    let isCompleted = true;
-    for(let i=0; i<playList.length;i++) {
-        if(playList[i].played == false) {
-            isCompleted = false;
-            break;
-        }
-    }
-    if(isCompleted==true) {
-        playList = [];
-    } */
 }
 
 async function playAudioLine(audio_body){    
@@ -471,7 +472,8 @@ audio.addEventListener("ended", function() {
 
     next = true;
     playList[current].played = true;
-    audioData[requestId+playList[current].text] = "";
+    audioData.remove([requestId+playList[current].text]);
+
     playAudioList()
 });
 
