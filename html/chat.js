@@ -133,6 +133,7 @@ function voicePong() {
 let retryCounter;
 function checkingDelayedPlayList() {
     console.log('->checking delayed played list ('+retryCounter+')');  
+    next = true;
     playAudioList();
 
     playTm = setTimeout(function () {           
@@ -149,6 +150,7 @@ let sentance = "";
 let lineText = "";
 let playList = [];
 let requestId = ""
+let next = true;
 function connect(endpoint, type) {
     const ws = new WebSocket(endpoint);
 
@@ -398,7 +400,7 @@ function loadAudio(requestId, text) {
                 'text': text,
                 'body': response.body
             });
-            console.log('successfully loaded. length =', playList.length);
+            console.log('successfully loaded. length ='+playList.length+' text: '+text);
         }
     };
     
@@ -414,7 +416,6 @@ function loadAudio(requestId, text) {
     xhr.send(blob);            
 } 
 
-let next = true;
 function playAudioList() {
     console.log('next = '+next+', required list to play: '+playList.length);
     for(let i=0; i<playList.length;i++) {
@@ -466,7 +467,7 @@ audio.addEventListener("ended", function() {
 function playAudio(audio) {
     return new Promise(res=>{
         audio.play()
-        audio.onended = res
+    //    audio.onended = res
     })
 }
 
