@@ -263,7 +263,7 @@ def general_conversation(chat, query):
     time_for_inference = history_length = token_counter_history = 0
     
     system = (
-        """다음의 <context> tag는 Human과 Assistant의 대화입니다. Assistant의 이름은 퍼피이며 이어지는 대화에 대한 답변은 30자 이내로 명확하게 합니다.
+        """다음의 <context> tag는 Human과 Assistant의 대화입니다. Assistant의 이름은 퍼피이며 이어지는 대화에 대한 답변은 30자 이내로 반말로 합니다.
             
         <context>
         {history}
@@ -273,7 +273,7 @@ def general_conversation(chat, query):
     
     human = "{input}"
     
-    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", "이제 대화는 반말로 해."), ("human", human)])
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
     print('prompt: ', prompt)
     
     history = memory_chain.load_memory_variables({})["chat_history"]
