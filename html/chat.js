@@ -403,8 +403,8 @@ function loadAudio(requestId, text) {
             audioData[requestId+text] = response.body;
 
             console.log('successfully loaded. text= '+text);
-            console.log(response.body);
-            console.log(audioData[requestId+text]);
+            // console.log(response.body);
+            // console.log(audioData[requestId+text]);
         }
     };
     
@@ -421,28 +421,23 @@ function loadAudio(requestId, text) {
 } 
 
 function playAudioList() {
-    if(audioData[requestId+playList[i].text]) {
-        console.log('next = '+next+', required list to play: '+playList.length+' '+'state: loaded');
+    console.log('next = '+next+', required list to play: '+playList.length);
+    
+    for(let i=0; i<playList.length;i++) {
+        console.log('audio data--> ', audioData[requestId+playList[i].text])
 
-        for(let i=0; i<playList.length;i++) {
-            if(next == true && playList[i].played == false && requestId == playList[i].requestId) {
-                console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
-                playAudioLine(audioData[requestId+playList[i].text]);
-                playList[i].played = true;
-                next = false;
-                break;
-            }
-            else if(requestId != playList[i].requestId) {
-                playList[i].played = true;
-            }
+        if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
+            console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
+            playAudioLine(audioData[requestId+playList[i].text]);
+            playList[i].played = true;
+            next = false;
+            break;
+        }
+        else if(requestId != playList[i].requestId) {
+            playList[i].played = true;
         }
     }
-    else {
-        console.log('next = '+next+', required list to play: '+playList.length+' '+'state: loading');
-    }
     
-    
-
     // clear playList when completed 
 /*    let isCompleted = true;
     for(let i=0; i<playList.length;i++) {
