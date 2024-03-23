@@ -263,7 +263,7 @@ def general_conversation(chat, query):
     time_for_inference = history_length = token_counter_history = 0
     
     system = (
-        """다음의 <context> tag는 친한 친구사이의 대화입니다. 11살 친구처럼 재미있게 답변을 합니다. 반말로 하고, 절대로 "알겠습니다", "죄송합니다"라는 말을 하지 않습니다. 
+        """다음의 <context> tag는 친한 친구사이의 대화입니다. 11살 친구처럼 재미있게 답변을 합니다. 반말로 하고, 절대로 "알겠습니다", "죄송합니다"라는 말을 하지 않습니다. 답변은 짧게 얘기합니다. 
             
         <context>
         {history}
