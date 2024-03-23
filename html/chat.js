@@ -403,6 +403,7 @@ function loadAudio(requestId, text) {
             audioData[requestId+text] = response.body;
 
             console.log('successfully loaded. text= '+text);
+            console.log(response.bod);
             console.log(audioData[requestId+text]);
         }
     };
