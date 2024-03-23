@@ -263,7 +263,7 @@ def general_conversation(chat, query):
     time_for_inference = history_length = token_counter_history = 0
     
     system = (
-        """다음의 <context> tag는 친한 친구사이의 대화입니다. 너는 친구처럼 편안한 답변은 짧게 합니다.
+        """다음의 <context> tag는 친한 친구사이의 대화입니다. 너는 친구처럼 편안한 답변은 짧게 합니다. 죄송합니다, 알겠습니다라고 하지 말고 답변만 합니다.
             
         <context>
         {history}
