@@ -130,6 +130,20 @@ function voicePong() {
     clearTimeout(voiceTm);
 }
 
+let retryCounter;
+function checkingDelayedPlayList() {
+    console.log('->checking delayed played list ('+retryCounter+')');  
+    playAudioList();
+
+    playTm = setTimeout(function () {           
+        retryCounter--;
+
+        if(retryCounter>0) {
+            checkingDelayedPlayList();
+        }
+    }, 1000);
+}
+
 // chat session 
 let sentance = "";
 let lineText = "";
@@ -179,11 +193,17 @@ function connect(endpoint, type) {
         else {
             response = JSON.parse(event.data)
 
-            if(response.status == 'completed') {          
+            if(response.status == 'completed') {     
+                console.log('dialog status: completed');    
+                console.log('next: ', next); 
                 feedback.style.display = 'none';       
                    
                 addReceivedMessage(response.request_id, response.msg);  
                 
+                next = true;
+                retryCounter = 5;
+                checkingDelayedPlayList();
+
                 // playAudioList();
                 // playList = [];
             }          
@@ -193,6 +213,7 @@ function connect(endpoint, type) {
                 sentance = "";
             }
             else if(response.status == 'proceeding') {
+                // console.log('status: proceeding...')
                 feedback.style.display = 'none';
                 sentance += response.msg;                
                 
@@ -200,7 +221,8 @@ function connect(endpoint, type) {
                 // console.log('response.msg: ', response.msg);
 
                 lineText += response.msg;
-                if(lineText.length>10 && (response.msg == '.' || response.msg == '?' || response.msg == '!')) {     
+                lineText = lineText.replace('\n','');
+                if(lineText.length>3 && (response.msg == '.' || response.msg == '?' || response.msg == '!'|| response.msg == ':')) {     
                     console.log('lineText: ', lineText);
                     loadAudio(response.request_id, lineText);
                     lineText = "";
@@ -247,10 +269,10 @@ function connect(endpoint, type) {
 // voice session 
 let listMessages = new HashMap();   // duplication check caused by pubsub in the case of abnormal disconnection
 function voiceConnect(voiceEndpoint, type) {
-    const ws = new WebSocket(voiceEndpoint);
+    const ws_voice = new WebSocket(voiceEndpoint);
 
     // connection event
-    ws.onopen = function () {
+    ws_voice.onopen = function () {
         console.log('voice connected...');
         isVoiceConnected = true;
 
@@ -266,7 +288,7 @@ function voiceConnect(voiceEndpoint, type) {
     };
 
     // message 
-    ws.onmessage = function (event) {     
+    ws_voice.onmessage = function (event) {     
         isVoiceConnected = true;   
         if (event.data.substr(1,8) == "__pong__") {
             console.log('<-voice pong');
@@ -287,7 +309,7 @@ function voiceConnect(voiceEndpoint, type) {
 
                 console.log('requestId: ', requestId);
                 console.log('query: ', query);
-                console.log('state: ', state);
+                console.log('voice state: ', state);
 
                 let current = new Date();
                 let datastr = getDate(current);
@@ -318,7 +340,7 @@ function voiceConnect(voiceEndpoint, type) {
                         listMessages.put(requestId, query);  
                     }
                     else {
-                        console.log('ignore the dupplicated message: ', query);
+                        console.log('ignore the duplicated message: ', query);
                     }
                 }
                 else {
@@ -335,24 +357,24 @@ function voiceConnect(voiceEndpoint, type) {
     };
 
     // disconnect
-    ws.onclose = function () {
+    ws_voice.onclose = function () {
         console.log('voice disconnected...!');
         isVoiceConnected = false;
 
-        ws.close();
+        ws_voice.close();
         console.log('the voice session will be closed');
     };
 
     // error
-    ws.onerror = function (error) {
+    ws_voice.onerror = function (error) {
         console.log(error);
         isVoiceConnected = false;
 
-        ws.close();
+        ws_voice.close();
         console.log('the voice session will be closed');
     };
 
-    return ws;
+    return ws_voice;
 }
 
 function loadAudio(requestId, text) {
@@ -435,6 +457,8 @@ async function playAudioLine(audio_body){
 var audio = document.querySelector('audio');
 audio.addEventListener("ended", function() {
     console.log("finish audio")
+    delay(1000)
+
     next = true;
     playAudioList()
 });
