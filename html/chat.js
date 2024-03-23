@@ -439,7 +439,7 @@ function playAudioList() {
     
     for(let i=0; i<playList.length;i++) {
         // console.log('audio data--> ', audioData[requestId+playList[i].text])
-        console.log('playedList: ', playList);
+        // console.log('playedList: ', playList);
 
         if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
             console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
