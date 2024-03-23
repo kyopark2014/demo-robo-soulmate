@@ -133,7 +133,6 @@ function voicePong() {
 let retryCounter;
 function checkingDelayedPlayList() {
     console.log('->checking delayed played list ('+retryCounter+')');  
-    next = true;
     playAudioList();
 
     playTm = setTimeout(function () {           
