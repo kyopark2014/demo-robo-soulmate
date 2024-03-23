@@ -224,14 +224,15 @@ function connect(endpoint, type) {
                 lineText = lineText.replace('\n','');
                 if(lineText.length>3 && (response.msg == '.' || response.msg == '?' || response.msg == '!'|| response.msg == ':')) {     
                     console.log('lineText: ', lineText);
+                    text = lineText
                     playList.push({
                         'played': false,
                         'requestId': requestId,
                         'text': text
                     });
-                    lineText = "";
+                    lineText = "";      
         
-                    loadAudio(response.request_id, lineText);                    
+                    loadAudio(response.request_id, text);                                  
                 }
                 
                 requestId = response.request_id;
@@ -424,7 +425,7 @@ function playAudioList() {
         for(let i=0; i<playList.length;i++) {
             if(next == true && playList[i].played == false && requestId == playList[i].requestId) {
                 console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
-                playAudioLine(playList[i].body);
+                playAudioLine(audioData[requestId+playList[i].text]);
                 playList[i].played = true;
                 next = false;
                 break;
