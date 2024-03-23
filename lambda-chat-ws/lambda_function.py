@@ -731,7 +731,7 @@ def getResponse(jsonBody):
             else:            
                 if convType == "normal":
                     msg = general_conversation(chat, text)   
-                elif convType == "normal":
+                elif convType == "ISTJ":
                     msg = ISTJ(chat, text)   
                 else: 
                     msg = general_conversation(chat, text)   
