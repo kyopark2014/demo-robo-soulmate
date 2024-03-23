@@ -466,12 +466,12 @@ async function playAudioLine(audio_body){
 // audio play
 var audio = document.querySelector('audio');
 audio.addEventListener("ended", function() {
-    console.log("finish audio")
+    console.log("finish audio, text= ", playList[current].text)
     delay(1000)
 
     next = true;
     playList[current].played = true;
-    audioData[requestId+playList[i].text] = "";
+    audioData[requestId+playList[current].text] = "";
     playAudioList()
 });
 
