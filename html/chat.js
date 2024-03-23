@@ -229,9 +229,9 @@ function connect(endpoint, type) {
                         'requestId': requestId,
                         'text': text
                     });
-        
-                    loadAudio(response.request_id, lineText);
                     lineText = "";
+        
+                    loadAudio(response.request_id, lineText);                    
                 }
                 
                 requestId = response.request_id;
