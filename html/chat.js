@@ -202,7 +202,6 @@ function connect(endpoint, type) {
                    
                 addReceivedMessage(response.request_id, response.msg);  
                 
-                next = true;
                 retryCounter = 5;
                 checkingDelayedPlayList();
 
@@ -467,7 +466,7 @@ audio.addEventListener("ended", function() {
 function playAudio(audio) {
     return new Promise(res=>{
         audio.play()
-    //    audio.onended = res
+        audio.onended = res
     })
 }
 
