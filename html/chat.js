@@ -493,45 +493,36 @@ if(conversationType=="") {
 }
 console.log('conversationType: ', conversationType);
 
-for (i=0;i<maxMsgItems;i++) {
-    msglist.push(document.getElementById('msgLog'+i));
+initiate();
 
-    // add listener        
-    (function(index) {
-        msglist[index].addEventListener("click", function() {
-            if(msglist.length < maxMsgItems) i = index;
-            else i = index + maxMsgItems;
-
-            console.log('click! index: '+index);
-        })
-    })(i);
-}
-calleeName.textContent = "Chatbot";  
-calleeId.textContent = "AWS";
-
-if(langstate=='korean') {
-    addNotifyMessage("Amazon Bedrock을 이용하여 채팅을 시작합니다.");
-    addReceivedMessage(uuidv4(), "아마존 베드락을 이용하여 주셔서 감사합니다. 편안한 대화를 즐기실수 있으며, 파일을 업로드하면 요약을 할 수 있습니다.")
-}
-else {
-    addNotifyMessage("Start chat with Amazon Bedrock");             
-    addReceivedMessage(uuidv4(), "Welcome to Amazon Bedrock. Use the conversational chatbot and summarize documents, TXT, PDF, and CSV. ")           
-}
-
-// get history
-function getAllowTime() {    
-    let allowableDays = 2; // two day's history
+function initiate() {
+    for (i=0;i<maxMsgItems;i++) {
+        msglist.push(document.getElementById('msgLog'+i));
     
-    let current = new Date();
-    let allowable = new Date(current.getTime() - 24*60*60*1000*allowableDays);  
-    let allowTime = getDate(allowable)+' '+getTime(current);
-    console.log('Current Time: ', getDate(current)+' '+getTime(current));
-    console.log('Allow Time: ', allowTime);
+        // add listener        
+        (function(index) {
+            msglist[index].addEventListener("click", function() {
+                if(msglist.length < maxMsgItems) i = index;
+                else i = index + maxMsgItems;
     
-    return allowTime;
+                console.log('click! index: '+index);
+            })
+        })(i);
+    }
+    calleeName.textContent = "Chatbot";  
+    // calleeId.textContent = "AWS";
+
+    if(langstate=='korean') {
+        addNotifyMessage("Amazon Bedrock을 이용하여 채팅을 시작합니다.");
+        addReceivedMessage(uuidv4(), "아마존 베드락을 이용하여 주셔서 감사합니다. 편안한 대화를 즐기실수 있으며, 파일을 업로드하면 요약을 할 수 있습니다.")
+    }
+    else {
+        addNotifyMessage("Start chat with Amazon Bedrock");             
+        addReceivedMessage(uuidv4(), "Welcome to Amazon Bedrock. Use the conversational chatbot and summarize documents, TXT, PDF, and CSV. ")           
+    }
+
+    getHistory(userId, 'initiate');
 }
-let allowTime = getAllowTime();
-getHistory(userId, allowTime);
 
 // Listeners
 message.addEventListener('keyup', function(e){
@@ -553,11 +544,43 @@ depart.addEventListener('click', function(){
     deleteItems(userId);    
 });
 
+function updateChatHistory() {
+    for(i=0;i<maxMsgItems;i++) {
+        msglist[i].innerHTML = `<div></div>`
+    }
+    
+    msglist = [];
+    index = 0;
+
+    msgHistory = new HashMap();
+    indexList = new HashMap();
+    
+    for (i=0;i<maxMsgItems;i++) {
+        msglist.push(document.getElementById('msgLog'+i));
+    
+        // add listener        
+        (function(index) {
+            msglist[index].addEventListener("click", function() {
+                if(msglist.length < maxMsgItems) i = index;
+                else i = index + maxMsgItems;
+    
+                console.log('click! index: '+index);
+            })
+        })(i);
+    } 
+
+    getHistory(userId, 'update');    
+}
+
 sendBtn.addEventListener('click', onSend);
 function onSend(e) {
     e.preventDefault();
-    
+
     if(message.value != '') {
+        if(index>maxMsgItems-20) {
+            updateChatHistory();
+        } 
+
         console.log("msg: ", message.value);
 
         let current = new Date();
@@ -580,7 +603,7 @@ function onSend(e) {
         }
         else {
             sendRequest(message.value, requestId, requestTime);
-        }            
+        }           
     }
     message.value = "";
 
@@ -596,10 +619,10 @@ function uuidv4() {
 
 (function() {
     window.addEventListener("focus", function() {
-//        console.log("Back to front");
+        // console.log("Back to front");
 
-        if(msgHistory.get(callee))
-            updateCallLogToDisplayed();
+        // if(msgHistory.get(callee))
+        //    updateCallLogToDisplayed();
     })
 })();
 
@@ -661,8 +684,8 @@ function addSentMessage(requestId, timestr, text) {
             `<div class="chat-sender80 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;
     }     
 
+    index++;       
     chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
-    index++;
 }       
 
 function addSentMessageForSummary(requestId, timestr, text) {  
@@ -691,29 +714,10 @@ function addSentMessageForSummary(requestId, timestr, text) {
     index++;
 }  
 
-/*
-function PlayAudioLine(requestId, audio_body) {
-    var sound = "data:audio/ogg;base64,"+audio_body;
-
-    if(isPlaying==true && rid != requestId) {
-        console.log('rid: '+rid+' requestId: '+requestId);
-        console.log('[audio] pause');
-        audio.pause(); 
-    }   
-    
-    audio.src = sound;
-    delay(3000);
-    console.log('[audio] play');
-    isPlaying = true;
-    rid = requestId;
-    audio.play();
-    console.log('[audio] finish');
-} */
-
 function addReceivedMessage(requestId, msg) {
     // console.log("add received message: "+msg);
     sender = "Chatbot"
-    
+
     if(!indexList.get(requestId+':receive')) {
         indexList.put(requestId+':receive', index);             
     }
@@ -1042,18 +1046,26 @@ function sendRequestForRetry(requestId) {
     xhr.send(blob);            
 }
 
-function getHistory(userId, allowTime) {
+let initialHistoryLength = 5;
+function getHistory(userId, state) {
     const uri = "history";
     const xhr = new XMLHttpRequest();
+
+    let allowTime = getAllowTime();
 
     xhr.open("POST", uri, true);
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
             let history = JSON.parse(response['msg']);
-            console.log("history: " + JSON.stringify(history));
-                        
-            for(let i=0; i<history.length; i++) {
+            // console.log("history: " + JSON.stringify(history));
+                      
+            let start = 0;
+            if(history.length > initialHistoryLength) {
+                index = 0;
+                start = history.length - initialHistoryLength;
+            }
+            for(let i=start; i<history.length; i++) {
                 if(history[i].type=='text') {                
                     // let timestr = history[i].request_time.substring(11, 19);
                     let requestId = history[i].request_id;
@@ -1068,15 +1080,16 @@ function getHistory(userId, allowTime) {
                     addReceivedMessage(requestId, msg);                            
                 }                 
             }         
-            if(history.length>=1) {
+            if(history.length>=1 && state=='initiate') {
                 if(langstate=='korean') {
                     addNotifyMessage("대화를 다시 시작하였습니다.");
                 }
                 else {
                     addNotifyMessage("Welcome back to the conversation");                               
-                }
-                chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
+                }                
             }
+
+            chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
         }
     };
     
@@ -1113,4 +1126,16 @@ function deleteItems(userId) {
     var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
 
     xhr.send(blob);            
+}
+
+function getAllowTime() {    
+    let allowableDays = 2; // two day's history
+    
+    let current = new Date();
+    let allowable = new Date(current.getTime() - 24*60*60*1000*allowableDays);  
+    let allowTime = getDate(allowable)+' '+getTime(current);
+    console.log('Current Time: ', getDate(current)+' '+getTime(current));
+    console.log('Allow Time: ', allowTime);
+    
+    return allowTime;
 }
