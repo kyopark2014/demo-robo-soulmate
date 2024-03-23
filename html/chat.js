@@ -148,6 +148,7 @@ function checkingDelayedPlayList() {
 let sentance = "";
 let lineText = "";
 let playList = [];
+let current = 0;
 let requestId = ""
 let next = true;
 function connect(endpoint, type) {
@@ -429,8 +430,8 @@ function playAudioList() {
 
         if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
             console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
-            playAudioLine(audioData[requestId+playList[i].text]);
-            playList[i].played = true;
+            current = i;
+            playAudioLine(audioData[requestId+playList[i].text]);            
             next = false;
             break;
         }
@@ -469,6 +470,8 @@ audio.addEventListener("ended", function() {
     delay(1000)
 
     next = true;
+    playList[current].played = true;
+    audioData[requestId+playList[i].text] = "";
     playAudioList()
 });
 
