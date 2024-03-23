@@ -205,7 +205,7 @@ function connect(endpoint, type) {
                 checkingDelayedPlayList();
 
                 // playAudioList();
-                // playList = [];
+                // playList = [];                
             }          
             else if(response.status == 'istyping') {
                 feedback.style.display = 'inline';
@@ -424,7 +424,8 @@ function playAudioList() {
     console.log('next = '+next+', required list to play: '+playList.length);
     
     for(let i=0; i<playList.length;i++) {
-        console.log('audio data--> ', audioData[requestId+playList[i].text])
+        // console.log('audio data--> ', audioData[requestId+playList[i].text])
+        console.log('playedList: ', playList);
 
         if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
             console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
@@ -437,8 +438,8 @@ function playAudioList() {
             playList[i].played = true;
         }
     }
-    
-    // clear playList when completed 
+
+        // clear playList when completed 
 /*    let isCompleted = true;
     for(let i=0; i<playList.length;i++) {
         if(playList[i].played == false) {
