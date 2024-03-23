@@ -420,7 +420,7 @@ function playAudioList() {
     console.log('next = '+next+', required list to play: '+playList.length);
     for(let i=0; i<playList.length;i++) {
         if(next == true && playList[i].played == false && requestId == playList[i].requestId) {
-            console.log(i+': '+requestId+', text: '+playList[i].text);
+            console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
             playAudioLine(playList[i].body);
             playList[i].played = true;
             next = false;
