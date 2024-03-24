@@ -6,8 +6,6 @@ import base64
 
 polly_client = boto3.client('polly')
 
-s3_bucket = os.environ.get('s3_bucket') # bucket name
-
 def lambda_handler(event, context):
     print('event: ', event)
     
