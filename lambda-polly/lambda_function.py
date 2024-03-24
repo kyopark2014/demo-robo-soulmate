@@ -12,8 +12,8 @@ def lambda_handler(event, context):
     text = event['text']
     voiceId = event['voiceId']
     langCode = event['langCode']
+    speed = event['speed']
     
-    speed = 120
     ssml_text = f'<speak><prosody rate="{speed}%">{text}</prosody></speak>'
     
     try: 
