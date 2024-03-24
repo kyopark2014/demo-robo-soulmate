@@ -733,6 +733,8 @@ def getResponse(jsonBody):
                     msg = general_conversation(chat, text)   
                 elif convType == "ISTJ":
                     msg = ISTJ(chat, text)   
+                elif convType == "translation":
+                    msg = translate_text(chat, text)
                 else: 
                     msg = general_conversation(chat, text)   
                         
