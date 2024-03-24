@@ -232,7 +232,7 @@ function connect(endpoint, type) {
                 sentance += response.msg;                
                 
                 addReceivedMessage(response.request_id, sentance);
-                // console.log('response.msg: ', response.msg);
+                console.log('response.msg: ', response.msg);
 
                 lineText += response.msg;
                 lineText = lineText.replace('\n','');
