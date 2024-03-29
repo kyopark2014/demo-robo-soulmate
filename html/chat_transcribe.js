@@ -1,6 +1,6 @@
 const protocol = 'WEBSOCKET'; // WEBSOCKET 
 const langstate = 'korean'; // korean or english
-const enableTTS = true;
+const enableTTS = false;
 
 // Common
 let userId = localStorage.getItem('userId'); // set userID if exists 
@@ -219,7 +219,6 @@ function connect(endpoint, type) {
                 // console.log('response.msg: ', response.msg);
 
                 if(enableTTS) {
-                    console.log('enableTTS: ', enableTTS);
                     console.log('requested: ', requested[response.request_id])
 
                     if(requested[response.request_id] == undefined) {
@@ -239,8 +238,8 @@ function connect(endpoint, type) {
                     
                     retryCounter = 10;
                     checkingDelayedPlayList();
-                    // playList = [];
-                }                              
+                    // playList = [];              
+                }                
             }          
             else if(response.status == 'istyping') {
                 feedback.style.display = 'inline';
@@ -286,7 +285,7 @@ function connect(endpoint, type) {
                 feedback.style.display = 'none';
                 console.log('error: ', response.msg);
 
-                if(response.msg.indexOf('throttlingException') || response.msg.indexOf('Too many requests') || response.msg.indexOf('too many requests')) {
+                if(response.msg.indexOf('Too many requests')) {
                     addNotifyMessage('허용된 요청수를 초과하였습니다. 추후 다시 재도시도 해주세요.');  
                 }
                 else {
@@ -332,6 +331,7 @@ function isDuplicated(requestId) {
 let redirectTm; // timer for redirection
 let mergyRequired = new HashMap();
 let remainingRedirectedMessage; 
+let requestToSend = new HashMap();
 
 function delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType) {    
     console.log('--> start delay() of redirected message');
@@ -344,10 +344,12 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
     console.log('remainingRedirectedMessage[message]: ', remainingRedirectedMessage['message']);
 
     redirectTm = setTimeout(function () {
-        console.log('--> delayed request: ', query);
+        console.log('--> delayed request: '+query+' (reuqestId: '+requestId+')');
         console.log('mergyRequired[requestId] = ', mergyRequired[requestId]);
 
-        if(mergyRequired[requestId] == false) {
+        console.log('requestToSend[requestId] = ', requestToSend[requestId]);
+
+        if(mergyRequired[requestId] == false && requestToSend[requestId]==undefined) {
             console.log('--> sendMessage: ', query);
 
             next = true;  // initiate valriable 'next' for audio play        
@@ -362,6 +364,7 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
             messageMemory.put(requestId, query);      
                 
             remainingRedirectedMessage = "";
+            requestToSend[requestId] = query;  // duplication check
         }
         
         clearRedirectTm();
@@ -423,7 +426,7 @@ function voiceConnect(voiceEndpoint, type) {
 
                 console.log('remainingRedirectedMessage', remainingRedirectedMessage);    // last redirected message but not delivered
 
-                if (remainingRedirectedMessage) {
+                if (remainingRedirectedMessage && requestId != remainingRedirectedMessage['requestId']) {
                     requestId = remainingRedirectedMessage['requestId'];     
                     mergyRequired[requestId] = true;               
                     console.log('merged message: ', query);

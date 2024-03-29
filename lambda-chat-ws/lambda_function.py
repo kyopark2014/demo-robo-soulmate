@@ -372,6 +372,33 @@ def ISTJ(chat, query):
     
     return msg
 
+def extract_sentiment(chat, text):
+    system = (
+        """What is the sentiment of the following review. The result should be one of "positive", "negative", or "neural". Put it in <result> tags."""
+    )
+        
+    human = "<review>{text}</review>"
+    
+    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
+    print('prompt: ', prompt)
+    
+    chain = prompt | chat    
+    try: 
+        result = chain.invoke(
+            {
+                "text": text
+            }
+        )        
+        msg = result.content                
+        print('result of sentiment extraction: ', msg)
+        
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)                    
+        raise Exception ("Not able to request to LLM")
+    
+    return msg
+
 def isTyping():    
     msg_proceeding = {
         'request_id': requestId,
@@ -491,42 +518,6 @@ def translate_text(chat, text):
         raise Exception ("Not able to request to LLM")
 
     return msg[msg.find('<result>')+8:len(msg)-9] # remove <result> tag
-
-def extract_sentiment(chat, text):
-    system = (
-        """아래의 <example> review와 Extracted Topic and sentiment 인 <result>가 있습니다.
-        <example>
-        객실은 작지만 깨끗하고 편안합니다. 프론트 데스크는 정말 분주했고 체크인 줄도 길었지만, 직원들은 프로페셔널하고 매우 유쾌하게 각 사람을 응대했습니다. 우리는 다시 거기에 머물것입니다.
-        </example>
-        <result>
-        청소: 긍정적, 
-        서비스: 긍정적
-        </result>
-
-        아래의 <review>에 대해서 위의 <result> 예시처럼 Extracted Topic and sentiment 을 만들어 주세요."""
-    )
-        
-    human = "<review>{text}</review>"
-    
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
-    print('prompt: ', prompt)
-    
-    chain = prompt | chat    
-    try: 
-        result = chain.invoke(
-            {
-                "text": text
-            }
-        )        
-        msg = result.content                
-        print('result of sentiment extraction: ', msg)
-        
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
-        raise Exception ("Not able to request to LLM")
-    
-    return msg
 
 def extract_information(chat, text):
     system = (
@@ -737,6 +728,9 @@ def getResponse(jsonBody):
                     msg = translate_text(chat, text)
                 else: 
                     msg = general_conversation(chat, text)   
+                
+                result = extract_sentiment(chat, text)
+                print('result: ', result)
                         
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
