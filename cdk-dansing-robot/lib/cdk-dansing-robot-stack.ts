@@ -700,7 +700,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     // Lambda - score
     const lambdaScore = new lambda.DockerImageFunction(this, `lambda-score-for-${projectName}`, {
       description: 'lambda for score',
-      functionName: `lambda-greeting-for-${projectName}`,
+      functionName: `lambda-score-for-${projectName}`,
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-score')),
       timeout: cdk.Duration.seconds(60),
       role: roleLambda,
