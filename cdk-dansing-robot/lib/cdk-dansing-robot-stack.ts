@@ -697,6 +697,44 @@ export class CdkDansingRobotStack extends cdk.Stack {
     });
     s3Bucket.grantReadWrite(lambdaGreeting);
 
+    // Lambda - score
+    const lambdaScore = new lambda.DockerImageFunction(this, `lambda-score-for-${projectName}`, {
+      description: 'lambda for score',
+      functionName: `lambda-greeting-for-${projectName}`,
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-score')),
+      timeout: cdk.Duration.seconds(60),
+      role: roleLambda,
+      environment: {
+        profile_of_LLMs:JSON.stringify(claude3_sonnet),
+      }
+    });     
+  
+    // POST method - greeting
+    const score = api.root.addResource("score");
+    score.addMethod('POST', new apiGateway.LambdaIntegration(lambdaScore, {
+        passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+        credentialsRole: role,
+        integrationResponses: [{
+            statusCode: '200',
+        }],
+        proxy: true,
+    }), {
+        methodResponses: [
+            {
+                statusCode: '200',
+                responseModels: {
+                    'application/json': apiGateway.Model.EMPTY_MODEL,
+                },
+            }
+        ]
+    });
+    
+    distribution.addBehavior("/score", new origins.RestApiOrigin(api), {
+        cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+        allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
+
     // Lambda - reading
     const lambdaReading = new lambda.DockerImageFunction(this, `lambda-reading-for-${projectName}`, {
       description: 'lambda for reading',

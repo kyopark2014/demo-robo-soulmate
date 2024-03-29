@@ -372,33 +372,6 @@ def ISTJ(chat, query):
     
     return msg
 
-def extract_sentiment(chat, text):
-    system = (
-        """What is the sentiment of the following review. The result should be one of "positive", "negative", or "neural". Put it in <result> tags."""
-    )
-        
-    human = "<review>{text}</review>"
-    
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
-    print('prompt: ', prompt)
-    
-    chain = prompt | chat    
-    try: 
-        result = chain.invoke(
-            {
-                "text": text
-            }
-        )        
-        msg = result.content                
-        print('result of sentiment extraction: ', msg)
-        
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
-        raise Exception ("Not able to request to LLM")
-    
-    return msg
-
 def isTyping():    
     msg_proceeding = {
         'request_id': requestId,
@@ -728,10 +701,7 @@ def getResponse(jsonBody):
                     msg = translate_text(chat, text)
                 else: 
                     msg = general_conversation(chat, text)   
-                
-                result = extract_sentiment(chat, text)
-                print('result: ', result)
-                        
+                                        
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
                     

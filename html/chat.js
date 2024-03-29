@@ -444,7 +444,10 @@ function voiceConnect(voiceEndpoint, type) {
                     else {  
                         addSentMessage(requestId, timestr, query);
                         mergyRequired[requestId] = false;
-                        delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType);                        
+                        delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType);           
+                        
+                        // get socre of the message
+                        getScore(userId, requestId, query);
                     }                    
                 }
                 else {
@@ -816,6 +819,31 @@ function addSentMessageForSummary(requestId, timestr, text) {
     chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
     index++;
 }  
+
+function getScore(userId, requestId, text) {
+    const uri = "score";
+    const xhr = new XMLHttpRequest();
+
+    xhr.open("POST", uri, true);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            let response = JSON.parse(xhr.responseText);
+            let body = JSON.parse(response['body']);
+            console.log("result: " + JSON.stringify(body));                        
+        }
+    };
+
+    var requestObj = {
+        "userId": userId,
+        "requestId": requestId,
+        "text": text
+    }
+    console.log("request: " + JSON.stringify(requestObj));
+
+    var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
+
+    xhr.send(blob);   
+}
 
 function addReceivedMessage(requestId, msg) {
     // console.log("add received message: "+msg);
