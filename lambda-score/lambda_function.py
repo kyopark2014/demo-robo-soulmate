@@ -80,11 +80,13 @@ def extract_sentiment(chat, text):
     return msg[msg.find('<result>')+8:len(msg)-9] # remove <result> tag
     
 def lambda_handler(event, context):
-    print(event)    
+    # print('evnet: ', event)    
+    body = event['body']
+    print('body: ', body)    
     
-    userId = event["userId"]         
-    requestId = event["requestId"]
-    text = event["text"]     
+    userId = body["userId"]         
+    requestId = body["requestId"]
+    text = body["text"]     
     print('text: ', text)
     
     start_time_for_greeting = time.time()
