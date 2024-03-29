@@ -81,8 +81,8 @@ def extract_sentiment(chat, text):
     
 def lambda_handler(event, context):
     # print('evnet: ', event)    
-    body = event['body']
-    print('body: ', body)    
+    body = json.loads(event['body'])
+    print('body: ', json.dumps(body))
     
     userId = body["userId"]         
     requestId = body["requestId"]
