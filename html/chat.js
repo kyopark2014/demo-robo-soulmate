@@ -696,6 +696,9 @@ function onSend(e) {
 
         let requestId = uuidv4();
         addSentMessage(requestId, timestr, message.value);
+
+        console.log('request to estimate the score');
+        getScore(userId, requestId, message.value);
         
         if(protocol == 'WEBSOCKET') {
             sendMessage({

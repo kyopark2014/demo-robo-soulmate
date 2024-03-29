@@ -80,7 +80,8 @@ def extract_sentiment(chat, text):
     return msg[msg.find('<result>')+8:len(msg)-9] # remove <result> tag
     
 def lambda_handler(event, context):
-    # print(event)    
+    print(event)    
+    
     userId = event["userId"]         
     requestId = event["requestId"]
     text = event["text"]     
