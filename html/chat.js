@@ -1,6 +1,6 @@
 const protocol = 'WEBSOCKET'; // WEBSOCKET 
 const langstate = 'korean'; // korean or english
-const enableTTS = true;
+const enableTTS = false;
 
 // Common
 let userId = localStorage.getItem('userId'); // set userID if exists 
