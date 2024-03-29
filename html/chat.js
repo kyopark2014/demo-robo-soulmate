@@ -446,7 +446,7 @@ function voiceConnect(voiceEndpoint, type) {
                         mergyRequired[requestId] = false;
                         delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType);           
                         
-                        // get socre of the message
+                        console.log('request to estimate the score');
                         getScore(userId, requestId, query);
                     }                    
                 }
@@ -829,7 +829,7 @@ function getScore(userId, requestId, text) {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
             let body = JSON.parse(response['body']);
-            console.log("result: " + JSON.stringify(body));                        
+            console.log("score: " + JSON.stringify(body));                        
         }
     };
 
