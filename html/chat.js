@@ -320,6 +320,7 @@ function connect(endpoint, type) {
 
 function isDuplicated(requestId) {
     let previous = messageMemory.get(requestId); 
+        
     if (previous == undefined) previous = "";
     console.log('previosu: ', previous);     
 
@@ -332,6 +333,7 @@ function isDuplicated(requestId) {
 let redirectTm; // timer for redirection
 let mergyRequired = new HashMap();
 let remainingRedirectedMessage; 
+let messageTransfered = new HashMap();
 
 function delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType) {    
     console.log('--> start delay() of redirected message');
@@ -346,8 +348,9 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
     redirectTm = setTimeout(function () {
         console.log('--> delayed request: ', query);
         console.log('mergyRequired[requestId] = ', mergyRequired[requestId]);
+        console.log('messageTransfered[requestId] = ', messageTransfered.get(requestId));
 
-        if(mergyRequired[requestId] == false) {
+        if(mergyRequired[requestId]==false && messageTransfered.get(requestId)==undefined) {
             console.log('--> sendMessage: ', query);
 
             next = true;  // initiate valriable 'next' for audio play        
@@ -360,6 +363,7 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
                 "convType": conversationType
             });
             messageMemory.put(requestId, query);      
+            messageTransfered.put(requestId, true);
                 
             remainingRedirectedMessage = "";
         }
@@ -430,7 +434,7 @@ function voiceConnect(voiceEndpoint, type) {
                     
                     // remainingRedirectedMessage['message'] += query; // add new message
                     // query = remainingRedirectedMessage['message'];
-                    remainingRedirectedMessage['message'] = query;                    
+                    remainingRedirectedMessage['message'] = query;     
 
                     // for debugging
                     let timeDiff = timestr-remainingRedirectedMessage['timestr'];
