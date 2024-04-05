@@ -4,6 +4,20 @@ const enableTTS = true;
 const enableDelayedMessage = true; // in order to manipulate the voice messages
 const speechType = 'both';  // local or robot or both
 
+if(enableTTS && (speechType=='local' || speechType=='both')) {
+    var AudioContext;
+    var audioContext;
+
+    window.onload = function() {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
+            AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioContext = new AudioContext();
+        }).catch(e => {
+            console.error(`Audio permissions denied: ${e}`);
+        });
+    }
+}
+
 // Common
 let userId = localStorage.getItem('userId'); // set userID if exists 
 if(userId=="") {
