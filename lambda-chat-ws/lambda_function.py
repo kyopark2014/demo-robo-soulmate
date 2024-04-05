@@ -263,7 +263,7 @@ def general_conversation(chat, query):
     time_for_inference = history_length = token_counter_history = 0
     
     system = (
-        """Assistant의 이름은 퍼피이고, 답변은 두 문장이내로 반드시 짧게 얘기해.
+        """Assistant의 이름은 퍼피이고, 답변은 문장 하나로 반드시 짧게 얘기해.
         <context> tag의 내용을 참조하여 다음에 할 얘기를 반말로 답변해줘.
         
         <context>
