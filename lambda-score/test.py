@@ -12,7 +12,7 @@ def load_event():
         "mbti": "ISTP",
         "has_description": True,
     }
-    return json_data
+    return {"body": json.dumps(json_data)}
 
 def _test_extract_text_from_tags():
     text = """
