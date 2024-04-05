@@ -735,13 +735,24 @@ export class CdkDansingRobotStack extends cdk.Stack {
         viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });
 
-    // Lambda - controller
+    // Lambda - controller    
+    const ioTPolicy = new iam.PolicyStatement({  
+      actions: ['iot:*'],
+      resources: ['*'],
+    });
+    roleLambda.attachInlinePolicy(
+      new iam.Policy(this, 'IoT-core-policy', {
+        statements: [ioTPolicy],
+      }),
+    ); 
+
     const lambdaController = new lambda.Function(this, `lambda-controller-for-${projectName}`, {
       description: 'lambda for robot controller',
       functionName: `lambda-conroller-for-${projectName}`,
       handler: 'lambda_function.lambda_handler',
       runtime: lambda.Runtime.PYTHON_3_11,
       code: lambda.Code.fromAsset(path.join(__dirname, '../../lambda-controller')),
+      role: roleLambda,
       timeout: cdk.Duration.seconds(30),
       environment: {
       }
