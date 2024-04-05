@@ -1,6 +1,7 @@
 const protocol = 'WEBSOCKET'; // WEBSOCKET 
 const langstate = 'korean'; // korean or english
 const enableTTS = true;
+const enableDelayedMessage = true; // in order to manipulate the voice messages
 
 // Common
 let userId = localStorage.getItem('userId'); // set userID if exists 
@@ -199,7 +200,6 @@ function connect(endpoint, type) {
     };
 
     // message 
-    let word = "";
     ws.onmessage = function (event) {     
         isConnected = true;   
         if (event.data.substr(1,8) == "__pong__") {
@@ -318,22 +318,32 @@ function connect(endpoint, type) {
     return ws;
 }
 
-function isDuplicated(requestId) {
-    let previous = messageMemory.get(requestId); 
-        
-    if (previous == undefined) previous = "";
-    console.log('previosu: ', previous);     
-
-    console.log('previous '+previous.length+', new: '+query.length);
-
-    if(previous) return true;
-    else return false;
-}
-
 let redirectTm; // timer for redirection
-let mergyRequired = new HashMap();
-let remainingRedirectedMessage; 
+let remainingRedirectedMessage;  // merge two consecutive messages in 2 seconds
 let messageTransfered = new HashMap();
+let messageMemory = new HashMap();   // duplication check caused by pubsub in the case of abnormal disconnection
+
+function requestReDirectMessage(requestId, query, userId, requestTime, conversationType) {  
+    console.log('--> send the redirected message');
+        
+    if(messageTransfered.get(requestId)==undefined) {
+        console.log('--> sendMessage: ', query);
+
+        next = true;  // initiate valriable 'next' for audio play        
+        sendMessage({
+            "user_id": userId,
+            "request_id": requestId,
+            "request_time": requestTime,        
+            "type": "text",
+            "body": query,
+            "convType": conversationType
+        });
+        messageMemory.put(requestId, query);      
+        messageTransfered.put(requestId, true);
+                
+        remainingRedirectedMessage = "";
+    }        
+}
 
 function delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType) {    
     console.log('--> start delay() of redirected message');
@@ -343,14 +353,13 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
         'requestId': requestId,
         'message': query
     }; 
-    console.log('remainingRedirectedMessage[message]: ', remainingRedirectedMessage['message']);
+    console.log('new remainingRedirectedMessage[message]: ', remainingRedirectedMessage['message']);
 
     redirectTm = setTimeout(function () {
         console.log('--> delayed request: ', query);
-        console.log('mergyRequired[requestId] = ', mergyRequired[requestId]);
         console.log('messageTransfered[requestId] = ', messageTransfered.get(requestId));
-
-        if(mergyRequired[requestId]==false && messageTransfered.get(requestId)==undefined) {
+        
+        if(messageTransfered.get(requestId)==undefined) {
             console.log('--> sendMessage: ', query);
 
             next = true;  // initiate valriable 'next' for audio play        
@@ -369,14 +378,13 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
         }
         
         clearRedirectTm();
-    }, 1000);
+    }, 2000);
 }
 function clearRedirectTm() {
     clearTimeout(redirectTm);
 }
 
 // voice session 
-let messageMemory = new HashMap();   // duplication check caused by pubsub in the case of abnormal disconnection
 function voiceConnect(voiceEndpoint, type) {
     const ws_voice = new WebSocket(voiceEndpoint);
 
@@ -404,10 +412,10 @@ function voiceConnect(voiceEndpoint, type) {
             voicePong();
             return;
         }
-        else {
+        else {  // voice messages delivered from interpreter (device <-> trasncribe)
             response = JSON.parse(event.data)
 
-             if(response.status == 'redirected') {    
+             if(response.status == 'redirected') {  // voice message status == redirected
                 feedback.style.display = 'none';      
                 console.log('response: ', response);
                 
@@ -427,31 +435,34 @@ function voiceConnect(voiceEndpoint, type) {
 
                 console.log('remainingRedirectedMessage', remainingRedirectedMessage);    // last redirected message but not delivered
 
-                if (remainingRedirectedMessage) {
-                    requestId = remainingRedirectedMessage['requestId'];     
-                    mergyRequired[requestId] = true;               
-                    console.log('merged message: ', query);
-                    
-                    // remainingRedirectedMessage['message'] += query; // add new message
-                    // query = remainingRedirectedMessage['message'];
-                    remainingRedirectedMessage['message'] = query;     
+                if (remainingRedirectedMessage && requestId != remainingRedirectedMessage['requestId']) {
+                    requestId = remainingRedirectedMessage['requestId']; // use the remained requestId for display
+                   
+                    remainingRedirectedMessage['message'] += query; // add new message
+                    query = remainingRedirectedMessage['message'];
+                    // remainingRedirectedMessage['message'] = query;     
 
                     // for debugging
-                    let timeDiff = timestr-remainingRedirectedMessage['timestr'];
-                    console.log('timeDiff: ', timeDiff)
+                    //let timeDiff = timestr-remainingRedirectedMessage['timestr'];
+                    //console.log('timeDiff: ', timeDiff)
                 }
 
                 if(state=='completed') {
-                    if(isDuplicated(requestId)) { 
-                        console.log('ignore the duplicated message: ', query);
+                    if(messageMemory.get(requestId)==undefined) { 
+                        addSentMessage(requestId, timestr, query);
+
+                        if(enableDelayedMessage == false) {
+                            requestReDirectMessage(requestId, query, userId, requestTime, conversationType)
+                        }
+                        else {  // in order to manipulate voice messages where the message will be delayed for one time
+                            delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType);                                   
+                        }
+                        
+                        console.log('get score for ', query);
+                        getScore(userId, requestId, query);                        
                     }
                     else {  
-                        addSentMessage(requestId, timestr, query);
-                        mergyRequired[requestId] = false;
-                        delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType);           
-                        
-                        console.log('request to estimate the score');
-                        getScore(userId, requestId, query);
+                        console.log('ignore the duplicated message: ', query);
                     }                    
                 }
                 else {
