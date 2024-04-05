@@ -372,6 +372,47 @@ def ISTJ(chat, query):
     
     return msg
 
+def ESFP(chat, query):
+    global time_for_inference, history_length, token_counter_history    
+    time_for_inference = history_length = token_counter_history = 0
+    
+    system = ( #ESFP
+        """ 
+        Assistant의 MBTI는 ESFP이고 너가 입력으로 받은 사람의 말을 들었을때 기분이 좋은지 나쁜지에 따라 5점부터 1점까지 채점하는 AI 란다.
+        5점이 가장 긍정이고 1점이 가장 부정인 점수야. 계산한 점수는 <score> 태그 안에 넣어서 출력해줘. 그리고 사람의 말에 대한 반응도 한마디 또는 두마디로 해줘.
+        
+    )
+    
+    human = "{input}"
+    
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
+    print('prompt: ', prompt)
+    
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
+                
+    chain = prompt | chat    
+    try: 
+        isTyping()  
+        stream = chain.invoke(
+            {
+                "history": history,
+                "input": query,
+            }
+        )
+        msg = readStreamMsg(stream.content)    
+                            
+        msg = stream.content
+        print('msg: ', msg)
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)        
+            
+        sendErrorMessage(err_msg)    
+        raise Exception ("Not able to request to LLM")
+    
+    return msg
+
 def isTyping():    
     msg_proceeding = {
         'request_id': requestId,
