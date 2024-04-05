@@ -708,7 +708,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
         profile_of_LLMs:JSON.stringify(claude3_sonnet),
       }
     });     
-  
+
     // POST method - greeting
     const score = api.root.addResource("score");
     score.addMethod('POST', new apiGateway.LambdaIntegration(lambdaScore, {
@@ -736,15 +736,16 @@ export class CdkDansingRobotStack extends cdk.Stack {
     });
 
     // Lambda - controller
-    const lambdaController = new lambda.DockerImageFunction(this, `lambda-controller-for-${projectName}`, {
+    const lambdaController = new lambda.Function(this, `lambda-controller-for-${projectName}`, {
       description: 'lambda for robot controller',
-      functionName: `lambda-score-for-${projectName}`,
-      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-controller')),
-      timeout: cdk.Duration.seconds(60),
-      role: roleLambda,
+      functionName: `lambda-conroller-for-${projectName}`,
+      handler: 'lambda_function.lambda_handler',
+      runtime: lambda.Runtime.PYTHON_3_11,
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambda-controller')),
+      timeout: cdk.Duration.seconds(30),
       environment: {
       }
-    });     
+    });
   
     // POST method - greeting
     const control = api.root.addResource("control");
