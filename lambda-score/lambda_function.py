@@ -144,11 +144,14 @@ def lambda_handler(event, context):
     print(f'bedrock_region: {bedrock_region}, modelId: {model_id}, max_output_token: {max_output_token}')
     print('event: ', event)
 
-    user_id = event["userId"]
-    request_id = event["requestId"]
+    body = event.get("body", "")
+    jsonBody = json.loads(body)
 
-    text = event["text"]
-    mbti = event["mbti"]
+    user_id = jsonBody["userId"]
+    request_id = jsonBody["requestId"]
+
+    text = jsonBody["text"]
+    mbti = jsonBody["mbti"]
 
     start_time_for_greeting = time.time()
 
