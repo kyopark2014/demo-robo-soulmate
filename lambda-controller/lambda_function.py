@@ -52,7 +52,7 @@ def lambda_handler(event, context):
             "seq": seq
         })
         
-    topic = f"pupper/do/${thingName}"
+    topic = f"pupper/do/{thingName}"
     print('topic: ', topic)
     
     try:         
