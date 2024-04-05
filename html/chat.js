@@ -224,7 +224,7 @@ function connect(endpoint, type) {
                     console.log('speechType: ', speechType);
                     if(speechType=='robot') {
                         // thingName = "AI-Dancing-Robot-000"
-                        sendControl(userId, 'text', response.msg, 0, requestId);
+                        sendControl(userId, 'text', response.msg, 0, response.request_id);
                     }
                     else { // local
                         if(requested[response.request_id] == undefined) {
