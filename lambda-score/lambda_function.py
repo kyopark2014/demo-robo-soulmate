@@ -1,123 +1,176 @@
-import boto3
 import os
 import time
 import boto3
 import json
+import re
 
-from botocore.config import Config
 import traceback
+from botocore.config import Config
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.chat_models import BedrockChat
 
+
 HUMAN_PROMPT = "\n\nHuman:"
 AI_PROMPT = "\n\nAssistant:"
 
-selected_LLM = 0
-profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
 
-def get_chat(profile_of_LLMs, selected_LLM):
-    profile = profile_of_LLMs[selected_LLM]
-    bedrock_region =  profile['bedrock_region']
-    modelId = profile['model_id']
-    print(f'LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
-    maxOutputTokens = int(profile['maxOutputTokens'])
-                          
+def get_chat(region, model_id, max_output_token):
     # bedrock   
     boto3_bedrock = boto3.client(
         service_name='bedrock-runtime',
-        region_name=bedrock_region,
+        region_name=region,
         config=Config(
-            retries = {
+            retries={
                 'max_attempts': 30
-            }            
+            }
         )
     )
     parameters = {
-        "max_tokens":maxOutputTokens,     
-        "temperature":0.1,
-        "top_k":250,
-        "top_p":0.9,
+        "max_tokens": max_output_token,
+        "temperature": 0.1,
+        "top_k": 250,
+        "top_p": 0.9,
         "stop_sequences": [HUMAN_PROMPT]
     }
-    # print('parameters: ', parameters)
 
     chat = BedrockChat(
-        model_id=modelId,
-        client=boto3_bedrock, 
-        streaming=True,
-        callbacks=[StreamingStdOutCallbackHandler()],
+        model_id=model_id,
+        client=boto3_bedrock,
+        # streaming=True,
+        # callbacks=[StreamingStdOutCallbackHandler()],
         model_kwargs=parameters,
-    )        
-    
+    )
+
     return chat
 
-def extract_sentiment(chat, text):
-    system = (
-        """What is the sentiment of the following review. The result should be one of "positive", "negative", or "neural". Put it in <result> tags."""
-    )
-        
-    human = "<review>{text}</review>"
-    
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
-    # print('prompt: ', prompt)
-    
-    chain = prompt | chat    
-    try: 
+
+def get_prompt():
+    system = ("""
+너는 사람 말을 1점부터 5점까지 채점하는 AI 란다. 5점이 가장 높고 1점이 가장 낮은 점수야.
+아래 <text> 태그 안의 말을 했을 때 <character> 안에 있는 성격을 가진 사람이 어떻게 받아들이는지 점수를 계산해줘
+계산한 점수는 <score> 태그 안에 넣어서 출력해줘. 나머지 이유는 5토큰 이내로 줄여서 <description> 태그 안에 넣어서 출력해줘
+    """
+              )
+
+    human = "<text>{text}</text> <character>{character}</character>"
+    return ChatPromptTemplate.from_messages([("system", system), ("human", human)])
+
+def get_character(mbti):
+    mbti_character = {
+        "ISTP": """
+만사 귀찮아함
+하기싫은건 죽어도 안함
+과묵하지만 호기심은 강함
+내향적이며 논리적임
+문제를 다양한 관점으로 판단
+        """,
+        "ESFP": """
+분위기메이커이며 목소리 큰 편임
+친화력이 좋고 사교성 적응력 뛰어남
+다른 사람 자존감 높여주는 말을 잘함
+이야기할때 부연 설명이 많음
+남의 기분을 잘 공감함
+        """,
+        "INFJ": """
+
+            """,
+        "ESTJ": """
+주인에게 충성함
+전투적인 성격이 있음
+부지런한 성격
+게으른거를 싫어함
+고집이 강함
+        """
+    }
+    return mbti_character[mbti]
+
+
+def extract_text_from_tags(text, tag):
+    try:
+        pattern = f"<{tag}>(.*?)</{tag}>"
+        matches = re.findall(pattern, text, re.DOTALL)[0]
+    except Exception:
+        return ''
+    return matches
+
+
+def extract_sentiment(chat, text, mbti):
+
+    prompt = get_prompt()
+    character = get_character(mbti)
+
+    chain = prompt | chat
+    try:
         result = chain.invoke(
             {
-                "text": text
+                "text": text,
+                "character":  character
             }
-        )        
-        msg = result.content                
+        )
+        msg = result.content
         # print('result of sentiment extraction: ', msg)
-        
+
     except Exception:
         err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
-        raise Exception ("Not able to request to LLM")
-    
-    output = msg[msg.find('<result>')+8:len(msg)-9]  # remove <result> tag
-    
-    if output == 'positive':
-        score = 5
-    elif output == 'negative':
-        score = 1
-    else:
-        score = 3
-    
-    return {
-        'score': score
-    }
-    
-def lambda_handler(event, context):
-    # print('evnet: ', event)    
-    body = json.loads(event['body'])
-    print('body: ', json.dumps(body))
-    
-    userId = body["userId"]         
-    requestId = body["requestId"]
-    text = body["text"]     
-    print('text: ', text)
-    
-    start_time_for_greeting = time.time()
-        
-    # creating greeting message
-    chat = get_chat(profile_of_LLMs, selected_LLM)    
+        print('error message: ', err_msg)
+        raise Exception("Not able to request to LLM")
 
-    result = extract_sentiment(chat, text)
+    score = extract_text_from_tags(msg, "score")
+    description = extract_text_from_tags(msg, "description")
+
+    return {
+        'score': score,
+        'description': description
+    }
+
+
+def lambda_handler(event, context):
+    try:
+        selected_LLM = 0
+        profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
+        profile = profile_of_LLMs[selected_LLM]
+    except Exception:
+        profile = {
+            'bedrock_region': 'us-west-2',
+            'model_id': 'anthropic.claude-3-sonnet-20240229-v1:0',
+            'maxOutputTokens': '8196'
+        }
+
+    bedrock_region = profile['bedrock_region']
+    model_id = profile['model_id']
+    max_output_token = int(profile['maxOutputTokens'])
+
+    print(f'bedrock_region: {bedrock_region}, modelId: {model_id}, max_output_token: {max_output_token}')
+    print('event: ', event)
+
+    user_id = event["userId"]
+    request_id = event["requestId"]
+
+    text = event["text"]
+    mbti = event["mbti"]
+
+    start_time_for_greeting = time.time()
+
+    # creating greeting message
+    chat = get_chat(region=bedrock_region, model_id=model_id, max_output_token=max_output_token)
+    result = extract_sentiment(chat=chat, text=text, mbti=mbti)
     print('result: ', result)
-    
+
+    # ToDo
+    # 스코어 보드 호출
+    ##
+
     end_time_for_greeting = time.time()
     time_for_greeting = end_time_for_greeting - start_time_for_greeting
-    
+
     return {
         "isBase64Encoded": False,
         'statusCode': 200,
-        'body': json.dumps({         
-            "userId": userId,
-            "requestId": requestId,
+        'body': json.dumps({
+            "userId": user_id,
+            "requestId": request_id,
             "result": result,
             "time_taken": str(time_for_greeting)
-        })
+        }, ensure_ascii=False)
     }
