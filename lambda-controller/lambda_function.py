@@ -3,18 +3,15 @@ import boto3
 import os
 import traceback
 
-thingName = "AI-Dancing-Robot-000"
-
-client = boto3.client('iot-data', region_name='us-west-2')
+client = boto3.client('iot-data')
 
 def lambda_handler(event, context):
     print('event: ', event)
     
     type = event['type']
     print('type: ', type)
-    
-    score = event['score']
-    print('score: ', score)
+    thingName = event['name']
+    print('thingName: ', thingName)
     
     if type == 'text':
         message = event['message']
@@ -22,6 +19,9 @@ def lambda_handler(event, context):
             "say": message, 
         })
     else:
+        score = event['score']
+        print('score: ', score)
+    
         if score == 5:
             show = 'HAPPY'
             move = 'seq'
@@ -51,9 +51,9 @@ def lambda_handler(event, context):
         
     try: 
         response = client.publish(
-            topic=f"$aws/things/pupper/do/${thingName}",
-            qos=1,
-            payload=payload
+            topic = f"pupper/do/${thingName}",
+            qos = 1,
+            payload = payload
         )
         print('response: ', response)        
             

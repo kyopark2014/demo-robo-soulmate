@@ -2,6 +2,7 @@ const protocol = 'WEBSOCKET'; // WEBSOCKET
 const langstate = 'korean'; // korean or english
 const enableTTS = true;
 const enableDelayedMessage = true; // in order to manipulate the voice messages
+const speechType = 'local';  // local or robot
 
 // Common
 let userId = localStorage.getItem('userId'); // set userID if exists 
@@ -221,20 +222,26 @@ function connect(endpoint, type) {
                 if(enableTTS) {
                     console.log('enableTTS: ', enableTTS);
                     console.log('requested: ', requested[response.request_id])
+                    
+                    if(speechType = 'robot') {
+                        thingName = "AI-Dancing-Robot-000"
 
-                    if(requested[response.request_id] == undefined) {
-                        requestId = response.request_id;
-                        playList.push({
-                            'played': false,
-                            'requestId': requestId,
-                            'text': response.msg
-                        });
-                        lineText = "";      
-                
-                        loadAudio(response.request_id, response.msg);
-                        
-                        next = true;
-                        playAudioList();
+                    }
+                    else { // local
+                        if(requested[response.request_id] == undefined) {
+                            requestId = response.request_id;
+                            playList.push({
+                                'played': false,
+                                'requestId': requestId,
+                                'text': response.msg
+                            });
+                            lineText = "";      
+                    
+                            loadAudio(response.request_id, response.msg);
+                            
+                            next = true;
+                            playAudioList();
+                        }    
                     }
                     
                     retryCounter = 10;
@@ -255,7 +262,7 @@ function connect(endpoint, type) {
                 addReceivedMessage(response.request_id, sentance);
                 // console.log('response.msg: ', response.msg);
 
-                if(enableTTS) {
+                if(enableTTS && speechType=='local') {
                     lineText += response.msg;
                     lineText = lineText.replace('\n','');
                     if(lineText.length>3 && (response.msg == '.' || response.msg == '?' || response.msg == '!'|| response.msg == ':')) {     
