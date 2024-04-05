@@ -838,6 +838,33 @@ function addSentMessageForSummary(requestId, timestr, text) {
     index++;
 }  
 
+function sendControl(score, requestId) {
+    const uri = "control";
+    const xhr = new XMLHttpRequest();
+
+    xhr.open("POST", uri, true);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            response = JSON.parse(xhr.responseText);
+            console.log("response: " + JSON.stringify(response));
+        }
+        else if(xhr.readyState ===4 && xhr.status === 504) {
+            console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
+        }
+    };
+
+    var requestObj = {
+        "user_id": userId,
+        "request_id": requestId,
+        "score":score
+    }
+    console.log("request: " + JSON.stringify(requestObj));
+
+    var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
+
+    xhr.send(blob);            
+}
+
 function getScore(userId, requestId, text) {
     const uri = "score";
     const xhr = new XMLHttpRequest();
@@ -847,8 +874,10 @@ function getScore(userId, requestId, text) {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
             console.log("response: " + JSON.stringify(response));   
-            let score = response.result;
-            console.log("score: " + score);                        
+            let score = response.result['socre'];
+            console.log("score: " + score);    
+            
+            sendControl(score, requestId)
         }
     };
 
