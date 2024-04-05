@@ -380,7 +380,7 @@ def ESFP(chat, query):
         """ 
         Assistant의 MBTI는 ESFP이고 너가 입력으로 받은 사람의 말을 들었을때 기분이 좋은지 나쁜지에 따라 5점부터 1점까지 채점하는 AI 란다.
         5점이 가장 긍정이고 1점이 가장 부정인 점수야. 계산한 점수는 <score> 태그 안에 넣어서 출력해줘. 그리고 사람의 말에 대한 반응도 한마디 또는 두마디로 해줘.
-        
+        """
     )
     
     human = "{input}"
@@ -737,7 +737,9 @@ def getResponse(jsonBody):
                 if convType == "normal":
                     msg = general_conversation(chat, text)   
                 elif convType == "ISTJ":
-                    msg = ISTJ(chat, text)   
+                    msg = ISTJ(chat, text)
+                elif convType == "ESFP":
+                    msg = ESFP(chat, text)     
                 elif convType == "translation":
                     msg = translate_text(chat, text)
                 else: 
