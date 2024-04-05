@@ -220,12 +220,11 @@ function connect(endpoint, type) {
                 // console.log('response.msg: ', response.msg);
 
                 if(enableTTS) {
-                    console.log('enableTTS: ', enableTTS);
-                    console.log('requested: ', requested[response.request_id])
-                    
-                    if(speechType = 'robot') {
+                    console.log('requested: ', requested[response.request_id]);
+                    console.log('speechType: ', speechType);
+                    if(speechType=='robot') {
                         // thingName = "AI-Dancing-Robot-000"
-                        sendControl(userId, 'text', response.msg, 0, requestId)
+                        sendControl(userId, 'text', response.msg, 0, requestId);
                     }
                     else { // local
                         if(requested[response.request_id] == undefined) {
@@ -894,10 +893,12 @@ function getScore(userId, requestId, text) {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
             console.log("response: " + JSON.stringify(response));   
-            let score = response.result['socre'];
+            let result = response.result;
+            console.log("result: " + JSON.stringify(result));   
+            let score = result.score;
             console.log("score: " + score);    
             
-            if(speechType = 'robot') {
+            if(speechType=='robot') {
                 // thingName = "AI-Dancing-Robot-000"
                 sendControl(userId, "action", "", score, requestId)
             }   
