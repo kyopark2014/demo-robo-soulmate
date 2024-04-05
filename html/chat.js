@@ -865,15 +865,15 @@ function sendControl(thingName, type, message, score, requestId) {
             "user_id": thingName,
             "request_id": requestId,
             "type": type,
-            "score":score
+            "text": message
         }
     }
     else { // score
         requestObj = {            
             "user_id": thingName,
             "request_id": requestId,
-            "type": type,
-            "text": message
+            "type": type,            
+            "score":score
         }
     }
     
