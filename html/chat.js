@@ -2,7 +2,7 @@ const protocol = 'WEBSOCKET'; // WEBSOCKET
 const langstate = 'korean'; // korean or english
 const enableTTS = true;
 const enableDelayedMessage = true; // in order to manipulate the voice messages
-const speechType = 'robot';  // local or robot
+const speechType = 'both';  // local or robot or both
 
 // Common
 let userId = localStorage.getItem('userId'); // set userID if exists 
@@ -226,7 +226,25 @@ function connect(endpoint, type) {
                         // thingName = "AI-Dancing-Robot-000"
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
                     }
-                    else { // local
+                    else if(speechType=='local') { // local
+                        if(requested[response.request_id] == undefined) {
+                            requestId = response.request_id;
+                            playList.push({
+                                'played': false,
+                                'requestId': requestId,
+                                'text': response.msg
+                            });
+                            lineText = "";      
+                    
+                            loadAudio(response.request_id, response.msg);
+                            
+                            next = true;
+                            playAudioList();
+                        }    
+                    }
+                    else if(speechType=='both') {
+                        sendControl(userId, 'text', response.msg, 0, response.request_id);
+
                         if(requested[response.request_id] == undefined) {
                             requestId = response.request_id;
                             playList.push({
@@ -261,7 +279,7 @@ function connect(endpoint, type) {
                 addReceivedMessage(response.request_id, sentance);
                 // console.log('response.msg: ', response.msg);
 
-                if(enableTTS && speechType=='local') {
+                if(enableTTS && (speechType=='local' || speechType=='both')) {
                     lineText += response.msg;
                     lineText = lineText.replace('\n','');
                     if(lineText.length>3 && (response.msg == '.' || response.msg == '?' || response.msg == '!'|| response.msg == ':')) {     
@@ -898,8 +916,7 @@ function getScore(userId, requestId, text) {
             let score = result.score;
             console.log("score: " + score);    
             
-            if(speechType=='robot') {
-                // thingName = "AI-Dancing-Robot-000"
+            if(speechType=='robot' || speechType=='both') {
                 sendControl(userId, "action", "", score, requestId)
             }   
         }
