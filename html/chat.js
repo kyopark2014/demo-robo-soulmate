@@ -459,19 +459,14 @@ function voiceConnect(voiceEndpoint, type) {
 
                 console.log('remainingRedirectedMessage', remainingRedirectedMessage);    // last redirected message but not delivered
 
-                if (remainingRedirectedMessage && requestId != remainingRedirectedMessage['requestId']) {
-                    requestId = remainingRedirectedMessage['requestId']; // use the remained requestId for display
-                   
-                    remainingRedirectedMessage['message'] += query; // add new message
-                    query = remainingRedirectedMessage['message'];
-                    // remainingRedirectedMessage['message'] = query;     
-
-                    // for debugging
-                    //let timeDiff = timestr-remainingRedirectedMessage['timestr'];
-                    //console.log('timeDiff: ', timeDiff)
-                }
-
                 if(state=='completed') {
+                    if (remainingRedirectedMessage && requestId != remainingRedirectedMessage['requestId']) {
+                        requestId = remainingRedirectedMessage['requestId']; // use the remained requestId for display
+                       
+                        remainingRedirectedMessage['message'] = remainingRedirectedMessage['message']+'\n'+query; // add new message
+                        query = remainingRedirectedMessage['message'];
+                    }
+
                     if(messageMemory.get(requestId)==undefined) { 
                         addSentMessage(requestId, timestr, query);
 
