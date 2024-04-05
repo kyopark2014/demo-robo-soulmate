@@ -77,7 +77,18 @@ def extract_sentiment(chat, text):
         print('error message: ', err_msg)                    
         raise Exception ("Not able to request to LLM")
     
-    return msg[msg.find('<result>')+8:len(msg)-9] # remove <result> tag
+    output = msg[msg.find('<result>')+8:len(msg)-9]  # remove <result> tag
+    
+    if output == 'positive':
+        score = 5
+    elif output == 'negative':
+        score = 1
+    else:
+        score = 3
+    
+    return {
+        'score': score
+    }
     
 def lambda_handler(event, context):
     # print('evnet: ', event)    

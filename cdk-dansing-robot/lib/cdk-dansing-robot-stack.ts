@@ -735,6 +735,43 @@ export class CdkDansingRobotStack extends cdk.Stack {
         viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });
 
+    // Lambda - controller
+    const lambdaController = new lambda.DockerImageFunction(this, `lambda-controller-for-${projectName}`, {
+      description: 'lambda for robot controller',
+      functionName: `lambda-score-for-${projectName}`,
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-controller')),
+      timeout: cdk.Duration.seconds(60),
+      role: roleLambda,
+      environment: {
+      }
+    });     
+  
+    // POST method - greeting
+    const control = api.root.addResource("control");
+    control.addMethod('POST', new apiGateway.LambdaIntegration(lambdaController, {
+        passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+        credentialsRole: role,
+        integrationResponses: [{
+            statusCode: '200',
+        }],
+        proxy: true,
+    }), {
+        methodResponses: [
+            {
+                statusCode: '200',
+                responseModels: {
+                    'application/json': apiGateway.Model.EMPTY_MODEL,
+                },
+            }
+        ]
+    });
+    
+    distribution.addBehavior("/control", new origins.RestApiOrigin(api), {
+        cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+        allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
+
     // Lambda - reading
     const lambdaReading = new lambda.DockerImageFunction(this, `lambda-reading-for-${projectName}`, {
       description: 'lambda for reading',
