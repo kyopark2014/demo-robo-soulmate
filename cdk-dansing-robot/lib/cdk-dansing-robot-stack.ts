@@ -766,7 +766,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
         integrationResponses: [{
             statusCode: '200',
         }],
-        proxy: true,
+        proxy: false,
     }), {
         methodResponses: [
             {
