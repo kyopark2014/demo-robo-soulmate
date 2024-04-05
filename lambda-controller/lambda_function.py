@@ -1,6 +1,5 @@
 import json
 import boto3
-import os
 import traceback
 
 client = boto3.client('iot-data')
@@ -10,8 +9,12 @@ def lambda_handler(event, context):
     
     type = event['type']
     print('type: ', type)
-    thingName = event['name']
-    print('thingName: ', thingName)
+    user_id = event['user_id'] # thingName
+    print('user_id: ', user_id)
+    thingName = user_id
+    
+    request_id = event['request_id']
+    print('request_id: ', request_id)
     
     if type == 'text':
         message = event['message']

@@ -224,8 +224,8 @@ function connect(endpoint, type) {
                     console.log('requested: ', requested[response.request_id])
                     
                     if(speechType = 'robot') {
-                        thingName = "AI-Dancing-Robot-000"
-
+                        // thingName = "AI-Dancing-Robot-000"
+                        sendControl(userId, 'text', response.msg, 0, requestId)
                     }
                     else { // local
                         if(requested[response.request_id] == undefined) {
@@ -466,7 +466,7 @@ function voiceConnect(voiceEndpoint, type) {
                         }
                         
                         console.log('get score for ', query);
-                        getScore(userId, requestId, query);                        
+                        getScore(userId, requestId, query);  
                     }
                     else {  
                         console.log('ignore the duplicated message: ', query);
@@ -845,7 +845,7 @@ function addSentMessageForSummary(requestId, timestr, text) {
     index++;
 }  
 
-function sendControl(score, requestId) {
+function sendControl(thingName, type, message, score, requestId) {
     const uri = "control";
     const xhr = new XMLHttpRequest();
 
@@ -860,11 +860,24 @@ function sendControl(score, requestId) {
         }
     };
 
-    var requestObj = {
-        "user_id": userId,
-        "request_id": requestId,
-        "score":score
+    let requestObj;
+    if(type == 'text') { // text
+        requestObj = {
+            "user_id": thingName,
+            "request_id": requestId,
+            "type": type,
+            "score":score
+        }
     }
+    else { // score
+        requestObj = {            
+            "user_id": thingName,
+            "request_id": requestId,
+            "type": type,
+            "text": message
+        }
+    }
+    
     console.log("request: " + JSON.stringify(requestObj));
 
     var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
@@ -884,7 +897,10 @@ function getScore(userId, requestId, text) {
             let score = response.result['socre'];
             console.log("score: " + score);    
             
-            sendControl(score, requestId)
+            if(speechType = 'robot') {
+                // thingName = "AI-Dancing-Robot-000"
+                sendControl(userId, "action", "", score, requestId)
+            }   
         }
     };
 
