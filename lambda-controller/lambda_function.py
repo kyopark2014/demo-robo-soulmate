@@ -52,9 +52,12 @@ def lambda_handler(event, context):
             "seq": seq
         })
         
-    try: 
+    topic = f"pupper/do/${thingName}"
+    print('topic: ', topic)
+    
+    try:         
         response = client.publish(
-            topic = f"pupper/do/${thingName}",
+            topic = topic,
             qos = 1,
             payload = payload
         )
