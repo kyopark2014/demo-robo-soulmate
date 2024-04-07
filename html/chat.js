@@ -924,6 +924,8 @@ function getScore(userId, requestId, text) {
             console.log("result: " + JSON.stringify(result));   
             let score = result.score;
             console.log("score: " + score);    
+            let description = result.description;
+            console.log("description: " + description);    
             
             if(speechType=='robot' || speechType=='both') {
                 sendControl(userId, "action", "", score, requestId)
