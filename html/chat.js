@@ -928,7 +928,8 @@ function getScore(userId, requestId, text) {
             console.log("description: ", description);    
 
             let noti = '[debug] score: '+score+', description: '+description;
-            addNotifyMessage(noti);
+            console.log("noti: ", noti);    
+            // addNotifyMessage(noti);
             
             if(speechType=='robot' || speechType=='both') {
                 sendControl(userId, "action", "", score, requestId)
