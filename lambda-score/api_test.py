@@ -10,7 +10,7 @@ data = {
     "requestId": "test1234",
     "request_time": "2023-10-08 18:01:45",
     "type": "text",
-    "text": "안녕하세요",
+    "text": "산책가자",
     "mbti": "ISTP",
     "has_description": True,
 }
