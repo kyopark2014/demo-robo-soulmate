@@ -47,13 +47,26 @@ def get_chat(region, model_id, max_output_token):
 
 def get_prompt():
     system = ("""
-너는 사람 말을 1점부터 5점까지 채점하는 AI 란다. 5점이 가장 높고 1점이 가장 낮은 점수야.
-아래 <text> 태그 안의 말을 했을 때 <character> 안에 있는 성격을 가진 사람이 어떻게 받아들이는지 점수를 계산해줘
-계산한 점수는 <score> 태그 안에 넣어서 출력해줘. 나머지 이유는 5토큰 이내로 줄여서 <description> 태그 안에 넣어서 출력해줘
+너는 사람이 말을 했을 때 강아지가 받아들이는 감정을 측정하는 AI 란다.
+
+아래 <text> 태그 안의 말을 했을 때 <character> 안에 있는 성격을 가진 강아지가 어떻게 받아들이는지 점수를 계산해줘
+계산한 점수는 <score> 태그 안에 넣어서 출력해줘. 점수는 5점부터 1점까지야.
+주인의 말을 많이 좋아할수록 5점이고 조금 좋아할 수록 1점이야.
+
+점수에 대한 이유는 5토큰 이내로 줄여서 <description> 태그 안에 넣어서 출력해줘
     """
               )
 
-    human = "<text>{text}</text> <character>{character}</character>"
+    human = """
+<text>
+{text}
+</text>
+
+<character>
+{character}
+</character>
+"""
+
     return ChatPromptTemplate.from_messages([("system", system), ("human", human)])
 
 def get_character(mbti):
@@ -63,25 +76,29 @@ def get_character(mbti):
 하기싫은건 죽어도 안함
 과묵하지만 호기심은 강함
 내향적이며 논리적임
-문제를 다양한 관점으로 판단
-        """,
+집에 있는 것을 좋아함
+""",
         "ESFP": """
 분위기메이커이며 목소리 큰 편임
 친화력이 좋고 사교성 적응력 뛰어남
 다른 사람 자존감 높여주는 말을 잘함
 이야기할때 부연 설명이 많음
 남의 기분을 잘 공감함
-        """,
+""",
         "INFJ": """
-
-            """,
+생각이 너무 많음
+주인에게 매우 잘해줌
+계획적인거 좋아 함
+단 둘이 노는거 좋아함
+관심 받고 싶은데 나서는건 싫어함
+""",
         "ESTJ": """
 주인에게 충성함
 전투적인 성격이 있음
 부지런한 성격
 게으른거를 싫어함
 고집이 강함
-        """
+"""
     }
     return mbti_character[mbti]
 
@@ -134,7 +151,7 @@ def lambda_handler(event, context):
         profile = {
             'bedrock_region': 'us-west-2',
             'model_id': 'anthropic.claude-3-sonnet-20240229-v1:0',
-            'maxOutputTokens': '8196'
+            'maxOutputTokens': '1024'
         }
 
     bedrock_region = profile['bedrock_region']
