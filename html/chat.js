@@ -1142,7 +1142,7 @@ attachFile.addEventListener('click', function(){
                 "filename": filename,
                 "contentType": contentType,
             }
-            console.log("request: " + JSON.stringify(requestObj));
+            console.log("request from file: " + JSON.stringify(requestObj));
         
             var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
         
@@ -1182,7 +1182,7 @@ function sendRequest(text, requestId, requestTime) {
         "type": "text",
         "body":text
     }
-    console.log("request: " + JSON.stringify(requestObj));
+    console.log("request for query: " + JSON.stringify(requestObj));
 
     var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
 
