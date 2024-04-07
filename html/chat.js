@@ -911,7 +911,7 @@ function sendControl(thingName, type, message, score, requestId) {
     xhr.send(blob);            
 }
 
-function getScore(userId, requestId, text) {
+function getScore(userId, requestId, text, convType) {
     const uri = "score";
     const xhr = new XMLHttpRequest();
 
@@ -931,10 +931,15 @@ function getScore(userId, requestId, text) {
         }
     };
 
+    let mbti;
+    if(convType=='normal' || convType=='translation') mbti = 'ISTP';
+    else mbti = convType;
+
     var requestObj = {
         "userId": userId,
         "requestId": requestId,
-        "text": text
+        "text": text,
+        "mbti": mbti
     }
     console.log("request: " + JSON.stringify(requestObj));
 
