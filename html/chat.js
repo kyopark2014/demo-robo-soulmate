@@ -934,6 +934,7 @@ function getScore(userId, requestId, text, convType) {
     let mbti = 'ISTP';
     if(convType=='normal' || convType=='translation') mbti = 'ISTP';
     else mbti = convType;
+    console.log('mbti: ', mbti);
 
     var requestObj = {
         "userId": userId,
