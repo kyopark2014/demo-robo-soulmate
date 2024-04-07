@@ -942,7 +942,7 @@ function getScore(userId, requestId, text, convType) {
         "text": text,
         "mbti": mbti
     }
-    console.log("request for getScore: " + requestObj);
+    console.log("request for getScore: " + JSON.stringify(requestObj));
 
     var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
 
