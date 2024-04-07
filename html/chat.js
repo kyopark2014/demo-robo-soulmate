@@ -931,7 +931,7 @@ function getScore(userId, requestId, text, convType) {
         }
     };
 
-    let mbti;
+    let mbti = 'ISTP';
     if(convType=='normal' || convType=='translation') mbti = 'ISTP';
     else mbti = convType;
 
