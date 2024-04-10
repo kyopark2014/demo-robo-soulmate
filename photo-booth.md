@@ -1,4 +1,4 @@
-# Photo Booth에서 이미지 변환
+# Photo Booth를 위한 생성형 이미지 생성
 
 Photo Booth에서 방문자의 사진을 찍과 얼굴과 배경을 분리하여 새로운 이미지를 생성합니다.
 
