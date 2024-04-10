@@ -13,7 +13,7 @@ Photo Booth에서 방문자의 사진을 찍과 얼굴과 배경을 분리하여
 
 큰 파일을 보낼수 있도록 presigned url을 이용합니다. 
 
-1) Presigned Url 요청합니다. Client에서 바라보는 CloudFront의 주소는 "dxt1m1ae24b28.cloudfront.net" 입니다. (데모전 변경될 수 있습니다) 아래와 같은 방식으로 Presigned url을 요청합니다.
+1) Presigned Url 요청합니다. Client에서 바라보는 CloudFront의 주소는 "dxt1m1ae24b28.cloudfront.net" 입니다. (URL 변경될 수 있습니다) 아래와 같은 방식으로 Presigned url을 요청합니다.
 
 ```text
 HTTPS POST https://dxt1m1ae24b28.cloudfront.net/upload
