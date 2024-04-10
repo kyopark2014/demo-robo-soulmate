@@ -302,7 +302,8 @@ def lambda_handler(event, context):
     
     # img_path = f'./andy_portrait_2.jpg'  # for testing
     
-    outpaint_prompt = 'forrest'
+    # outpaint_prompt = 'forrest'
+    outpaint_prompt = 'wonderful see and aws'
     target_label = None
     
     if target_label == None:
