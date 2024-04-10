@@ -65,7 +65,7 @@ HTTPS POST  https://dxt1m1ae24b28.cloudfront.net/photo
 
 #### 원본이미지
 
-<img src="https://github.com/kyopark2014/demo-ai-dansing-robot/blob/main/photo-booth/andy_portrait_2.jpg" width="500">
+<img src="https://github.com/kyopark2014/demo-ai-dansing-robot/blob/main/photo-booth/andy_portrait_2.jpg" width="800">
 
 #### 생성된 이미지
 
