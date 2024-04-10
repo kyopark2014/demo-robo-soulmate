@@ -292,6 +292,13 @@ def lambda_handler(event, context):
     bucket = jsonBody["bucket"]   
     key = jsonBody["key"]   
     
+    # mask
+    ext = key.split('.')[-1]
+    if ext == 'jpg':
+        ext = 'jpeg'
+    
+    s3_file_name = key[key.rfind('/')+1:len(key)]   
+    target_name = 'photo_'+s3_file_name
     
     # img_path = f'./andy_portrait_2.jpg'  # for testing
     
@@ -306,11 +313,6 @@ def lambda_handler(event, context):
         object_image, width, height, f_left, f_top, f_width, f_height, color, human_res = show_labels(bucket, key, target_label=target_label)
         text_prompt =  f'a {target_label} with a {outpaint_prompt} and {color} background'
     """
-    
-    # mask
-    ext = key.split('.')[-1]
-    if ext == 'jpg':
-        ext = 'jpeg'
     
     encode_object_image = encode_image(object_image,formats=ext.upper()).decode("utf-8")
     inputs = dict(
@@ -363,7 +365,8 @@ def lambda_handler(event, context):
     # save image to bucket
     # id = uuid.uuid1()
     
-    object_key = f'{s3_photo_prefix}/photo_{requestId}.{ext}'  # MP3 파일 경로
+    object_key = f'{s3_photo_prefix}/{target_name}'  # MP3 파일 경로
+    print('object_key: ', object_key)
     #img_base64 = base64.b64encode(img_b64).decode()
     
     # upload
@@ -378,8 +381,9 @@ def lambda_handler(event, context):
     end_time_for_generation = time.time()
     time_for_photo_generation = end_time_for_generation - start_time_for_generation
     
-    s3_file_name = object_key[object_key.rfind('/')+1:len(object_key)]            
-    url = path+s3_photo_prefix+'/'+parse.quote(s3_file_name)
+    # s3_file_name = object_key[object_key.rfind('/')+1:len(object_key)]            
+    url = path+s3_photo_prefix+'/'+parse.quote(target_name)
+    print('url: ', url)
     
     return {
         "isBase64Encoded": False,
