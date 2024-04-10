@@ -371,7 +371,7 @@ def lambda_handler(event, context):
         Bucket=s3_bucket,
         Key=object_key,
         ContentType='image/jpeg',
-        Body=img_b64
+        Body=base64.b64decode(img_b64)
     )
     print('response: ', response)
         
