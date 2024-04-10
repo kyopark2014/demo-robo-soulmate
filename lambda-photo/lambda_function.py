@@ -75,17 +75,32 @@ def show_faces(bucket, key):
     img = Image.open(BytesIO(image_content))
     
     width, height = img.size 
-    print(f"width: {width}, height: {height}, size: {width*height}")
+    print(f"(original) width: {width}, height: {height}, size: {width*height}")
     
+    """
     isResized = False
     while(width > 512):
         width = int(width/2)
         height = int(height/2)
         isResized = True
         print(f"width: {width}, height: {height}, size: {width*height}")
-                
+        
     if isResized:
         img = img.resize((width, height))
+    """ 
+    
+    max_length = 512
+    if width < height:
+        width = int(max_length/height*width)
+        width = width-width%64
+        height = max_length
+    else:
+        height = int(max_length/width*height)
+        height = height-height%64
+        width = max_length 
+    print(f"(new) width={width}, height={height}")
+                
+    img = img.resize((width, height))
 
     buffer = BytesIO()
     img.save(buffer, format='jpeg', quality=100)
@@ -338,9 +353,20 @@ def lambda_handler(event, context):
     response_body = json.loads(response.get("body").read())
     img_b64 = response_body["images"][0]
     print(f"Output: {img_b64[0:80]}...")
-        
-    # save image to bucket
     
+    # save image to bucket
+    # id = uuid.uuid1()
+    
+    object_key = f'{s3_photo_prefix}/photo_{requestId}.{ext}'  # MP3 파일 경로
+    
+    # upload
+    response = s3_client.put_object(
+        Bucket=s3_bucket,
+        Key=object_key,
+        ContentType='image/jpeg',
+        Body=img_b64
+    )
+    print('response: ', response)
         
     end_time_for_generation = time.time()
     time_for_photo_generation = end_time_for_generation - start_time_for_generation
