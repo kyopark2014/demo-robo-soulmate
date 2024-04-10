@@ -379,7 +379,7 @@ def lambda_handler(event, context):
     time_for_photo_generation = end_time_for_generation - start_time_for_generation
     
     s3_file_name = object_key[object_key.rfind('/')+1:len(object_key)]            
-    url = path+s3_photo_prefix+parse.quote(s3_file_name)
+    url = path+s3_photo_prefix+'/'+parse.quote(s3_file_name)
     
     return {
         "isBase64Encoded": False,

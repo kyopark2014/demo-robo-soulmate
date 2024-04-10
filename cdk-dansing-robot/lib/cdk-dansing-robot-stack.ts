@@ -24,7 +24,7 @@ const s3_photo_prefix = 'photo';
 
 const projectName = `demo-dansing-robot`; 
 const bucketName = `storage-for-${projectName}-${accountId}-${region}`; 
-const domainName = 'https://dxt1m1ae24b28.cloudfront.net'
+const domainName = 'dxt1m1ae24b28.cloudfront.net'
 const claude3_sonnet = [
   {
     "bedrock_region": "us-west-2", // Oregon
