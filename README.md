@@ -32,6 +32,9 @@
 
 현재는 Interpreter(voice to text)는 terminal에서 직접 명령어를 설치하지만 추후 AWS IoT Greengrass (v2)를 이용하여 component로 자동설치를 수행합니다. 
 
+### Photo Booth
+
+Photo Booth에서는 Stable Diffusion 이미지를 생성합니다. 상세한 내용은 [photo-booth.md](./photo-booth.md)을 참조합니다.
 
 ### 실행결과
 
