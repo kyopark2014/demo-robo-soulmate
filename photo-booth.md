@@ -4,7 +4,7 @@ Photo Booth에서 방문자의 사진을 찍과 얼굴과 배경을 분리하여
 
 다음과 같은 과정으로 이미지가 생성됩니다.
 
-1) Booth의 Pad올 사진을 찍고 서버로 전송합니다.
+1) Booth의 Pad올 이용해 사진을 찍고 서버로 전송합니다.
 2) Rekognition을 통해 얼굴의 위치(bounding box)를 확인합니다.
 3) SageMaker Endpoint로 구성된 SAM을 이용하여 얼굴만 추출합니다.
 4) Bedrock의 Titan image generator를 이용해 새로운 이미지를 생성합니다.
