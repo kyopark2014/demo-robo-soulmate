@@ -69,7 +69,7 @@ HTTPS POST  https://dxt1m1ae24b28.cloudfront.net/photo
 
 #### 생성된 이미지
 
-이미지 해상되 및 배경작업은 진행 예정입니다.
+이미지 해상도 및 배경작업은 진행 예정입니다.
 
 ![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/ab11c2b3-39c7-431a-bdff-188b1641ef39)
 
