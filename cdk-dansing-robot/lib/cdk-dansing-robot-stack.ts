@@ -578,6 +578,21 @@ export class CdkDansingRobotStack extends cdk.Stack {
       description: 'The arn of lambda webchat.',
     }); 
 
+     // Lambda - photo generation
+     const lambdaPhoto = new lambda.DockerImageFunction(this, `lambda-photo-for-${projectName}`, {
+      description: 'lambda for Photo Generation',
+      functionName: `lambda-photo-for-${projectName}`,
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-photo')),
+      timeout: cdk.Duration.seconds(60),
+      role: roleLambda,
+      environment: {
+        s3_bucket: bucketName,
+        profile_of_LLMs:JSON.stringify(claude3_sonnet),
+        s3_photo_prefix: s3_photo_prefix,
+        path: 'https://'+distribution.domainName+'/',   
+      }
+    });     
+
     // lambda - provisioning
     const lambdaProvisioning = new lambda.Function(this, `lambda-provisioning-for-${projectName}`, {
       description: 'lambda to earn provisioning info',
@@ -726,6 +741,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     s3Bucket.grantReadWrite(lambdaGreeting);
 
     // Lambda - photo generation
+    /*
     const lambdaPhoto = new lambda.DockerImageFunction(this, `lambda-photo-for-${projectName}`, {
       description: 'lambda for Photo Generation',
       functionName: `lambda-photo-for-${projectName}`,
@@ -738,7 +754,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
         s3_photo_prefix: s3_photo_prefix,
         path: 'https://'+domainName+'/',   
       }
-    });     
+    });     */
   
     // POST method - photo
     // permission for sagemaker and rekognition
