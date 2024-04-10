@@ -24,7 +24,7 @@ const s3_photo_prefix = 'photo';
 
 const projectName = `demo-dansing-robot`; 
 const bucketName = `storage-for-${projectName}-${accountId}-${region}`; 
-
+const domainName = 'https://dxt1m1ae24b28.cloudfront.net'
 const claude3_sonnet = [
   {
     "bedrock_region": "us-west-2", // Oregon
@@ -736,7 +736,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
         s3_bucket: bucketName,
         profile_of_LLMs:JSON.stringify(claude3_sonnet),
         s3_photo_prefix: s3_photo_prefix,
-        path: 'https://'+distribution.domainName+'/',   
+        path: 'https://'+domainName+'/',   
       }
     });     
   
