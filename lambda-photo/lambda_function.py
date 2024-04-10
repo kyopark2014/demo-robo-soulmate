@@ -283,7 +283,7 @@ def lambda_handler(event, context):
     """
     
     # mask
-    ext = img_path.split('.')[-1]
+    ext = key.split('.')[-1]
     if ext == 'jpg':
         ext = 'jpeg'
     
