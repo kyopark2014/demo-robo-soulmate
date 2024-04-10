@@ -264,9 +264,13 @@ def lambda_handler(event, context):
     img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
     """
     
-    requestId = event["requestId"]       
-    bucket = event["bucket"]   
-    key = event["key"]   
+    jsonBody = json.loads(event['body'])
+    print('request body: ', json.dumps(jsonBody))
+    
+    requestId = jsonBody["requestId"]       
+    bucket = jsonBody["bucket"]   
+    key = jsonBody["key"]   
+    
     
     # img_path = f'./andy_portrait_2.jpg'  # for testing
     
