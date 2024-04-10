@@ -48,7 +48,7 @@ HTTPS POST  https://dxt1m1ae24b28.cloudfront.net/photo
 {
     "requestId": "b123456abc",
     "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
-    "key": "photo/sample-man.jpg"
+    "key": "photo/andy_portrait_2.jpg"
 }
 ```
 
@@ -56,9 +56,21 @@ HTTPS POST  https://dxt1m1ae24b28.cloudfront.net/photo
 
 ```java
 {
-    "url": "https://dxt1m1ae24b28.cloudfront.net/photo/photo_sample-man.jpg",
+    "url": "https://dxt1m1ae24b28.cloudfront.net/photo/photo_andy_portrait_2.jpg",
     "time_taken": "19.635620832443237"
 }
 ```
+
+생성된 이미지의 예는 아래와 같습니다.
+
+#### 원본이미지
+
+<img src="https://github.com/kyopark2014/demo-ai-dansing-robot/blob/main/photo-booth/andy_portrait_2.jpg" width="500">
+
+#### 생성된 이미지
+
+이미지 해상되 및 배경작업은 진행 예정입니다.
+
+![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/ab11c2b3-39c7-431a-bdff-188b1641ef39)
 
 
