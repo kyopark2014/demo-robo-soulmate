@@ -89,6 +89,9 @@ def show_faces(bucket, key):
         img = img.resize((width, height))
     """ 
     
+    
+    
+    """
     max_length = 512
     if width < height:
         width = int(max_length/height*width)
@@ -101,7 +104,10 @@ def show_faces(bucket, key):
     print(f"(new) width={width}, height={height}")
                 
     img = img.resize((width, height))
-
+    """
+    
+    img = img_resize(img)
+    
     buffer = BytesIO()
     img.save(buffer, format='jpeg', quality=100)
     val = buffer.getvalue()
@@ -351,7 +357,7 @@ def lambda_handler(event, context):
     
     # Output processing
     response_body = json.loads(response.get("body").read())
-    img_b64 = response_body["images"][0].decode()
+    img_b64 = response_body["images"][0]
     print(f"Output: {img_b64[0:80]}...")
     
     # save image to bucket
