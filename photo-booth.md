@@ -33,7 +33,7 @@ HTTPS POST https://dxt1m1ae24b28.cloudfront.net/upload
 }
 ````
 
-2) UploadURL로 HTTP PUT으로 파일을 전송합니다. [chat.js](./html/chat.js)의 "attachFile.addEventListener"를 참조하면 아래와 같습니다. 
+2) UploadURL로 HTTP PUT으로 파일을 전송합니다. [chat.js](./html/chat.js)의 "attachFile.addEventListener"를 참조하면 아래와 같습니다. 
 
 ```java
 var xmlHttp = new XMLHttpRequest();
