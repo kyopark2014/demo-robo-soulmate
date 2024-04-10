@@ -735,7 +735,8 @@ export class CdkDansingRobotStack extends cdk.Stack {
       environment: {
         s3_bucket: bucketName,
         profile_of_LLMs:JSON.stringify(claude3_sonnet),
-        s3_photo_prefix: s3_photo_prefix
+        s3_photo_prefix: s3_photo_prefix,
+        path: 'https://'+distribution.domainName+'/',   
       }
     });     
   

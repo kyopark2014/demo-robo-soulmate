@@ -15,9 +15,8 @@ import traceback
 
 s3_bucket = os.environ.get('s3_bucket') # bucket name
 s3_photo_prefix = os.environ.get('s3_photo_prefix')
+path = os.environ.get('path')
 
-s3_client = boto3.client('s3')   
-   
 selected_LLM = 0
 profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
 modelId = "amazon.titan-image-generator-v1"
@@ -29,7 +28,8 @@ cfgScale = 7.5
 # width = 768
 
 smr_client = boto3.client("sagemaker-runtime")
-
+s3_client = boto3.client('s3')   
+  
 def get_client(profile_of_LLMs, selected_LLM):
     profile = profile_of_LLMs[selected_LLM]
     bedrock_region =  profile['bedrock_region']
@@ -372,7 +372,9 @@ def lambda_handler(event, context):
     end_time_for_generation = time.time()
     time_for_photo_generation = end_time_for_generation - start_time_for_generation
     
-    url = ""
+    s3_file_name = object_key[object_key.rfind('/')+1:len(object_key)]            
+    url = path+s3_photo_prefix+parse.quote(s3_file_name)
+    
     return {
         "isBase64Encoded": False,
         'statusCode': 200,
