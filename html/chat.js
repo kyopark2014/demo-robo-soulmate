@@ -360,6 +360,7 @@ let redirectTm; // timer for redirection
 let remainingRedirectedMessage;  // merge two consecutive messages in 2 seconds
 let messageTransfered = new HashMap();
 let messageMemory = new HashMap();   // duplication check caused by pubsub in the case of abnormal disconnection
+let scoreValue = new HashMap();   // duplication check for score
 
 function requestReDirectMessage(requestId, query, userId, requestTime, conversationType) {  
     console.log('--> send the redirected message');
@@ -492,7 +493,11 @@ function voiceConnect(voiceEndpoint, type) {
                         }
                         
                         console.log('get score for ', query);
-                        getScore(userId, requestId, query);  
+                        if(scoreValue.get(requestId)==undefined) { // check duplication
+                            getScore(userId, requestId, query); 
+                            scoreValue.put(requestId, true);
+                        }
+                         
                     }
                     else {  
                         console.log('ignore the duplicated message: ', query);
