@@ -251,9 +251,6 @@ def lambda_handler(event, context):
     img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
     """
     
-    # creating greeting message
-    boto3_bedrock = get_client(profile_of_LLMs, selected_LLM)    
-    
     img_path = f'./andy_portrait_2.jpg'  # for testing
     
     outpaint_prompt = 'forrest'
@@ -302,6 +299,9 @@ def lambda_handler(event, context):
             "seed": seed
         }
     })
+    
+    # creating greeting message
+    boto3_bedrock = get_client(profile_of_LLMs, selected_LLM)    
     
     response = boto3_bedrock.invoke_model(
         body=body,
