@@ -723,7 +723,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     });
 
     const photo = api.root.addResource("photo");
-    greeting.addMethod('POST', new apiGateway.LambdaIntegration(lambdaPhoto, {
+    photo.addMethod('POST', new apiGateway.LambdaIntegration(lambdaPhoto, {
         passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
         credentialsRole: role,
         integrationResponses: [{
