@@ -13,6 +13,7 @@ import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as elasticache from 'aws-cdk-lib/aws-elasticache';
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import { Role, ManagedPolicy, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import * as rekognition from 'aws-cdk-lib/aws-rekognition';
 
 const region = process.env.CDK_DEFAULT_REGION;    
 const accountId = process.env.CDK_DEFAULT_ACCOUNT
@@ -242,7 +243,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     roleLambda.addManagedPolicy({
       managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
     });
-    const BedrockPolicy = new iam.PolicyStatement({  // policy statement for sagemaker
+    const BedrockPolicy = new iam.PolicyStatement({  // policy statement for bedrock
       resources: ['*'],
       actions: ['bedrock:*'],
     });        
@@ -696,6 +697,66 @@ export class CdkDansingRobotStack extends cdk.Stack {
         viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });
     s3Bucket.grantReadWrite(lambdaGreeting);
+
+    // Lambda - photo generation
+    const lambdaPhoto = new lambda.DockerImageFunction(this, `lambda-photo-for-${projectName}`, {
+      description: 'lambda for Photo Generation',
+      functionName: `lambda-photo-for-${projectName}`,
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-photo')),
+      timeout: cdk.Duration.seconds(60),
+      role: roleLambda,
+      environment: {
+        s3_bucket: bucketName,
+        profile_of_LLMs:JSON.stringify(claude3_sonnet),
+      }
+    });     
+  
+    // POST method - photo
+    // permission for sagemaker and rekognition
+    const SageMakerPolicy = new iam.PolicyStatement({ 
+      actions: ['sagemaker:*'],
+      resources: ['*'],
+    });
+    const RekognitionPolicy = new iam.PolicyStatement({
+      actions: ['rekognition:*'],
+      resources: ['*'],
+    });
+
+    const photo = api.root.addResource("photo");
+    greeting.addMethod('POST', new apiGateway.LambdaIntegration(lambdaPhoto, {
+        passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+        credentialsRole: role,
+        integrationResponses: [{
+            statusCode: '200',
+        }],
+        proxy: true,
+    }), {
+        methodResponses: [
+            {
+                statusCode: '200',
+                responseModels: {
+                    'application/json': apiGateway.Model.EMPTY_MODEL,
+                },
+            }
+        ]
+    });
+    
+    distribution.addBehavior("/photo", new origins.RestApiOrigin(api), {
+        cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+        allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
+    s3Bucket.grantReadWrite(lambdaPhoto);
+    lambdaPhoto.role?.attachInlinePolicy( // add sagemaker policy
+      new iam.Policy(this, 'sagemaker-policy-for-photo', {
+        statements: [SageMakerPolicy],
+      }),
+    );
+    lambdaPhoto.role?.attachInlinePolicy( // add rekognition policy
+      new iam.Policy(this, 'rekognition-policy-for-photo', {
+        statements: [RekognitionPolicy],
+      }),
+    );
 
     // Lambda - score
     const lambdaScore = new lambda.DockerImageFunction(this, `lambda-score-for-${projectName}`, {
