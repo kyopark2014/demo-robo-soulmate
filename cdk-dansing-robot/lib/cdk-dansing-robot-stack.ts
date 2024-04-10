@@ -20,6 +20,8 @@ const accountId = process.env.CDK_DEFAULT_ACCOUNT
 const debug = false;
 const stage = 'dev';
 const s3_prefix = 'docs';
+const s3_photo_prefix = 'photo';
+
 const projectName = `demo-dansing-robot`; 
 const bucketName = `storage-for-${projectName}-${accountId}-${region}`; 
 
@@ -305,7 +307,8 @@ export class CdkDansingRobotStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(10),
       environment: {
         bucketName: s3Bucket.bucketName,
-        s3_prefix:  s3_prefix
+        s3_prefix: s3_prefix,
+        s3_photo_prefix: s3_photo_prefix
       }      
     });
     s3Bucket.grantReadWrite(lambdaUpload);
@@ -708,6 +711,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
       environment: {
         s3_bucket: bucketName,
         profile_of_LLMs:JSON.stringify(claude3_sonnet),
+        s3_photo_prefix: s3_photo_prefix
       }
     });     
   

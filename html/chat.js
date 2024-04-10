@@ -1149,6 +1149,7 @@ attachFile.addEventListener('click', function(){
             };
         
             var requestObj = {
+                "type": "doc",
                 "filename": filename,
                 "contentType": contentType,
             }

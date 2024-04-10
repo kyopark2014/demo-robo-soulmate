@@ -4,7 +4,7 @@ const s3 = new aws.S3();
 
 const bucketName = process.env.bucketName;
 const s3_prefix = process.env.s3_prefix;
-
+const s3_photo_prefix = process.env.s3_photo_prefix;
 const URL_EXPIRATION_SECONDS = 300;
 
 exports.handler = async (event, context) => {
@@ -13,6 +13,15 @@ exports.handler = async (event, context) => {
         
     let filename = event['filename'];
     let contentType = event['contentType'];
+    let type = event['type'];
+
+    let key;
+    if (type =='photo') {
+        key = s3_photo_prefix+'/'+filename
+    }
+    else {
+        key = s3_prefix+'/'+filename
+    } 
 
     const s3Params = {
         Bucket: bucketName,
@@ -29,7 +38,7 @@ exports.handler = async (event, context) => {
         statusCode: 200,
         body: JSON.stringify({
             Bucket: bucketName,
-            Key: s3_prefix+'/'+filename,
+            Key: key,
             Expires: URL_EXPIRATION_SECONDS,
             ContentType: contentType,
             UploadURL: uploadURL

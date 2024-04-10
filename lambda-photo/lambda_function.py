@@ -13,10 +13,10 @@ from io import BytesIO
 from urllib import parse
 import traceback
 
-bucket = os.environ.get('s3_bucket') # bucket name
-photo_prefix = 'photo/'
+s3_bucket = os.environ.get('s3_bucket') # bucket name
+s3_photo_prefix = os.environ.get('s3_photo_prefix')
 
-s3 = boto3.client('s3')
+s3_client = boto3.client('s3')   
    
 selected_LLM = 0
 profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
@@ -65,23 +65,36 @@ def img_resize(image):
     image = image.resize((imgWidth, imgHeight), resample=0)
     return image
 
-def show_faces(img_path, target_region='us-west-2'):
+def show_faces(bucket, key):
     client = boto3_runtime(
         service_name='rekognition',
-        target_region=target_region
     )
-
-    image = Image.open(img_path).convert('RGB')
-    image = img_resize(image)
+                          
+    image_obj = s3_client.get_object(Bucket=bucket, Key=key)
+    image_content = image_obj['Body'].read()
+    img = Image.open(BytesIO(image_content))
+    
+    width, height = img.size 
+    print(f"width: {width}, height: {height}, size: {width*height}")
+    
+    isResized = False
+    while(width > 512):
+        width = int(width/2)
+        height = int(height/2)
+        isResized = True
+        print(f"width: {width}, height: {height}, size: {width*height}")
+                
+    if isResized:
+        img = img.resize((width, height))
 
     buffer = BytesIO()
-    image.save(buffer, format='jpeg', quality=100)
+    img.save(buffer, format='jpeg', quality=100)
     val = buffer.getvalue()
 
     response = client.detect_faces(Image={'Bytes': val},Attributes=['ALL'])
 
-    imgWidth, imgHeight = image.size       
-    ori_image = copy.deepcopy(image)
+    imgWidth, imgHeight = img.size       
+    ori_image = copy.deepcopy(img)
 
     for faceDetail in response['FaceDetails']:
         print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
@@ -226,16 +239,16 @@ def encode_image(image, formats="PNG"):
 def lambda_handler(event, context):
     print(event)
     
-    image_content = event["body"]    
-    
     start_time_for_generation = time.time()
+    
+    """
+    image_content = event["body"]    
     
     img = Image.open(BytesIO(base64.b64decode(image_content)))
     
     width, height = img.size 
     print(f"width: {width}, height: {height}, size: {width*height}")
     
-    """
     isResized = False
     while(width*height > 5242880):                    
         width = int(width/2)
@@ -251,17 +264,23 @@ def lambda_handler(event, context):
     img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
     """
     
-    img_path = f'./andy_portrait_2.jpg'  # for testing
+    requestId = event["requestId"]       
+    bucket = event["bucket"]   
+    key = event["key"]   
+    
+    # img_path = f'./andy_portrait_2.jpg'  # for testing
     
     outpaint_prompt = 'forrest'
     target_label = None
     
     if target_label == None:
-        object_image, width, height, f_left, f_top, f_width, f_height, human_res = show_faces(img_path) ## detect_faces
+        object_image, width, height, f_left, f_top, f_width, f_height, human_res = show_faces(bucket, key) ## detect_faces
         text_prompt =  f'a human with a {outpaint_prompt} background'
+    """
     else:
-        object_image, width, height, f_left, f_top, f_width, f_height, color, human_res = show_labels(img_path, target_label=target_label)
+        object_image, width, height, f_left, f_top, f_width, f_height, color, human_res = show_labels(bucket, key, target_label=target_label)
         text_prompt =  f'a {target_label} with a {outpaint_prompt} and {color} background'
+    """
     
     # mask
     ext = img_path.split('.')[-1]
