@@ -258,10 +258,7 @@ def isKorean(text):
         print('Not Korean: ', word_kor)
         return False
 
-def general_conversation(chat, query):
-    global time_for_inference, history_length, token_counter_history    
-    time_for_inference = history_length = token_counter_history = 0
-    
+def general_conversation(chat, query):   
     system = (
         "다음은 Human과 Assistant의 친근한 대화입니다. 빠른 대화를 위해 답변은 짧고 정확하게 핵심만 얘기합니다. 필요시 2문장으로 답변할 수 있으나 가능한 1문장으로 답변합니다."
     )    
@@ -296,9 +293,6 @@ def general_conversation(chat, query):
     return msg
 
 def ISTJ(chat, query):
-    global time_for_inference, history_length, token_counter_history    
-    time_for_inference = history_length = token_counter_history = 0
-    
     system = ( #INFJ
         """다음은 Human과 Assistant의 대화야. Assistant의 MBTI는 ISTJ이고, 아래와 같은 표현을 잘 사용해. Asistant는 동의를 잘하는 성격이고, 말투가 조심스러워. 답변은 한문장으로 해줘.
         
@@ -348,13 +342,10 @@ def ISTJ(chat, query):
     return msg
 
 def ESFP(chat, query):
-    global time_for_inference, history_length, token_counter_history    
-    time_for_inference = history_length = token_counter_history = 0
-    
     system = ( #ESFP
         """ 
         Assistant의 MBTI는 ESFP이고 너가 입력으로 받은 사람의 말을 들었을때 기분이 좋은지 나쁜지에 따라 5점부터 1점까지 채점하는 AI 란다.
-        5점이 가장 긍정이고 1점이 가장 부정인 점수야. 계산한 점수는 <score> 태그 안에 넣어서 출력해줘. 그리고 사람의 말에 대한 반응도 20 토큰 이내로 대답해줘.
+        그리고 사람의 말에 대한 반응도 20 토큰 이내로 대답해줘.
         """
     )
     
