@@ -112,7 +112,7 @@ def lambda_handler(event, context):
                 if userId in isConnected:
                     start_redis_pubsub(userId)
                 else:
-                    isConnected[userId] = True                
+                    isConnected.append(userId)
     return {
         "isBase64Encoded": False,
         'statusCode': 200,
