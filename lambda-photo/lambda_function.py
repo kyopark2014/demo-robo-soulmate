@@ -351,13 +351,14 @@ def lambda_handler(event, context):
     
     # Output processing
     response_body = json.loads(response.get("body").read())
-    img_b64 = response_body["images"][0]
+    img_b64 = response_body["images"][0].decode()
     print(f"Output: {img_b64[0:80]}...")
     
     # save image to bucket
     # id = uuid.uuid1()
     
     object_key = f'{s3_photo_prefix}/photo_{requestId}.{ext}'  # MP3 파일 경로
+    #img_base64 = base64.b64encode(img_b64).decode()
     
     # upload
     response = s3_client.put_object(
