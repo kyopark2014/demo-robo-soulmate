@@ -52,3 +52,13 @@ Controller에 전달되는 정보는 아래와 같습니다.
             "seq": seq
         })
 ```
+
+MQTT를 이용해 Robo에 전달되는 값은 아래와 같습니다.
+
+1) 사용자가 입력한 메시지는 Robot에서 Polly를 이용해 재생합니다.
+   
+![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/05619904-8b6a-4c65-b344-b793ee5fd3fa)
+
+2) 리엑션 점수에 따라 Robot은 아래와 같은 동작을 수행합니다.
+   
+![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/9f147bc2-069a-4db7-a00a-b8d92cd4aa54)
