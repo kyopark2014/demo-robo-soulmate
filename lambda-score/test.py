@@ -1,6 +1,7 @@
 import numpy as np
 import time
 from lambda_function import *
+import pprint
 
 def load_event():
     json_data = {
@@ -36,7 +37,8 @@ def main():
     # run
     _test_extract_text_from_tags()
     results = lambda_handler(event, "")
-    
+    pprint.pprint(results)
+
     # results
     print(results['statusCode'])
     print(results['body'])
