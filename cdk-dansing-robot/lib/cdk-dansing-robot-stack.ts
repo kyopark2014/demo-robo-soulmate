@@ -62,16 +62,6 @@ const profile_of_Image_LLMs = [
     "bedrock_region": "us-east-1", // N.Virginia
     "model_type": "titan",
     "model_id": "amazon.titan-image-generator-v1"
-  },
-  {
-    "bedrock_region": "ap-southeast-2", // Sydney
-    "model_type": "titan",
-    "model_id": "amazon.titan-image-generator-v1"
-  },
-  {
-    "bedrock_region": "eu-west-3", // Paris
-    "model_type": "titan",
-    "model_id": "amazon.titan-image-generator-v1"
   }
 ];
 
