@@ -21,6 +21,7 @@ const debug = false;
 const stage = 'dev';
 const s3_prefix = 'docs';
 const s3_photo_prefix = 'photo';
+const endpoint_dashboard = "";
 
 const projectName = `demo-dansing-robot`; 
 const bucketName = `storage-for-${projectName}-${accountId}-${region}`; 
@@ -848,6 +849,46 @@ export class CdkDansingRobotStack extends cdk.Stack {
         statements: [ioTPolicy],
       }),
     ); 
+
+    // lambda - score-gesture
+    const lambdaScoreGesture = new lambda.Function(this, `lambda-score-gesture-for-${projectName}`, {
+      description: 'lambda to earn score of gesture',
+      functionName: `lambda-score-gesture-${projectName}`,
+      handler: 'lambda_function.lambda_handler',
+      runtime: lambda.Runtime.PYTHON_3_11,
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambda-score-gesture')),
+      timeout: cdk.Duration.seconds(30),
+      environment: {
+        endpoint_dashboard: endpoint_dashboard,
+      }
+    });
+
+    // POST method - provisioning
+    const scorGesture = api.root.addResource("score_gesture");
+    scorGesture.addMethod('POST', new apiGateway.LambdaIntegration(lambdaScoreGesture, {
+      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+      credentialsRole: role,
+      integrationResponses: [{
+        statusCode: '200',
+      }], 
+      proxy:false, 
+    }), {
+      methodResponses: [  
+        {
+          statusCode: '200',
+          responseModels: {
+            'application/json': apiGateway.Model.EMPTY_MODEL,
+          }, 
+        }
+      ]
+    }); 
+
+    // cloudfront setting for score_gesture
+    distribution.addBehavior("/score_gesture", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
 
     const lambdaController = new lambda.Function(this, `lambda-controller-for-${projectName}`, {
       description: 'lambda for robot controller',
