@@ -302,6 +302,8 @@ def lambda_handler(event, context):
         outpaint_prompt = 'forrest'
         text_prompt = f'a human with a {outpaint_prompt[0]} background'
         
+        boto3_bedrock = get_client(profile_of_LLMs, selected_LLM)
+        
         img_b64 = generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt)
                                 
         # upload
