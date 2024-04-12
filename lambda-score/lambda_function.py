@@ -186,7 +186,7 @@ def lambda_handler(event, context):
     # ToDo
     # 스코어 보드 호출
     function_name = "lambda-score-update-for-demo-dansing-robot"
-    lambda_region = profile['bedrock_region']
+    lambda_region = 'ap-northeast-2'
     try:
         lambda_client = get_lambda_client(region=lambda_region)
         payload = {
