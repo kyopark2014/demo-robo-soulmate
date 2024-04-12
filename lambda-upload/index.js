@@ -9,7 +9,7 @@ const URL_EXPIRATION_SECONDS = 300;
 
 exports.handler = async (event, context) => {
     //console.log('## ENVIRONMENT VARIABLES: ' + JSON.stringify(process.env));
-    //console.log('## EVENT: ' + JSON.stringify(event));
+    console.log('## EVENT: ' + JSON.stringify(event));
         
     let filename = event['filename'];
     let contentType = event['contentType'];
