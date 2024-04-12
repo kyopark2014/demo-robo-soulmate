@@ -4,6 +4,8 @@
 
 ## Gesture 전달
 
+[lambda-score-gesture](./lambda-score-gesture/lambda_function.py)로 '/socre_gesture' API로 gesture를 전달합니다.
+
 ```java
 POST https://dxt1m1ae24b28.cloudfront.net/score_gesture
 {
@@ -13,3 +15,10 @@ POST https://dxt1m1ae24b28.cloudfront.net/score_gesture
   "text": "heart"
 }
 ```
+
+## Gesture Score의 계산식
+
+Guesture의 기본점수 및 항목별 점수는 아래와 같습니다. (To-Do)
+
+## Gesture에 대한 응답
+
