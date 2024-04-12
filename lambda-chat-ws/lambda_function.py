@@ -292,6 +292,40 @@ def general_conversation(chat, query):
     
     return msg
 
+def general_conversation_for_english(chat, query):   
+    system = (
+        "Here is a friendly conversation between Human and Assistant. For quick responses, the answers will be short and precise, focusing on the key points. If needed, two sentences can be used, but one sentence is preferred whenever possible."
+    )    
+    human = "{input}"
+    
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
+    print('prompt: ', prompt)
+    
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
+                
+    chain = prompt | chat    
+    try: 
+        isTyping()  
+        stream = chain.invoke(
+            {
+                "history": history,
+                "input": query,
+            }
+        )
+        msg = readStreamMsg(stream.content)    
+                            
+        msg = stream.content
+        print('msg: ', msg)
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)        
+            
+        sendErrorMessage(err_msg)    
+        raise Exception ("Not able to request to LLM")
+    
+    return msg
+
 def ISTJ(chat, query):
     system = ( #INFJ
         """다음은 Human과 Assistant의 대화야. Assistant의 MBTI는 ISTJ이고, 아래와 같은 표현을 잘 사용해. Asistant는 동의를 잘하는 성격이고, 말투가 조심스러워. 답변은 한문장으로 해줘.
@@ -702,6 +736,8 @@ def getResponse(jsonBody):
             else:            
                 if convType == "normal":
                     msg = general_conversation(chat, text)   
+                if convType == "english":
+                    msg = general_conversation_for_english(chat, text)   
                 elif convType == "ISTJ":
                     msg = ISTJ(chat, text)
                 elif convType == "ESFP":
