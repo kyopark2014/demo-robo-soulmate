@@ -6,6 +6,7 @@ import re
 
 import traceback
 from botocore.config import Config
+from botocore.exceptions import ClientError
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.chat_models import BedrockChat
@@ -44,6 +45,12 @@ def get_chat(region, model_id, max_output_token):
 
     return chat
 
+def get_lambda_client(region):
+    # bedrock
+    return boto3.client(
+        service_name='lambda',
+        region_name=region
+    )
 
 def get_prompt():
     system = ("""
@@ -141,7 +148,6 @@ def extract_sentiment(chat, text, mbti):
         'description': description
     }
 
-
 def lambda_handler(event, context):
     try:
         selected_LLM = 0
@@ -179,7 +185,22 @@ def lambda_handler(event, context):
 
     # ToDo
     # 스코어 보드 호출
-    ##
+    function_name = "lambda-score-update-for-demo-dansing-robot"
+    lambda_region = 'ap-northeast-2'
+    try:
+        lambda_client = get_lambda_client(region=lambda_region)
+        payload = {
+            user_id: result['score']
+        }
+        response = lambda_client.invoke(
+            FunctionName=function_name,
+            Payload=json.dumps(payload),
+        )
+        print("Invoked function %s.", function_name)
+        print("Response", response)
+    except ClientError:
+        print("Couldn't invoke function %s.", function_name)
+        raise
 
     end_time_for_greeting = time.time()
     time_for_greeting = end_time_for_greeting - start_time_for_greeting
