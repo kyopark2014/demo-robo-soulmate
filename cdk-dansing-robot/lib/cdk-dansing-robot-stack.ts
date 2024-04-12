@@ -743,7 +743,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
       description: 'lambda for Photo Generation',
       functionName: `lambda-photo-for-${projectName}`,
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-photo')),
-      timeout: cdk.Duration.seconds(60),
+      timeout: cdk.Duration.seconds(300),
       role: roleLambda,
       environment: {
         s3_bucket: bucketName,
