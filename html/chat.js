@@ -958,7 +958,7 @@ function getScore(userId, requestId, text) {
     };
 
     let mbti;
-    if(conversationType=='normal' || conversationType=='translation') mbti = 'ISTP';
+    if(conversationType=='normal' || conversationType=='english' || conversationType=='translation') mbti = 'ISTP';
     else mbti = conversationType;
     console.log('mbti: ', mbti);
 
