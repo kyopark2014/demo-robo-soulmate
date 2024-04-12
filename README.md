@@ -25,6 +25,9 @@
 
 Photo Booth에서는 Stable Diffusion 이미지를 생성합니다. 상세한 내용은 [photo-booth.md](./photo-booth.md)을 참조합니다.
 
+### Gesture에 대한 점수
+
+방문자의 Gesture에 대한 응답은 [gesture-score.md](./gesture-score.md)에 따라 처리합니다.
 
 ## 데모 준비
 
