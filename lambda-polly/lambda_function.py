@@ -7,6 +7,7 @@ import base64
 polly_client = boto3.client('polly')
 
 voiceId = os.environ.get('voiceId')
+speed = os.environ.get('speed')
 
 def lambda_handler(event, context):
     print('event: ', event)
@@ -16,9 +17,13 @@ def lambda_handler(event, context):
     print('voiceId: ', voiceId)
     if voiceId == "": 
         voiceId = event['voiceId']
+    if speed == "": 
+        speed = event['speed']
         
     langCode = event['langCode']
     speed = event['speed']
+    
+    print(f'voiceId: {voiceId}, speed: {speed}')
     
     ssml_text = f'<speak><prosody rate="{speed}%">{text}</prosody></speak>'
     
