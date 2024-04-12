@@ -5,22 +5,14 @@ import os
 import base64
 
 polly_client = boto3.client('polly')
-voiceId = os.environ.get('voiceId')
-
-speed = os.environ.get('speed')
 
 def lambda_handler(event, context):    
     print('event: ', event)
     global voiceId, speed
     
-    text = event['text']
-    
-    print('voiceId: ', voiceId)
-    if voiceId == None: 
-        voiceId = event['voiceId']
-    if speed == None: 
-        speed = event['speed']
-        
+    text = event['text']    
+    voiceId = event['voiceId']
+    speed = event['speed']        
     langCode = event['langCode']
     speed = event['speed']
     
