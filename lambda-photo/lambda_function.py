@@ -376,6 +376,8 @@ def lambda_handler(event, context):
                 
         end_time_for_generation = time.time()
         time_for_photo_generation = end_time_for_generation - start_time_for_generation
+        
+        print('generated_urls: ', json.dumps(generated_urls))
             
         return {
             "isBase64Encoded": False,
