@@ -16,7 +16,7 @@ exports.handler = async (event, context) => {
     let type = event['type'];
 
     let key;
-    if (type =='photo') {
+    if (type == 'photo') {
         key = s3_photo_prefix+'/'+filename
     }
     else {
@@ -25,7 +25,7 @@ exports.handler = async (event, context) => {
 
     const s3Params = {
         Bucket: bucketName,
-        Key: s3_prefix+'/'+filename,
+        Key: key,
         Expires: URL_EXPIRATION_SECONDS,
         ContentType: contentType,
     };
