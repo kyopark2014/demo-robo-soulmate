@@ -52,12 +52,13 @@ POST  https://dxt1m1ae24b28.cloudfront.net/photo
 }
 ```
 
-이때의 결과는 아래와 같습니다. 업로드한 파일의 이름에 prefix인 "photo_"를 추가하여 새로운 이름이 생성되었습니다. 생성되는 파일이 여러개일 경우에 "_1", "_2"와 같이 추가됩니다.
+이때의 결과는 아래와 같습니다. 업로드한 파일의 이름에 prefix인 "photo_"를 추가하여 새로운 이름이 생성되었습니다. 생성되는 파일이 여러개일 경우에 "_1", "_2", "_3"와 같이 추가됩니다. 
 
 ```java
 {
-    "url": "https://dxt1m1ae24b28.cloudfront.net/photo/photo_andy_portrait_2.jpg",
-    "time_taken": "19.635620832443237"
+    "url_original": "https://dxt1m1ae24b28.cloudfront.net/photo/andy_portrait_2.jpg",
+    "url_generated": "[\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_1.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_2.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_3.jpeg\"]",
+    "time_taken": "26.989280939102173"
 }
 ```
 
@@ -69,8 +70,13 @@ POST  https://dxt1m1ae24b28.cloudfront.net/photo
 
 #### 생성된 이미지
 
-생성된 이미지 해상도 조정 및 배경에 대한 최적화 작업은 진행중입니다.
-
-![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/ab11c2b3-39c7-431a-bdff-188b1641ef39)
+현재 Titan image generator를 사용할 수 있는 리전이 Virginia와 Oregon이라서 3개의 이미지만 생성하였습니다.
 
 
+![photo_86db851a-f8dd-11ee-872f-c90482ae9123_1](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/2ee958f9-8292-4147-8cee-5f2a51920850)
+
+![photo_86db851a-f8dd-11ee-872f-c90482ae9123_2](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/c2b3dd10-fb01-47ef-9586-24d581779d21)
+
+![photo_86db851a-f8dd-11ee-872f-c90482ae9123_3](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/770a9d66-b054-49a7-8ff7-aaaea6d1155b)
+
+![photo_86db851a-f8dd-11ee-872f-c90482ae9123_4](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/a0c6e6b3-08d8-493d-a4cc-1e019ffa030a)
