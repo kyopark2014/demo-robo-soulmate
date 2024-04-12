@@ -329,15 +329,12 @@ def lambda_handler(event, context):
         if selected_LLM == len(profile_of_Image_LLMs):
             selected_LLM = 0
         
-        return {
-            "isBase64Encoded": False,
-            'statusCode': 200,
-            'body': json.dumps({            
+        result = {            
                 "url_original": url_original,
                 "url_generated": url_generated,
                 "time_taken": str(time_for_photo_generation)
-            })
         }
+        print('result: ', result)
         
     else: # multiple (k)
         generated_urls = []    
@@ -386,8 +383,8 @@ def lambda_handler(event, context):
         }
         print('result: ', result)
         
-        return {
-            "isBase64Encoded": False,
-            'statusCode': 200,
-            'body': json.dumps(result)
-        }
+    return {
+        "isBase64Encoded": False,
+        'statusCode': 200,
+        'body': json.dumps(result)
+    }
