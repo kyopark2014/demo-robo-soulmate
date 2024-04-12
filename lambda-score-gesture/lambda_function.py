@@ -5,29 +5,30 @@ import os
 endpoint_dashboard = os.environ.get('endpoint_dashboard')
 
 def lambda_handler(event, context):
-    # print('event: ', event)
+    print('event: ', event)
     
-    body = event["body"]
-    jsonBody = json.loads(body)
-
-    user_id = jsonBody["userId"]
-    request_id = jsonBody["requestId"]
-    type = jsonBody["type"]
-    text = jsonBody["text"]
+    userId = event["userId"]
+    requestId = event["requestId"]
+    type = event["type"]
+    text = event["text"]
     
     # To-Do: Get Score
     # send the score to the dashboard    
-    if text:
-        score = 5
-    else:
-        score = 1    
+    if type=='gesture':
+        if text == "heart":
+            score = 5
+        else:
+            score = 1    
     print('score: ', score)
     
     # To-do: Push the text for the last message
     
     return {
+        "isBase64Encoded": False,
         'statusCode': 200,
-        'info': json.dumps({
-            'score': score
+        'body': json.dumps({        
+            "userId": userId,
+            "requestId": requestId,
+            "score": score
         })
     }
