@@ -257,6 +257,8 @@ def parallel_process(conn, boto3_bedrock, object_img, mask_img, text_prompt, obj
     conn.close()
                     
 def lambda_handler(event, context):
+    global selected_LLM
+        
     print(event)
     
     start_time_for_generation = time.time()
