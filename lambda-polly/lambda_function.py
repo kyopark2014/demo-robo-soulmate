@@ -7,6 +7,8 @@ import base64
 polly_client = boto3.client('polly')
 
 voiceId = os.environ.get('voiceId')
+print('voiceId: ', voiceId)
+
 speed = os.environ.get('speed')
 
 def lambda_handler(event, context):
