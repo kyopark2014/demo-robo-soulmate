@@ -6,36 +6,29 @@ import base64
 import boto3
 import uuid
 import json
-import traceback
-import copy    
 
 from botocore.config import Config
 from PIL import Image
 from io import BytesIO
 from urllib import parse
-from multiprocessing import Process, Pipe
+import traceback
 
 s3_bucket = os.environ.get('s3_bucket') # bucket name
 s3_photo_prefix = os.environ.get('s3_photo_prefix')
 path = os.environ.get('path')
+
+selected_LLM = 0
+profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
 modelId = "amazon.titan-image-generator-v1"
 endpoint_name = 'sam-endpoint-2024-04-10-01-35-30'
-
-profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
-selected_LLM = 0
 
 seed = 43
 cfgScale = 7.5
 # height = 1152
 # width = 768
 
-enableParallel = False
-k = 4
-outpaint_prompt = {'forrest', 'sea', 'mount', 'desert'}
-
 smr_client = boto3.client("sagemaker-runtime")
 s3_client = boto3.client('s3')   
-rekognition_client = boto3.client('rekognition')
   
 def get_client(profile_of_LLMs, selected_LLM):
     profile = profile_of_LLMs[selected_LLM]
@@ -72,7 +65,11 @@ def img_resize(image):
     image = image.resize((imgWidth, imgHeight), resample=0)
     return image
 
-def show_faces(bucket, key):                          
+def show_faces(bucket, key):
+    client = boto3_runtime(
+        service_name='rekognition',
+    )
+                          
     image_obj = s3_client.get_object(Bucket=bucket, Key=key)
     image_content = image_obj['Body'].read()
     img = Image.open(BytesIO(image_content))
@@ -80,13 +77,42 @@ def show_faces(bucket, key):
     width, height = img.size 
     print(f"(original) width: {width}, height: {height}, size: {width*height}")
     
+    """
+    isResized = False
+    while(width > 512):
+        width = int(width/2)
+        height = int(height/2)
+        isResized = True
+        print(f"width: {width}, height: {height}, size: {width*height}")
+        
+    if isResized:
+        img = img.resize((width, height))
+    """ 
+    
+    
+    
+    """
+    max_length = 512
+    if width < height:
+        width = int(max_length/height*width)
+        width = width-width%64
+        height = max_length
+    else:
+        height = int(max_length/width*height)
+        height = height-height%64
+        width = max_length 
+    print(f"(new) width={width}, height={height}")
+                
+    img = img.resize((width, height))
+    """
+    
     img = img_resize(img)
     
     buffer = BytesIO()
     img.save(buffer, format='jpeg', quality=100)
     val = buffer.getvalue()
 
-    response = rekognition_client.detect_faces(Image={'Bytes': val},Attributes=['ALL'])
+    response = client.detect_faces(Image={'Bytes': val},Attributes=['ALL'])
 
     imgWidth, imgHeight = img.size       
     ori_image = copy.deepcopy(img)
@@ -109,7 +135,35 @@ def show_faces(bucket, key):
 
     return ori_image, imgWidth, imgHeight, int(left), int(top), int(width), int(height), response
 
-def show_labels(img_path, target_label=None):
+def boto3_runtime(service_name, target_region=boto3.Session().region_name):
+    session_kwargs = {"region_name": target_region}
+    client_kwargs = {**session_kwargs}
+
+    retry_config = Config(
+        region_name=target_region,
+        retries={
+            "max_attempts": 10,
+            "mode": "standard",
+        },
+    )
+
+    session = boto3.Session(**session_kwargs)
+
+    boto3_runtime = session.client(
+        service_name=service_name,
+        config=retry_config,
+        **client_kwargs
+    )
+    
+    return boto3_runtime
+    
+import copy    
+def show_labels(img_path, target_label=None, target_region='us-west-2'):
+    client = boto3_runtime(
+        service_name='rekognition',
+        target_region=target_region
+    )
+    
     if target_label is None:
         Settings = {"GeneralLabels": {"LabelInclusionFilters":[]},"ImageProperties": {"MaxDominantColors":1}}
         print(f"target_label_None : {target_label}")
@@ -126,7 +180,7 @@ def show_labels(img_path, target_label=None):
     image.save(buffer, format='jpeg', quality=100)
     val = buffer.getvalue()
     
-    response = rekognition_client.detect_labels(Image={'Bytes': val},
+    response = client.detect_labels(Image={'Bytes': val},
         MaxLabels=15,
         MinConfidence=0.7,
         # Uncomment to use image properties and filtration settings
@@ -202,8 +256,77 @@ def encode_image(image, formats="PNG"):
     image.save(buffer, format=formats)
     img_str = base64.b64encode(buffer.getvalue())
     return img_str
+        
+def lambda_handler(event, context):
+    print(event)
+    
+    start_time_for_generation = time.time()
+    
+    """
+    image_content = event["body"]    
+    
+    img = Image.open(BytesIO(base64.b64decode(image_content)))
+    
+    width, height = img.size 
+    print(f"width: {width}, height: {height}, size: {width*height}")
+    
+    isResized = False
+    while(width*height > 5242880):                    
+        width = int(width/2)
+        height = int(height/2)
+        isResized = True
+    print(f"width: {width}, height: {height}, size: {width*height}")
+    
+    if isResized:
+        img = img.resize((width, height))
+                
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    """
+    
+    jsonBody = json.loads(event['body'])
+    print('request body: ', json.dumps(jsonBody))
+    
+    requestId = jsonBody["requestId"]       
+    bucket = jsonBody["bucket"]   
+    key = jsonBody["key"]   
+    
+    # mask
+    ext = key.split('.')[-1]
+    if ext == 'jpg':
+        ext = 'jpeg'
+    
+    s3_file_name = key[key.rfind('/')+1:len(key)]   
+    target_name = 'photo_'+s3_file_name
+    
+    # img_path = f'./andy_portrait_2.jpg'  # for testing
+    
+    # outpaint_prompt = 'forrest'
+    outpaint_prompt = 'wonderful see and aws'
+    target_label = None
+    
+    if target_label == None:
+        object_image, width, height, f_left, f_top, f_width, f_height, human_res = show_faces(bucket, key) ## detect_faces
+        text_prompt =  f'a human with a {outpaint_prompt} background'
+    """
+    else:
+        object_image, width, height, f_left, f_top, f_width, f_height, color, human_res = show_labels(bucket, key, target_label=target_label)
+        text_prompt =  f'a {target_label} with a {outpaint_prompt} and {color} background'
+    """
+    
+    encode_object_image = encode_image(object_image,formats=ext.upper()).decode("utf-8")
+    inputs = dict(
+        encode_image = encode_object_image,
+        input_box = [f_left, f_top, f_left+f_width, f_top+f_height]
+    )
 
-def generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt):
+    predictions = invoke_endpoint(endpoint_name, inputs)
+    mask_image = decode_image(json.loads(predictions)['mask_image'])
+
+    object_img = img_resize(object_image)
+    mask_img = img_resize(mask_image)
+    
     body = json.dumps({
         "taskType": "OUTPAINTING",
         "outPaintingParams": {
@@ -223,7 +346,10 @@ def generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt)
             "seed": seed
         }
     })
-            
+    
+    # creating greeting message
+    boto3_bedrock = get_client(profile_of_LLMs, selected_LLM)    
+    
     response = boto3_bedrock.invoke_model(
         body=body,
         modelId=modelId,
@@ -231,17 +357,19 @@ def generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt)
         contentType="application/json"
     )
     print('response: ', response)
-            
+    
     # Output processing
     response_body = json.loads(response.get("body").read())
     img_b64 = response_body["images"][0]
     print(f"Output: {img_b64[0:80]}...")
     
-    return img_b64
-
-def parallel_process(conn, boto3_bedrock, object_img, mask_img, text_prompt, object_key):    
-    img_b64 =  generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt)
-            
+    # save image to bucket
+    # id = uuid.uuid1()
+    
+    object_key = f'{s3_photo_prefix}/{target_name}'  # MP3 파일 경로
+    print('object_key: ', object_key)
+    #img_base64 = base64.b64encode(img_b64).decode()
+    
     # upload
     response = s3_client.put_object(
         Bucket=s3_bucket,
@@ -250,133 +378,19 @@ def parallel_process(conn, boto3_bedrock, object_img, mask_img, text_prompt, obj
         Body=base64.b64decode(img_b64)
     )
     print('response: ', response)
-            
+        
+    end_time_for_generation = time.time()
+    time_for_photo_generation = end_time_for_generation - start_time_for_generation
+    
+    # s3_file_name = object_key[object_key.rfind('/')+1:len(object_key)]            
     url = path+s3_photo_prefix+'/'+parse.quote(target_name)
     print('url: ', url)
     
-    conn.send(url)
-    conn.close()
-                    
-def lambda_handler(event, context):
-    print(event)
-    
-    start_time_for_generation = time.time()
-    
-    jsonBody = json.loads(event['body'])
-    print('request body: ', json.dumps(jsonBody))
-    
-    requestId = jsonBody["requestId"]
-    print('requestId: ', requestId)
-    bucket = jsonBody["bucket"]   
-    key = jsonBody["key"]   
-    
-    url_original = path+parse.quote(key)
-    print('url_original: ', url_original)
-    
-    # mask
-    ext = key.split('.')[-1]
-    if ext == 'jpg':
-        ext = 'jpeg'
-    
-    target_label = None  
-        
-    if target_label == None:
-        object_image, width, height, f_left, f_top, f_width, f_height, human_res = show_faces(bucket, key) ## detect_faces        
-    #else:
-    #    object_image, width, height, f_left, f_top, f_width, f_height, color, human_res = show_labels(bucket, key, target_label=target_label)
-    
-    encode_object_image = encode_image(object_image,formats=ext.upper()).decode("utf-8")
-    inputs = dict(
-        encode_image = encode_object_image,
-        input_box = [f_left, f_top, f_left+f_width, f_top+f_height]
-    )
-
-    predictions = invoke_endpoint(endpoint_name, inputs)
-    mask_image = decode_image(json.loads(predictions)['mask_image'])
-
-    object_img = img_resize(object_image)
-    mask_img = img_resize(mask_image)
-    
-    if enableParallel==False: # single 
-        target_name = 'photo_'+uuid.uuid1()+f'.{ext}'
-        text_prompt = f'a human with a {outpaint_prompt[0]} background'
-        
-        img_b64 = generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt)
-                                
-        # upload
-        object_key = f'{s3_photo_prefix}/{target_name}'  # MP3 파일 경로
-        print('object_key: ', object_key)
-        
-        response = s3_client.put_object(
-            Bucket=s3_bucket,
-            Key=object_key,
-            ContentType='image/jpeg',
-            Body=base64.b64decode(img_b64)
-        )
-        print('response: ', response)
-            
-        end_time_for_generation = time.time()
-        time_for_photo_generation = end_time_for_generation - start_time_for_generation
-        
-        url_generated = path+s3_photo_prefix+'/'+parse.quote(target_name)
-        print('url_generated: ', url_generated)
-        
-        selected_LLM = selected_LLM + 1
-        if selected_LLM == len(profile_of_LLMs):
-            selected_LLM = 0
-        
-        return {
-            "isBase64Encoded": False,
-            'statusCode': 200,
-            'body': json.dumps({            
-                "url_original": url_original,
-                "url_generated": url_generated,
-                "time_taken": str(time_for_photo_generation)
-            })
-        }
-        
-    else: # multiple (k)
-        generated_urls = []    
-        processes = []
-        parent_connections = []
-        
-        for i in range(k):
-            parent_conn, child_conn = Pipe()
-            parent_connections.append(parent_conn)
-            
-            boto3_bedrock = get_client(profile_of_LLMs, selected_LLM)
-            text_prompt =  f'a human with a {outpaint_prompt[i]} background'
-            
-            target_name = 'photo_'+uuid.uuid1()+f'_{i}.{ext}'
-            object_key = f'{s3_photo_prefix}/{target_name}'  # MP3 파일 경로
-            print('object_key: ', object_key)
-        
-            process = Process(target=parallel_process, args=(child_conn, boto3_bedrock, object_img, mask_img, text_prompt, object_key))
-            processes.append(process)
-            
-            selected_LLM = selected_LLM + 1
-            if selected_LLM == len(profile_of_LLMs):
-                selected_LLM = 0
-                        
-        for process in processes:
-            process.start()
-                
-        for parent_conn in parent_connections:
-            url = parent_conn.recv()
-            generated_urls.append(url)
-
-        for process in processes:
-            process.join()
-                
-        end_time_for_generation = time.time()
-        time_for_photo_generation = end_time_for_generation - start_time_for_generation
-            
-        return {
-            "isBase64Encoded": False,
-            'statusCode': 200,
-            'body': json.dumps({            
-                "url_original": url_original,
-                "url_generated": generated_urls,
-                "time_taken": str(time_for_photo_generation)
-            })
-        }
+    return {
+        "isBase64Encoded": False,
+        'statusCode': 200,
+        'body': json.dumps({            
+            "url": url,
+            "time_taken": str(time_for_photo_generation)
+        })
+    }
