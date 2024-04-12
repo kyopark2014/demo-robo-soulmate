@@ -251,7 +251,7 @@ def parallel_process(conn, boto3_bedrock, object_img, mask_img, text_prompt, obj
     )
     print('response: ', response)
             
-    url = path+s3_photo_prefix+'/'+parse.quote(target_name)
+    url = path+s3_photo_prefix+'/'+parse.quote(object_name)
     print('url: ', url)
     
     conn.send(url)
@@ -296,15 +296,16 @@ def lambda_handler(event, context):
 
     object_img = img_resize(object_image)
     mask_img = img_resize(mask_image)
+    id = uuid.uuid1()
     
     if enableParallel==False: # single 
-        target_name = 'photo_'+uuid.uuid1()+f'.{ext}'
+        object_name = f'photo_{id}.{ext}'
         text_prompt = f'a human with a {outpaint_prompt[0]} background'
         
         img_b64 = generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt)
                                 
         # upload
-        object_key = f'{s3_photo_prefix}/{target_name}'  # MP3 파일 경로
+        object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
         print('object_key: ', object_key)
         
         response = s3_client.put_object(
@@ -318,7 +319,7 @@ def lambda_handler(event, context):
         end_time_for_generation = time.time()
         time_for_photo_generation = end_time_for_generation - start_time_for_generation
         
-        url_generated = path+s3_photo_prefix+'/'+parse.quote(target_name)
+        url_generated = path+s3_photo_prefix+'/'+parse.quote(object_name)
         print('url_generated: ', url_generated)
         
         selected_LLM = selected_LLM + 1
@@ -347,8 +348,8 @@ def lambda_handler(event, context):
             boto3_bedrock = get_client(profile_of_LLMs, selected_LLM)
             text_prompt =  f'a human with a {outpaint_prompt[i]} background'
             
-            target_name = 'photo_'+uuid.uuid1()+f'_{i}.{ext}'
-            object_key = f'{s3_photo_prefix}/{target_name}'  # MP3 파일 경로
+            object_name = f'photo_{id}_{i+1}.{ext}'
+            object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
             print('object_key: ', object_key)
         
             process = Process(target=parallel_process, args=(child_conn, boto3_bedrock, object_img, mask_img, text_prompt, object_key))
