@@ -384,7 +384,7 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'body': json.dumps({            
                 "url_original": url_original,
-                "url_generated": generated_urls,
+                "url_generated": json.dumps(generated_urls),
                 "time_taken": str(time_for_photo_generation)
             })
         }
