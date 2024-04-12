@@ -16,7 +16,7 @@ Photo Booth에서 방문자의 사진을 찍과 얼굴과 배경을 분리하여
 1) Presigned Url 요청합니다. Client에서 바라보는 CloudFront의 주소는 "dxt1m1ae24b28.cloudfront.net" 입니다. (URL 변경될 수 있습니다) 아래와 같은 방식으로 Presigned url을 요청합니다.
 
 ```text
-HTTPS POST https://dxt1m1ae24b28.cloudfront.net/upload
+POST https://dxt1m1ae24b28.cloudfront.net/upload
 {
   "type": "photo",
   "filename": "andy_portrait_2.jpg",
@@ -44,7 +44,7 @@ const blob = new Blob([input.files[0]], { type: contentType });
 3) 이미지 생성을 요청합니다. 이때의 요청하는 URL은 CloudFront의 도메인과 '/photo' API를 이용합니다.
    
 ```text   
-HTTPS POST  https://dxt1m1ae24b28.cloudfront.net/photo
+POST  https://dxt1m1ae24b28.cloudfront.net/photo
 {
     "requestId": "b123456abc",
     "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
