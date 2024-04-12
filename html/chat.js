@@ -543,11 +543,13 @@ function loadAudio(requestId, text) {
 
     let speed = 120;
     let voiceId;
-    
+    let langCode;
     if(conversationType=='english') {
+        langCode = 'en-US';
         voiceId = 'Ivy';
     }
     else {
+        langCode = 'ko-KR';  // ko-KR en-US(영어)) ja-JP(일본어)) cmn-CN(중국어)) sv-SE(스페인어))
         voiceId = 'Seoyeon';
     }
     
@@ -559,10 +561,7 @@ function loadAudio(requestId, text) {
     // Bianca: 스페인어? (x)
     // Brian: 
     // Camila (o)
-
-
-
-    let langCode = 'ko-KR';  // ko-KR en-US(영어)) ja-JP(일본어)) cmn-CN(중국어)) sv-SE(스페인어))
+   
     if(conversationType == 'translation') {
         langCode = langCode;
         voiceId = voiceId; // child Ivy, adult Joanna
