@@ -22,3 +22,12 @@ Guesture의 기본점수 및 항목별 점수는 아래와 같습니다. (To-Do)
 
 ## Gesture에 대한 응답
 
+Gesture에 대한 점수 요청시 아래와 같은 응답을 얻습니다.
+
+```java
+{
+    "isBase64Encoded": false,
+    "statusCode": 200,
+    "body": "{\"userId\": \"AI-Dancing-Robot-001\", \"requestId\": \"588c8731-0acf-4127-bf54-841bdc170567\", \"score\": 5}"
+}
+```
