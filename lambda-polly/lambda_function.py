@@ -16,9 +16,9 @@ def lambda_handler(event, context):
     text = event['text']
     
     print('voiceId: ', voiceId)
-    if voiceId == "": 
+    if voiceId == None: 
         voiceId = event['voiceId']
-    if speed == "": 
+    if speed == None: 
         speed = event['speed']
         
     langCode = event['langCode']
