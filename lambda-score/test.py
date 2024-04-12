@@ -15,6 +15,8 @@ def load_event():
     }
     return {"body": json.dumps(json_data)}
 
+
+pprint.pprint(load_event())
 def _test_extract_text_from_tags():
     text = """
 <score>5</score>
