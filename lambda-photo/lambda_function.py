@@ -29,7 +29,7 @@ cfgScale = 7.5
 # width = 768
 
 enableParallel = True
-k = 4
+k = 3
 
 smr_client = boto3.client("sagemaker-runtime")
 s3_client = boto3.client('s3')   
