@@ -6,7 +6,7 @@ import base64
 
 polly_client = boto3.client('polly')
 
-voiceId = bucket = os.environ.get('voiceId')
+voiceId = os.environ.get('voiceId')
 
 def lambda_handler(event, context):
     print('event: ', event)
