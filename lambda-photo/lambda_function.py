@@ -18,10 +18,9 @@ from multiprocessing import Process, Pipe
 s3_bucket = os.environ.get('s3_bucket') # bucket name
 s3_photo_prefix = os.environ.get('s3_photo_prefix')
 path = os.environ.get('path')
-modelId = "amazon.titan-image-generator-v1"
 endpoint_name = 'sam-endpoint-2024-04-10-01-35-30'
 
-profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
+profile_of_Image_LLMs = json.loads(os.environ.get('profile_of_Image_LLMs'))
 selected_LLM = 0
 
 seed = 43
@@ -36,8 +35,8 @@ smr_client = boto3.client("sagemaker-runtime")
 s3_client = boto3.client('s3')   
 rekognition_client = boto3.client('rekognition')
   
-def get_client(profile_of_LLMs, selected_LLM):
-    profile = profile_of_LLMs[selected_LLM]
+def get_client(profile_of_Image_LLMs, selected_LLM):
+    profile = profile_of_Image_LLMs[selected_LLM]
     bedrock_region =  profile['bedrock_region']
     modelId = profile['model_id']
     print(f'LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
@@ -52,7 +51,7 @@ def get_client(profile_of_LLMs, selected_LLM):
             }            
         )
     )
-    return boto3_bedrock
+    return boto3_bedrock, modelId
 
 def img_resize(image):
     imgWidth, imgHeight = image.size 
@@ -202,7 +201,7 @@ def encode_image(image, formats="PNG"):
     img_str = base64.b64encode(buffer.getvalue())
     return img_str
 
-def generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt):
+def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt):
     body = json.dumps({
         "taskType": "OUTPAINTING",
         "outPaintingParams": {
@@ -238,8 +237,8 @@ def generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt)
     
     return img_b64
 
-def parallel_process(conn, boto3_bedrock, object_img, mask_img, text_prompt, object_key):    
-    img_b64 =  generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt)
+def parallel_process(conn, boto3_bedrock, modelId, object_img, mask_img, text_prompt, object_key):    
+    img_b64 =  generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
             
     # upload
     response = s3_client.put_object(
@@ -304,9 +303,9 @@ def lambda_handler(event, context):
         outpaint_prompt = 'forrest'
         text_prompt = f'a human with a {outpaint_prompt[0]} background'
         
-        boto3_bedrock = get_client(profile_of_LLMs, selected_LLM)
+        boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM)
         
-        img_b64 = generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt)
+        img_b64 = generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
                                 
         # upload
         object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
@@ -327,7 +326,7 @@ def lambda_handler(event, context):
         print('url_generated: ', url_generated)
         
         selected_LLM = selected_LLM + 1
-        if selected_LLM == len(profile_of_LLMs):
+        if selected_LLM == len(profile_of_Image_LLMs):
             selected_LLM = 0
         
         return {
@@ -351,18 +350,18 @@ def lambda_handler(event, context):
             parent_conn, child_conn = Pipe()
             parent_connections.append(parent_conn)
             
-            boto3_bedrock = get_client(profile_of_LLMs, selected_LLM)
+            boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM)
             text_prompt =  f'a human with a {outpaint_prompt[i]} background'
             
             object_name = f'photo_{id}_{i+1}.{ext}'
             object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
             print('object_key: ', object_key)
         
-            process = Process(target=parallel_process, args=(child_conn, boto3_bedrock, object_img, mask_img, text_prompt, object_key))
+            process = Process(target=parallel_process, args=(child_conn, boto3_bedrock, modelId, object_img, mask_img, text_prompt, object_key))
             processes.append(process)
             
             selected_LLM = selected_LLM + 1
-            if selected_LLM == len(profile_of_LLMs):
+            if selected_LLM == len(profile_of_Image_LLMs):
                 selected_LLM = 0
                         
         for process in processes:

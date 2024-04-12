@@ -52,6 +52,29 @@ const claude3_sonnet = [
   }
 ];
 
+const profile_of_Image_LLMs = [
+  {
+    "bedrock_region": "us-west-2", // Oregon
+    "model_type": "titan",
+    "model_id": "amazon.titan-image-generator-v1"
+  },
+  {
+    "bedrock_region": "us-east-1", // N.Virginia
+    "model_type": "titan",
+    "model_id": "amazon.titan-image-generator-v1"
+  },
+  {
+    "bedrock_region": "ap-southeast-2", // Sydney
+    "model_type": "titan",
+    "model_id": "amazon.titan-image-generator-v1"
+  },
+  {
+    "bedrock_region": "eu-west-3", // Paris
+    "model_type": "titan",
+    "model_id": "amazon.titan-image-generator-v1"
+  }
+];
+
 const claude3_haiku = [
   {
     "bedrock_region": "us-west-2", // Oregon
@@ -734,7 +757,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
       role: roleLambda,
       environment: {
         s3_bucket: bucketName,
-        profile_of_LLMs:JSON.stringify(claude3_sonnet),
+        profile_of_Image_LLMs:JSON.stringify(profile_of_Image_LLMs),
         s3_photo_prefix: s3_photo_prefix,
         path: 'https://'+domainName+'/',   
       }
