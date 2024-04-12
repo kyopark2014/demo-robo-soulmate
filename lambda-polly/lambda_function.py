@@ -6,11 +6,17 @@ import base64
 
 polly_client = boto3.client('polly')
 
+voiceId = bucket = os.environ.get('voiceId')
+
 def lambda_handler(event, context):
     print('event: ', event)
     
     text = event['text']
-    voiceId = event['voiceId']
+    
+    print('voiceId: ', voiceId)
+    if voiceId == "": 
+        voiceId = event['voiceId']
+        
     langCode = event['langCode']
     speed = event['speed']
     
