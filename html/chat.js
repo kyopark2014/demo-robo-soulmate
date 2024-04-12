@@ -552,6 +552,7 @@ function loadAudio(requestId, text) {
         voiceId = voiceId; // child Ivy, adult Joanna
         speed = '120';
     }    
+    console.log('voiceId: ', voiceId);
     
     xhr.open("POST", uri, true);
     xhr.onreadystatechange = () => {
