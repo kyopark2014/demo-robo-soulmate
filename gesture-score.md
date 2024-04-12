@@ -9,9 +9,9 @@
 ```java
 POST https://dxt1m1ae24b28.cloudfront.net/score_gesture
 {
-  "userId": "AI-Dancing-Robot-001"
+  "userId": "AI-Dancing-Robot-001",
   "requestId": "588c8731-0acf-4127-bf54-841bdc170567",
-  "type": "gesture”
+  "type": "gesture",
   "text": "heart"
 }
 ```
