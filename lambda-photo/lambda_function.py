@@ -378,13 +378,16 @@ def lambda_handler(event, context):
         time_for_photo_generation = end_time_for_generation - start_time_for_generation
         
         print('generated_urls: ', json.dumps(generated_urls))
-            
-        return {
-            "isBase64Encoded": False,
-            'statusCode': 200,
-            'body': json.dumps({            
+        
+        result = {            
                 "url_original": url_original,
                 "url_generated": json.dumps(generated_urls),
                 "time_taken": str(time_for_photo_generation)
-            })
+        }
+        print('result: ', result)
+        
+        return {
+            "isBase64Encoded": False,
+            'statusCode': 200,
+            'body': json.dumps(result)
         }
