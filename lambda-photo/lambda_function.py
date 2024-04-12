@@ -31,7 +31,6 @@ cfgScale = 7.5
 
 enableParallel = False
 k = 4
-outpaint_prompt = {'forrest', 'sea', 'mount', 'desert'}
 
 smr_client = boto3.client("sagemaker-runtime")
 s3_client = boto3.client('s3')   
@@ -300,6 +299,7 @@ def lambda_handler(event, context):
     
     if enableParallel==False: # single 
         object_name = f'photo_{id}.{ext}'
+        outpaint_prompt = 'forrest'
         text_prompt = f'a human with a {outpaint_prompt[0]} background'
         
         img_b64 = generate_outpainting_image(boto3_bedrock, object_img, mask_img, text_prompt)
@@ -340,6 +340,8 @@ def lambda_handler(event, context):
         generated_urls = []    
         processes = []
         parent_connections = []
+        
+        outpaint_prompt = ['forrest', 'sea', 'mount', 'desert']
         
         for i in range(k):
             parent_conn, child_conn = Pipe()
