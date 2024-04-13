@@ -2,6 +2,7 @@ const protocol = 'WEBSOCKET'; // WEBSOCKET
 const langstate = 'korean'; // korean or english
 const enableTTS = true;
 const enableDelayedMessage = true; // in order to manipulate the voice messages
+const enableScore = 'false';
 const speechType = 'robot';  // local or robot or both
 
 if(enableTTS && (speechType=='local' || speechType=='both')) {
@@ -236,11 +237,11 @@ function connect(endpoint, type) {
                 if(enableTTS) {
                     console.log('requested: ', requested.get(response.request_id));
                     console.log('speechType: ', speechType);
-                    if(speechType=='robot') {
+                    if(enableScore && speechType=='robot') {
                         // thingName = "AI-Dancing-Robot-000"
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
                     }
-                    else if(speechType=='local') { // local
+                    else if(enableScore && speechType=='local') { // local
                         if(requested.get(response.request_id) == undefined) {
                             requestId = response.request_id;
                             playList.push({
@@ -256,7 +257,7 @@ function connect(endpoint, type) {
                             playAudioList();
                         }    
                     }
-                    else if(speechType=='both') {
+                    else if(enableScore && speechType=='both') {
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
 
                         if(requested.get(response.request_id) == undefined) {
@@ -492,12 +493,13 @@ function voiceConnect(voiceEndpoint, type) {
                             delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType);                                   
                         }
                         
-                        console.log('get score for ', query);
-                        if(scoreValue.get(requestId)==undefined) { // check duplication
-                            getScore(userId, requestId, query); 
-                            scoreValue.put(requestId, true);
-                        }
-                         
+                        if(enableScore) {
+                            console.log('get score for ', query);
+                            if(scoreValue.get(requestId)==undefined) { // check duplication
+                                getScore(userId, requestId, query); 
+                                scoreValue.put(requestId, true);
+                            }
+                        }                         
                     }
                     else {  
                         console.log('ignore the duplicated message: ', query);
@@ -767,8 +769,10 @@ function onSend(e) {
         let requestId = uuidv4();
         addSentMessage(requestId, timestr, message.value);
 
-        console.log('request to estimate the score');
-        getScore(userId, requestId, message.value);
+        if(enableScore) {
+            console.log('request to estimate the score');
+            getScore(userId, requestId, message.value);        
+        }
         
         if(protocol == 'WEBSOCKET') {
             sendMessage({
@@ -951,7 +955,7 @@ function getScore(userId, requestId, text) {
 
             addNotifyMessage('[debug] score: '+score+', description: '+description);
             
-            if(speechType=='robot' || speechType=='both') {
+            if(enableScore && (speechType=='robot' || speechType=='both')) {
                 sendControl(userId, "action", "", score, requestId)
             }   
         }
