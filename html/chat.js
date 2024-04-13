@@ -987,7 +987,7 @@ function addReceivedMessage(requestId, msg) {
     // console.log("add received message: "+msg);
     sender = "Chatbot"
 
-    console.log('requestId: '+requestId+ '(index: '+indexList.get(requestId+':receive')+')')
+    // console.log('requestId: '+requestId+ '(index: '+indexList.get(requestId+':receive')+')')
     if (indexList.get(requestId+':receive') == undefined) {
         indexList.put(requestId+':receive', index);
         current = index;
@@ -997,7 +997,7 @@ function addReceivedMessage(requestId, msg) {
         current = indexList.get(requestId+':receive');
         // console.log("reused index="+index+', id='+requestId+':receive');
     }
-    console.log("current index:"+current+', msg='+msg);
+    // console.log("current index:"+current+', msg='+msg);
 
     msg = msg.replaceAll("\n", "<br/>");
 
