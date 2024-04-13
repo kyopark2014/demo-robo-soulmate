@@ -182,7 +182,7 @@ let playList = [];
 let current = 0;
 let requestId = ""
 let next = true;
-let requested = new HashMap();
+let isNew = new HashMap();
 function connect(endpoint, type) {
     const ws = new WebSocket(endpoint);
 
@@ -235,14 +235,14 @@ function connect(endpoint, type) {
                 // console.log('response.msg: ', response.msg);
 
                 if(enableTTS) {
-                    console.log('requested: ', requested.get(response.request_id));
+                    console.log('isNew: ', isNew.get(response.request_id));
                     console.log('speechType: ', speechType);
                     if(enableScore && speechType=='robot') {
                         // thingName = "AI-Dancing-Robot-000"
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
                     }
                     else if(enableScore && speechType=='local') { // local
-                        if(requested.get(response.request_id) == undefined) {
+                        if(isNew.get(response.request_id) == undefined) {
                             requestId = response.request_id;
                             playList.push({
                                 'played': false,
@@ -255,12 +255,14 @@ function connect(endpoint, type) {
                             
                             next = true;
                             playAudioList();
+
+                            isNew.put(requestId, true)
                         }    
                     }
-                    else if(enableScore && speechType=='both') {
+                    else if(enableScore && speechType=='both') { // need to control the robot
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
 
-                        if(requested.get(response.request_id) == undefined) {
+                        if(isNew.get(response.request_id) == undefined) {
                             requestId = response.request_id;
                             playList.push({
                                 'played': false,
@@ -273,6 +275,8 @@ function connect(endpoint, type) {
                             
                             next = true;
                             playAudioList();
+
+                            isNew.put(requestId, true)
                         }    
                     }
                     
@@ -307,7 +311,7 @@ function connect(endpoint, type) {
                         });
                         lineText = "";      
             
-                        requested.put(response.request_id, true);
+                        isNew.put(response.request_id, true);
                         loadAudio(response.request_id, text);                                  
                     }
                     
@@ -983,16 +987,16 @@ function addReceivedMessage(requestId, msg) {
     // console.log("add received message: "+msg);
     sender = "Chatbot"
 
-    let isNew;
+    let isReceived;
     console.log('indexList.get(requestId]: ', indexList.get(requestId+':receive'))
     if(!indexList.get(requestId+':receive')) {
         indexList.put(requestId+':receive', index);
-        isNew = true;
+        isReceived = true;
     }
     else {
         index = indexList.get(requestId+':receive');
         // console.log("reused index="+index+', id='+requestId+':receive');
-        isNew = false;
+        isReceived = false;
     }
     console.log("index:", index);   
 
@@ -1030,7 +1034,7 @@ function addReceivedMessage(requestId, msg) {
         msglist[index].innerHTML = `<div class="chat-receiver80 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
 
-    if(isNew) index++;
+    if(isReceived) index++;
 
     chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
 }
