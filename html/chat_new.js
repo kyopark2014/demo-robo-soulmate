@@ -1,8 +1,9 @@
 const protocol = 'WEBSOCKET'; // WEBSOCKET 
 const langstate = 'korean'; // korean or english
 const enableTTS = true;
-const enableDelayedMessage = true; // in order to manipulate the voice messages
+const enableScore = false;
 const speechType = 'both';  // local or robot or both
+const enableDelayedMessage = true; // in order to manipulate the voice messages
 
 if(enableTTS && (speechType=='local' || speechType=='both')) {
     var AudioContext;
@@ -181,7 +182,7 @@ let playList = [];
 let current = 0;
 let requestId = ""
 let next = true;
-let requested = new HashMap();
+let isDelivered = new HashMap();
 function connect(endpoint, type) {
     const ws = new WebSocket(endpoint);
 
@@ -226,7 +227,7 @@ function connect(endpoint, type) {
             response = JSON.parse(event.data)
 
             if(response.status == 'completed') {     
-                console.log('dialog status: completed');    
+                console.log('dialog status: completed ('+response.request_id+')');    
                 console.log('next: ', next); 
                 feedback.style.display = 'none';       
                    
@@ -234,18 +235,17 @@ function connect(endpoint, type) {
                 // console.log('response.msg: ', response.msg);
 
                 if(enableTTS) {
-                    console.log('requested: ', requested[response.request_id]);
+                    console.log('isDelivered: ', isDelivered.get(response.request_id));
                     console.log('speechType: ', speechType);
-                    if(speechType=='robot') {
+                    if(enableScore && speechType=='robot') {
                         // thingName = "AI-Dancing-Robot-000"
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
                     }
-                    else if(speechType=='local') { // local
-                        if(requested[response.request_id] == undefined) {
-                            requestId = response.request_id;
+                    else if(enableScore && speechType=='local') { // local
+                        if(isDelivered.get(response.request_id) == undefined) {
                             playList.push({
                                 'played': false,
-                                'requestId': requestId,
+                                'requestId': response.request_id,
                                 'text': response.msg
                             });
                             lineText = "";      
@@ -254,16 +254,17 @@ function connect(endpoint, type) {
                             
                             next = true;
                             playAudioList();
+
+                            isDelivered.put(response.request_id, true)
                         }    
                     }
-                    else if(speechType=='both') {
+                    else if(enableScore && speechType=='both') { // need to control the robot
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
 
-                        if(requested[response.request_id] == undefined) {
-                            requestId = response.request_id;
+                        if(isDelivered.get(response.request_id) == undefined) {
                             playList.push({
                                 'played': false,
-                                'requestId': requestId,
+                                'requestId': response.request_id,
                                 'text': response.msg
                             });
                             lineText = "";      
@@ -272,6 +273,8 @@ function connect(endpoint, type) {
                             
                             next = true;
                             playAudioList();
+
+                            isDelivered.put(response.request_id, true)
                         }    
                     }
                     
@@ -288,7 +291,7 @@ function connect(endpoint, type) {
             else if(response.status == 'proceeding') {
                 // console.log('status: proceeding...')
                 feedback.style.display = 'none';
-                sentance.put(response.request_id, sentance.get(response.request_id)+response.msg);              
+                sentance.put(response.request_id, sentance.get(response.request_id)+response.msg);
                 
                 addReceivedMessage(response.request_id, sentance.get(response.request_id));
                 // console.log('response.msg: ', response.msg);
@@ -306,7 +309,7 @@ function connect(endpoint, type) {
                         });
                         lineText = "";      
             
-                        requested[response.request_id] = true;
+                        isDelivered.put(response.request_id, true);
                         loadAudio(response.request_id, text);                                  
                     }
                     
@@ -492,12 +495,13 @@ function voiceConnect(voiceEndpoint, type) {
                             delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType);                                   
                         }
                         
-                        console.log('get score for ', query);
-                        if(scoreValue.get(requestId)==undefined) { // check duplication
-                            getScore(userId, requestId, query); 
-                            scoreValue.put(requestId, true);
-                        }
-                         
+                        if(enableScore) {
+                            console.log('get score for ', query);
+                            if(scoreValue.get(requestId)==undefined) { // check duplication
+                                getScore(userId, requestId, query); 
+                                scoreValue.put(requestId, true);
+                            }
+                        }                         
                     }
                     else {  
                         console.log('ignore the duplicated message: ', query);
@@ -694,7 +698,7 @@ function initiate() {
     }
     else {
         addNotifyMessage("Start chat with Amazon Bedrock");             
-        addReceivedMessage(uuidv4(), "Welcome to Amazon Bedrock. Use the conversational chatbot and summarize documents, TXT, PDF, and CSV. ")           
+        addReceivedMessage(uuidv4(), "Welcome to Amazon Bedrock. Use the conversational chatbot and summarize documents, TXT, PDF, and CSV. ");
     }
 
     getHistory(userId, 'initiate');
@@ -767,8 +771,10 @@ function onSend(e) {
         let requestId = uuidv4();
         addSentMessage(requestId, timestr, message.value);
 
-        console.log('request to estimate the score');
-        getScore(userId, requestId, message.value);
+        if(enableScore) {
+            console.log('request to estimate the score');
+            getScore(userId, requestId, message.value);        
+        }
         
         if(protocol == 'WEBSOCKET') {
             sendMessage({
@@ -951,7 +957,7 @@ function getScore(userId, requestId, text) {
 
             addNotifyMessage('[debug] score: '+score+', description: '+description);
             
-            if(speechType=='robot' || speechType=='both') {
+            if(enableScore && (speechType=='robot' || speechType=='both')) {
                 sendControl(userId, "action", "", score, requestId)
             }   
         }
@@ -979,51 +985,53 @@ function addReceivedMessage(requestId, msg) {
     // console.log("add received message: "+msg);
     sender = "Chatbot"
 
-    if(!indexList.get(requestId+':receive')) {
-        indexList.put(requestId+':receive', index);             
+    // console.log('requestId: '+requestId+ '(index: '+indexList.get(requestId+':receive')+')')
+    if (indexList.get(requestId+':receive') == undefined) {
+        indexList.put(requestId+':receive', index);
+        index_received = index;
+        index++;
     }
     else {
-        index = indexList.get(requestId+':receive');
-        // console.log("reused index="+index+', id='+requestId+':receive');        
+        index_received = indexList.get(requestId+':receive');
+        // console.log("reused index="+index+', id='+requestId+':receive');
     }
-    // console.log("index:", index);   
+    // console.log("index_receivedindex_received:"+index_received+', msg='+msg);
 
     msg = msg.replaceAll("\n", "<br/>");
 
-    var length = msg.length;
+    let length = msg.length;
     // console.log('msg: ', msg)
     // console.log("length: ", length);
 
     if(length < 10) {
-        msglist[index].innerHTML = `<div class="chat-receiver20 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[index_received].innerHTML = `<div class="chat-receiver20 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 14) {
-        msglist[index].innerHTML = `<div class="chat-receiver25 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[index_received].innerHTML = `<div class="chat-receiver25 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 17) {
-        msglist[index].innerHTML = `<div class="chat-receiver30 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[index_received].innerHTML = `<div class="chat-receiver30 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 21) {
-        msglist[index].innerHTML = `<div class="chat-receiver35 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[index_received].innerHTML = `<div class="chat-receiver35 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 25) {
-        msglist[index].innerHTML = `<div class="chat-receiver40 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[index_received].innerHTML = `<div class="chat-receiver40 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 35) {
-        msglist[index].innerHTML = `<div class="chat-receiver50 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[index_received].innerHTML = `<div class="chat-receiver50 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 80) {
-        msglist[index].innerHTML = `<div class="chat-receiver60 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[index_received].innerHTML = `<div class="chat-receiver60 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 145) {
-        msglist[index].innerHTML = `<div class="chat-receiver70 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[index_received].innerHTML = `<div class="chat-receiver70 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else {
-        msglist[index].innerHTML = `<div class="chat-receiver80 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[index_received].innerHTML = `<div class="chat-receiver80 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
 
     chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
-    index++;
 }
 
 function addNotifyMessage(msg) {
@@ -1286,7 +1294,7 @@ function sendRequestForRetry(requestId) {
                         
             if(response.msg) {
                 isResponsed.put(response.request_id, true);
-                addReceivedMessage(response.request_id, response.msg);        
+                addReceivedMessage(response.request_id, response.msg);    
                 
                 console.log('completed!');
             }            
@@ -1339,7 +1347,7 @@ function getHistory(userId, state) {
                     let msg = history[i].msg;
                     console.log("answer: ", msg);
                     addSentMessage(requestId, timestr, body)
-                    addReceivedMessage(requestId, msg);                            
+                    addReceivedMessage(requestId, msg);     
                 }                 
             }         
             if(history.length>=1 && state=='initiate') {
