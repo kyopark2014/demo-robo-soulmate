@@ -287,7 +287,7 @@ def general_conversation(chat, requestId, query):
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
             
-        sendErrorMessage(err_msg)    
+        sendErrorMessage(requestId, err_msg)    
         raise Exception ("Not able to request to LLM")
     
     return msg
@@ -321,7 +321,7 @@ def general_conversation_for_english(chat, requestId, query):
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
             
-        sendErrorMessage(err_msg)    
+        sendErrorMessage(requestId, err_msg)    
         raise Exception ("Not able to request to LLM")
     
     return msg
@@ -370,7 +370,7 @@ def ISTJ(chat, requestId, query):
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
             
-        sendErrorMessage(err_msg)    
+        sendErrorMessage(requestId, err_msg)    
         raise Exception ("Not able to request to LLM")
     
     return msg
@@ -408,7 +408,7 @@ def ESFP(chat, requestId, query):
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
             
-        sendErrorMessage(err_msg)    
+        sendErrorMessage(requestId, err_msg)    
         raise Exception ("Not able to request to LLM")
     
     return msg
@@ -450,7 +450,7 @@ def sendMessage(body):
         print('err_msg: ', err_msg)
         raise Exception ("Not able to send a message")
     
-def sendResultMessage(msg):    
+def sendResultMessage(requestId, msg):    
     result = {
         'request_id': requestId,
         'msg': msg,
@@ -459,7 +459,7 @@ def sendResultMessage(msg):
     #print('debug: ', json.dumps(debugMsg))
     sendMessage(result)
         
-def sendErrorMessage(msg):
+def sendErrorMessage(requestId, msg):
     errorMsg = {
         'request_id': requestId,
         'msg': msg,
@@ -868,7 +868,7 @@ def getResponse(jsonBody):
     else:
         selected_LLM = selected_LLM + 1
     
-    sendResultMessage(msg)  
+    sendResultMessage(requestId, msg)  
     
     return msg
 
@@ -906,7 +906,8 @@ def lambda_handler(event, context):
                     err_msg = traceback.format_exc()
                     print('err_msg: ', err_msg)
 
-                    sendErrorMessage(err_msg)    
+                    requestId  = jsonBody['request_id']
+                    sendErrorMessage(requestId, err_msg)    
                     raise Exception ("Not able to send a message")
 
     return {
