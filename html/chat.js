@@ -694,7 +694,7 @@ function initiate() {
     }
     else {
         addNotifyMessage("Start chat with Amazon Bedrock");             
-        addReceivedMessage(uuidv4(), "Welcome to Amazon Bedrock. Use the conversational chatbot and summarize documents, TXT, PDF, and CSV. ")           
+        addReceivedMessage(uuidv4(), "Welcome to Amazon Bedrock. Use the conversational chatbot and summarize documents, TXT, PDF, and CSV. ");
     }
 
     getHistory(userId, 'initiate');
@@ -979,18 +979,22 @@ function addReceivedMessage(requestId, msg) {
     // console.log("add received message: "+msg);
     sender = "Chatbot"
 
+    let isNew;
+    print('indexList.get(requestId]: ', indexList.get(requestId+':receive'))
     if(!indexList.get(requestId+':receive')) {
-        indexList.put(requestId+':receive', index);             
+        indexList.put(requestId+':receive', index);
+        isNew = true;
     }
     else {
         index = indexList.get(requestId+':receive');
-        // console.log("reused index="+index+', id='+requestId+':receive');        
+        // console.log("reused index="+index+', id='+requestId+':receive');
+        isNew = false;
     }
     // console.log("index:", index);   
 
     msg = msg.replaceAll("\n", "<br/>");
 
-    var length = msg.length;
+    let length = msg.length;
     // console.log('msg: ', msg)
     // console.log("length: ", length);
 
@@ -1022,8 +1026,9 @@ function addReceivedMessage(requestId, msg) {
         msglist[index].innerHTML = `<div class="chat-receiver80 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
 
+    if(isNew) index++;
+
     chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
-    index++;
 }
 
 function addNotifyMessage(msg) {
@@ -1286,7 +1291,7 @@ function sendRequestForRetry(requestId) {
                         
             if(response.msg) {
                 isResponsed.put(response.request_id, true);
-                addReceivedMessage(response.request_id, response.msg);        
+                addReceivedMessage(response.request_id, response.msg);    
                 
                 console.log('completed!');
             }            
@@ -1339,7 +1344,7 @@ function getHistory(userId, state) {
                     let msg = history[i].msg;
                     console.log("answer: ", msg);
                     addSentMessage(requestId, timestr, body)
-                    addReceivedMessage(requestId, msg);                            
+                    addReceivedMessage(requestId, msg);     
                 }                 
             }         
             if(history.length>=1 && state=='initiate') {
