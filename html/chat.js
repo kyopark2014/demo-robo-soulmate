@@ -980,7 +980,7 @@ function addReceivedMessage(requestId, msg) {
     sender = "Chatbot"
 
     let isNew;
-    print('indexList.get(requestId]: ', indexList.get(requestId+':receive'))
+    console.log('indexList.get(requestId]: ', indexList.get(requestId+':receive'))
     if(!indexList.get(requestId+':receive')) {
         indexList.put(requestId+':receive', index);
         isNew = true;
@@ -990,7 +990,7 @@ function addReceivedMessage(requestId, msg) {
         // console.log("reused index="+index+', id='+requestId+':receive');
         isNew = false;
     }
-    // console.log("index:", index);   
+    console.log("index:", index);   
 
     msg = msg.replaceAll("\n", "<br/>");
 
