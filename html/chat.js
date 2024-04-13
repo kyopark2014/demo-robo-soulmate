@@ -997,7 +997,7 @@ function addReceivedMessage(requestId, msg) {
         current = indexList.get(requestId+':receive');
         // console.log("reused index="+index+', id='+requestId+':receive');
     }
-    console.log("current index:"+current+' , msg='+msg);   
+    console.log("current index:"+current+', msg='+msg);
 
     msg = msg.replaceAll("\n", "<br/>");
 

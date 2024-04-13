@@ -258,7 +258,7 @@ def isKorean(text):
         print('Not Korean: ', word_kor)
         return False
 
-def general_conversation(chat, query):   
+def general_conversation(chat, requestId, query):   
     system = (
         "다음은 Human과 Assistant의 친근한 대화입니다. 빠른 대화를 위해 답변은 짧고 정확하게 핵심만 얘기합니다. 필요시 2문장으로 답변할 수 있으나 가능한 1문장으로 답변합니다."
     )    
@@ -272,14 +272,14 @@ def general_conversation(chat, query):
                 
     chain = prompt | chat    
     try: 
-        isTyping()  
+        isTyping(requestId)  
         stream = chain.invoke(
             {
                 "history": history,
                 "input": query,
             }
         )
-        msg = readStreamMsg(stream.content)    
+        msg = readStreamMsg(requestId, stream.content)    
                             
         msg = stream.content
         print('msg: ', msg)
@@ -292,7 +292,7 @@ def general_conversation(chat, query):
     
     return msg
 
-def general_conversation_for_english(chat, query):   
+def general_conversation_for_english(chat, requestId, query):   
     system = (
         "Here is a friendly conversation between Human and Assistant. For quick responses, the answers will be short and precise, focusing on the key points. If needed, two sentences can be used, but one sentence is preferred whenever possible."
     )    
@@ -306,14 +306,14 @@ def general_conversation_for_english(chat, query):
                 
     chain = prompt | chat    
     try: 
-        isTyping()  
+        isTyping(requestId)  
         stream = chain.invoke(
             {
                 "history": history,
                 "input": query,
             }
         )
-        msg = readStreamMsg(stream.content)    
+        msg = readStreamMsg(requestId, stream.content)    
                             
         msg = stream.content
         print('msg: ', msg)
@@ -326,7 +326,7 @@ def general_conversation_for_english(chat, query):
     
     return msg
 
-def ISTJ(chat, query):
+def ISTJ(chat, requestId, query):
     system = ( #INFJ
         """다음은 Human과 Assistant의 대화야. Assistant의 MBTI는 ISTJ이고, 아래와 같은 표현을 잘 사용해. Asistant는 동의를 잘하는 성격이고, 말투가 조심스러워. 답변은 한문장으로 해줘.
         
@@ -355,14 +355,14 @@ def ISTJ(chat, query):
                 
     chain = prompt | chat    
     try: 
-        isTyping()  
+        isTyping(requestId)  
         stream = chain.invoke(
             {
                 "history": history,
                 "input": query,
             }
         )
-        msg = readStreamMsg(stream.content)    
+        msg = readStreamMsg(requestId, stream.content)    
                             
         msg = stream.content
         print('msg: ', msg)
@@ -375,7 +375,7 @@ def ISTJ(chat, query):
     
     return msg
 
-def ESFP(chat, query):
+def ESFP(chat, requestId, query):
     system = ( #ESFP
         """ 
         Assistant의 MBTI는 ESFP입니다.
@@ -393,14 +393,14 @@ def ESFP(chat, query):
                 
     chain = prompt | chat    
     try: 
-        isTyping()  
+        isTyping(requestId)  
         stream = chain.invoke(
             {
                 "history": history,
                 "input": query,
             }
         )
-        msg = readStreamMsg(stream.content)    
+        msg = readStreamMsg(requestId, stream.content)    
                             
         msg = stream.content
         print('msg: ', msg)
@@ -413,7 +413,7 @@ def ESFP(chat, query):
     
     return msg
 
-def isTyping():    
+def isTyping(requestId):    
     msg_proceeding = {
         'request_id': requestId,
         'msg': 'Proceeding...',
@@ -422,7 +422,7 @@ def isTyping():
     #print('result: ', json.dumps(result))
     sendMessage(msg_proceeding)
         
-def readStreamMsg(stream):
+def readStreamMsg(requestId, stream):
     msg = ""
     if stream:
         for event in stream:
@@ -735,23 +735,23 @@ def getResponse(jsonBody):
                 msg  = "The chat memory was intialized in this session."
             else:            
                 if convType == "normal":
-                    msg = general_conversation(chat, text)   
+                    msg = general_conversation(chat, requestId, text)   
                 if convType == "english":
-                    msg = general_conversation_for_english(chat, text)   
+                    msg = general_conversation_for_english(chat, requestId, text)   
                 elif convType == "ISTJ":
-                    msg = ISTJ(chat, text)
+                    msg = ISTJ(chat, requestId, text)
                 elif convType == "ESFP":
-                    msg = ESFP(chat, text)     
+                    msg = ESFP(chat, requestId, text)     
                 elif convType == "translation":
-                    msg = translate_text(chat, text)
+                    msg = translate_text(chat, requestId, text)
                 else: 
-                    msg = general_conversation(chat, text)   
+                    msg = general_conversation(chat, requestId, text)   
                                         
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
                     
         elif type == 'document':
-            isTyping()
+            isTyping(requestId)
             
             object = body
             file_type = object[object.rfind('.')+1:len(object)]            
@@ -874,7 +874,7 @@ def getResponse(jsonBody):
 
 def lambda_handler(event, context):
     # print('event: ', event)    
-    global connectionId, requestId
+    global connectionId
     
     msg = ""
     if event['requestContext']: 
@@ -898,7 +898,6 @@ def lambda_handler(event, context):
                 jsonBody = json.loads(body)
                 print('request body: ', json.dumps(jsonBody))
 
-                requestId  = jsonBody['request_id']
                 try:                    
                     msg = getResponse(jsonBody)
                     print('msg: ', msg)
