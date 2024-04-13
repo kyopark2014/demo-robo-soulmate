@@ -234,14 +234,14 @@ function connect(endpoint, type) {
                 // console.log('response.msg: ', response.msg);
 
                 if(enableTTS) {
-                    console.log('requested: ', requested[response.request_id]);
+                    console.log('requested: ', requested.get(response.request_id));
                     console.log('speechType: ', speechType);
                     if(speechType=='robot') {
                         // thingName = "AI-Dancing-Robot-000"
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
                     }
                     else if(speechType=='local') { // local
-                        if(requested[response.request_id] == undefined) {
+                        if(requested.get(response.request_id) == undefined) {
                             requestId = response.request_id;
                             playList.push({
                                 'played': false,
@@ -259,7 +259,7 @@ function connect(endpoint, type) {
                     else if(speechType=='both') {
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
 
-                        if(requested[response.request_id] == undefined) {
+                        if(requested.get(response.request_id) == undefined) {
                             requestId = response.request_id;
                             playList.push({
                                 'played': false,
@@ -306,7 +306,7 @@ function connect(endpoint, type) {
                         });
                         lineText = "";      
             
-                        requested[response.request_id] = true;
+                        requested.put(response.request_id, true);
                         loadAudio(response.request_id, text);                                  
                     }
                     
