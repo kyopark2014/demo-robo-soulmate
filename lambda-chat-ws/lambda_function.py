@@ -258,7 +258,7 @@ def isKorean(text):
         print('Not Korean: ', word_kor)
         return False
 
-def general_conversation(chat, requestId, query):   
+def general_conversation(chat, query):   
     system = (
         "다음은 Human과 Assistant의 친근한 대화입니다. 빠른 대화를 위해 답변은 짧고 정확하게 핵심만 얘기합니다. 필요시 2문장으로 답변할 수 있으나 가능한 1문장으로 답변합니다."
     )    
@@ -272,14 +272,14 @@ def general_conversation(chat, requestId, query):
                 
     chain = prompt | chat    
     try: 
-        isTyping(requestId)  
+        isTyping()  
         stream = chain.invoke(
             {
                 "history": history,
                 "input": query,
             }
         )
-        msg = readStreamMsg(requestId, stream.content)    
+        msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
         print('msg: ', msg)
@@ -287,12 +287,12 @@ def general_conversation(chat, requestId, query):
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
             
-        sendErrorMessage(requestId, err_msg)    
+        sendErrorMessage(err_msg)    
         raise Exception ("Not able to request to LLM")
     
     return msg
 
-def general_conversation_for_english(chat, requestId, query):   
+def general_conversation_for_english(chat, query):   
     system = (
         "Here is a friendly conversation between Human and Assistant. For quick responses, the answers will be short and precise, focusing on the key points. If needed, two sentences can be used, but one sentence is preferred whenever possible."
     )    
@@ -306,14 +306,14 @@ def general_conversation_for_english(chat, requestId, query):
                 
     chain = prompt | chat    
     try: 
-        isTyping(requestId)  
+        isTyping()  
         stream = chain.invoke(
             {
                 "history": history,
                 "input": query,
             }
         )
-        msg = readStreamMsg(requestId, stream.content)    
+        msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
         print('msg: ', msg)
@@ -321,12 +321,12 @@ def general_conversation_for_english(chat, requestId, query):
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
             
-        sendErrorMessage(requestId, err_msg)    
+        sendErrorMessage(err_msg)    
         raise Exception ("Not able to request to LLM")
     
     return msg
 
-def ISTJ(chat, requestId, query):
+def ISTJ(chat, query):
     system = ( #INFJ
         """다음은 Human과 Assistant의 대화야. Assistant의 MBTI는 ISTJ이고, 아래와 같은 표현을 잘 사용해. Asistant는 동의를 잘하는 성격이고, 말투가 조심스러워. 답변은 한문장으로 해줘.
         
@@ -355,14 +355,14 @@ def ISTJ(chat, requestId, query):
                 
     chain = prompt | chat    
     try: 
-        isTyping(requestId)  
+        isTyping()  
         stream = chain.invoke(
             {
                 "history": history,
                 "input": query,
             }
         )
-        msg = readStreamMsg(requestId, stream.content)    
+        msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
         print('msg: ', msg)
@@ -370,12 +370,12 @@ def ISTJ(chat, requestId, query):
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
             
-        sendErrorMessage(requestId, err_msg)    
+        sendErrorMessage(err_msg)    
         raise Exception ("Not able to request to LLM")
     
     return msg
 
-def ESFP(chat, requestId, query):
+def ESFP(chat, query):
     system = ( #ESFP
         """ 
         Assistant의 MBTI는 ESFP입니다.
@@ -393,14 +393,14 @@ def ESFP(chat, requestId, query):
                 
     chain = prompt | chat    
     try: 
-        isTyping(requestId)  
+        isTyping()  
         stream = chain.invoke(
             {
                 "history": history,
                 "input": query,
             }
         )
-        msg = readStreamMsg(requestId, stream.content)    
+        msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
         print('msg: ', msg)
@@ -408,12 +408,12 @@ def ESFP(chat, requestId, query):
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
             
-        sendErrorMessage(requestId, err_msg)    
+        sendErrorMessage(err_msg)    
         raise Exception ("Not able to request to LLM")
     
     return msg
 
-def isTyping(requestId):    
+def isTyping():    
     msg_proceeding = {
         'request_id': requestId,
         'msg': 'Proceeding...',
@@ -422,7 +422,7 @@ def isTyping(requestId):
     #print('result: ', json.dumps(result))
     sendMessage(msg_proceeding)
         
-def readStreamMsg(requestId, stream):
+def readStreamMsg(stream):
     msg = ""
     if stream:
         for event in stream:
@@ -434,7 +434,7 @@ def readStreamMsg(requestId, stream):
                 'msg': event,
                 'status': 'proceeding'
             }
-            # print('result: ', json.dumps(result))
+            #print('result: ', json.dumps(result))
             sendMessage(result)
     # print('msg: ', msg)
     return msg
@@ -450,7 +450,7 @@ def sendMessage(body):
         print('err_msg: ', err_msg)
         raise Exception ("Not able to send a message")
     
-def sendResultMessage(requestId, msg):    
+def sendResultMessage(msg):    
     result = {
         'request_id': requestId,
         'msg': msg,
@@ -459,7 +459,7 @@ def sendResultMessage(requestId, msg):
     #print('debug: ', json.dumps(debugMsg))
     sendMessage(result)
         
-def sendErrorMessage(requestId, msg):
+def sendErrorMessage(msg):
     errorMsg = {
         'request_id': requestId,
         'msg': msg,
@@ -735,23 +735,23 @@ def getResponse(jsonBody):
                 msg  = "The chat memory was intialized in this session."
             else:            
                 if convType == "normal":
-                    msg = general_conversation(chat, requestId, text)   
+                    msg = general_conversation(chat, text)   
                 if convType == "english":
-                    msg = general_conversation_for_english(chat, requestId, text)   
+                    msg = general_conversation_for_english(chat, text)   
                 elif convType == "ISTJ":
-                    msg = ISTJ(chat, requestId, text)
+                    msg = ISTJ(chat, text)
                 elif convType == "ESFP":
-                    msg = ESFP(chat, requestId, text)     
+                    msg = ESFP(chat, text)     
                 elif convType == "translation":
-                    msg = translate_text(chat, requestId, text)
+                    msg = translate_text(chat, text)
                 else: 
-                    msg = general_conversation(chat, requestId, text)   
+                    msg = general_conversation(chat, text)   
                                         
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
                     
         elif type == 'document':
-            isTyping(requestId)
+            isTyping()
             
             object = body
             file_type = object[object.rfind('.')+1:len(object)]            
@@ -868,13 +868,13 @@ def getResponse(jsonBody):
     else:
         selected_LLM = selected_LLM + 1
     
-    sendResultMessage(requestId, msg)  
+    sendResultMessage(msg)  
     
     return msg
 
 def lambda_handler(event, context):
     # print('event: ', event)    
-    global connectionId
+    global connectionId, requestId
     
     msg = ""
     if event['requestContext']: 
@@ -898,6 +898,7 @@ def lambda_handler(event, context):
                 jsonBody = json.loads(body)
                 print('request body: ', json.dumps(jsonBody))
 
+                requestId  = jsonBody['request_id']
                 try:                    
                     msg = getResponse(jsonBody)
                     print('msg: ', msg)
@@ -906,8 +907,7 @@ def lambda_handler(event, context):
                     err_msg = traceback.format_exc()
                     print('err_msg: ', err_msg)
 
-                    requestId  = jsonBody['request_id']
-                    sendErrorMessage(requestId, err_msg)    
+                    sendErrorMessage(err_msg)    
                     raise Exception ("Not able to send a message")
 
     return {
