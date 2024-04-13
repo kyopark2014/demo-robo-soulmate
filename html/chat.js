@@ -987,7 +987,7 @@ function addReceivedMessage(requestId, msg) {
     // console.log("add received message: "+msg);
     sender = "Chatbot"
 
-    console.log('indexList.get(requestId]: ', indexList.get(requestId+':receive'))
+    console.log('requestId: '+requestId+ '(index: '+indexList.get(requestId+':receive')+')')
     if (indexList.get(requestId+':receive') == undefined) {
         indexList.put(requestId+':receive', index);
         current = index;
