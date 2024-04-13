@@ -1,8 +1,8 @@
 const protocol = 'WEBSOCKET'; // WEBSOCKET 
 const langstate = 'korean'; // korean or english
-const enableTTS = false;
+const enableTTS = true;
 const enableScore = false;
-const speechType = 'robot';  // local or robot or both
+const speechType = 'both';  // local or robot or both
 const enableDelayedMessage = true; // in order to manipulate the voice messages
 
 if(enableTTS && (speechType=='local' || speechType=='both')) {
@@ -182,7 +182,7 @@ let playList = [];
 let current = 0;
 let requestId = ""
 let next = true;
-let isNew = new HashMap();
+let isDelivered = new HashMap();
 function connect(endpoint, type) {
     const ws = new WebSocket(endpoint);
 
@@ -227,7 +227,7 @@ function connect(endpoint, type) {
             response = JSON.parse(event.data)
 
             if(response.status == 'completed') {     
-                console.log('dialog status: completed');    
+                console.log('dialog status: completed ('+response.request_id+')');    
                 console.log('next: ', next); 
                 feedback.style.display = 'none';       
                    
@@ -235,18 +235,17 @@ function connect(endpoint, type) {
                 // console.log('response.msg: ', response.msg);
 
                 if(enableTTS) {
-                    console.log('isNew: ', isNew.get(response.request_id));
+                    console.log('isDelivered: ', isDelivered.get(response.request_id));
                     console.log('speechType: ', speechType);
                     if(enableScore && speechType=='robot') {
                         // thingName = "AI-Dancing-Robot-000"
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
                     }
                     else if(enableScore && speechType=='local') { // local
-                        if(isNew.get(response.request_id) == undefined) {
-                            requestId = response.request_id;
+                        if(isDelivered.get(response.request_id) == undefined) {
                             playList.push({
                                 'played': false,
-                                'requestId': requestId,
+                                'requestId': response.request_id,
                                 'text': response.msg
                             });
                             lineText = "";      
@@ -256,17 +255,16 @@ function connect(endpoint, type) {
                             next = true;
                             playAudioList();
 
-                            isNew.put(requestId, true)
+                            isDelivered.put(response.request_id, true)
                         }    
                     }
                     else if(enableScore && speechType=='both') { // need to control the robot
                         sendControl(userId, 'text', response.msg, 0, response.request_id);
 
-                        if(isNew.get(response.request_id) == undefined) {
-                            requestId = response.request_id;
+                        if(isDelivered.get(response.request_id) == undefined) {
                             playList.push({
                                 'played': false,
-                                'requestId': requestId,
+                                'requestId': response.request_id,
                                 'text': response.msg
                             });
                             lineText = "";      
@@ -276,7 +274,7 @@ function connect(endpoint, type) {
                             next = true;
                             playAudioList();
 
-                            isNew.put(requestId, true)
+                            isDelivered.put(response.request_id, true)
                         }    
                     }
                     
@@ -311,7 +309,7 @@ function connect(endpoint, type) {
                         });
                         lineText = "";      
             
-                        isNew.put(response.request_id, true);
+                        isDelivered.put(response.request_id, true);
                         loadAudio(response.request_id, text);                                  
                     }
                     
