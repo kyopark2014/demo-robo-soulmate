@@ -988,15 +988,15 @@ function addReceivedMessage(requestId, msg) {
     sender = "Chatbot"
 
     let isReceived;
-    console.log('indexList.get(requestId]: ', indexList.get(requestId+':receive'))
-    if(!indexList.get(requestId+':receive')) {
+    console.log('indexList.get(requestId]: ',)
+    if (indexList.get(requestId+':receive' == undefined)) {
         indexList.put(requestId+':receive', index);
-        isReceived = true;
+        isReceived = false;
     }
     else {
         index = indexList.get(requestId+':receive');
         // console.log("reused index="+index+', id='+requestId+':receive');
-        isReceived = false;
+        isReceived = true;
     }
     console.log("index:", index);   
 
@@ -1034,7 +1034,7 @@ function addReceivedMessage(requestId, msg) {
         msglist[index].innerHTML = `<div class="chat-receiver80 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
 
-    if(isReceived) index++;
+    if(isReceived==false) index++;
 
     chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
 }
