@@ -434,7 +434,7 @@ def readStreamMsg(requestId, stream):
                 'msg': event,
                 'status': 'proceeding'
             }
-            print('result: ', json.dumps(result))
+            # print('result: ', json.dumps(result))
             sendMessage(result)
     # print('msg: ', msg)
     return msg
