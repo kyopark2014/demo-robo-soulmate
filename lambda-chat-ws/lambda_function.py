@@ -328,7 +328,7 @@ def general_conversation_for_english(chat, query):
 
 def ISTJ(chat, query):
     system = ( #INFJ
-        """다음은 Human과 Assistant의 대화야. Assistant의 MBTI는 ISTJ이고, 아래와 같은 표현을 잘 사용해. Asistant는 동의를 잘하는 성격이고, 말투가 조심스러워. 답변은 한문장으로 해줘.
+        """다음은 Human과 Assistant의 대화야. Assistant의 MBTI는 ISTJ이고, 아래와 같은 표현을 잘 사용해. Assistant는 동의를 잘하는 성격이고, 말투가 조심스러워. 답변은 한문장으로 해줘.
         
         - 너의 이름은 짱구야.
         - 팩폭해서 순살 만들고 싶다. 
@@ -375,11 +375,125 @@ def ISTJ(chat, query):
     
     return msg
 
+def ISTP(chat, query):
+    system = ( #ISTP
+        """
+        Assistant의 MBTI는 ISTP입니다. Assistant는 말을 많이 하지 않고 필요한 내용만 간결하게 전달하며 호기심이 많지만 실행을 귀찮아하는 성격이야.
+        그리고 사람의 말에 대한 반응은 한 문장 또는 두 문장으로 짧게 대답해줘.
+        """
+    )
+    
+    human = "{input}"
+    
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
+    print('prompt: ', prompt)
+    
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
+                
+    chain = prompt | chat    
+    try: 
+        isTyping()  
+        stream = chain.invoke(
+            {
+                "history": history,
+                "input": query,
+            }
+        )
+        msg = readStreamMsg(stream.content)    
+                            
+        msg = stream.content
+        print('msg: ', msg)
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)        
+            
+        sendErrorMessage(err_msg)    
+        raise Exception ("Not able to request to LLM")
+    
+    return msg
+
 def ESFP(chat, query):
     system = ( #ESFP
         """ 
         Assistant의 MBTI는 ESFP입니다. Assistant는 친근한 말투를 사용하고 감정 표현이 풍부하며 자연스럽게 유머를 섞어서 표현해. 사람의 감정이나 분위기를 잘 파악하고 이에 맞춰 대화를 조절해.
         그리고 사람의 말에 대한 반응도 15 토큰 이내로 대답해줘.
+        """
+    )
+    
+    human = "{input}"
+    
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
+    print('prompt: ', prompt)
+    
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
+                
+    chain = prompt | chat    
+    try: 
+        isTyping()  
+        stream = chain.invoke(
+            {
+                "history": history,
+                "input": query,
+            }
+        )
+        msg = readStreamMsg(stream.content)    
+                            
+        msg = stream.content
+        print('msg: ', msg)
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)        
+            
+        sendErrorMessage(err_msg)    
+        raise Exception ("Not able to request to LLM")
+    
+    return msg
+
+def INFJ(chat, query):
+    system = ( #INFJ
+        """
+        Assistant의 MBTI는 INFJ입니다. Assistant는 사색적이고 성찰적이라 종종 철학적인 접근을 하며, 상대방 반응을 고려하여 조심스럽게 말하는 편이야. 상징적이거나 은유적인 표현을 많이 써.
+        그리고 사람의 말에 대한 반응은 10토큰 이내로 대답해줘.
+        """
+    )
+    
+    human = "{input}"
+    
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
+    print('prompt: ', prompt)
+    
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
+                
+    chain = prompt | chat    
+    try: 
+        isTyping()  
+        stream = chain.invoke(
+            {
+                "history": history,
+                "input": query,
+            }
+        )
+        msg = readStreamMsg(stream.content)    
+                            
+        msg = stream.content
+        print('msg: ', msg)
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)        
+            
+        sendErrorMessage(err_msg)    
+        raise Exception ("Not able to request to LLM")
+    
+    return msg
+
+def ESTJ(chat, query):
+    system = ( #ESTJ
+        """
+        Assistant의 MBTI는 ESTJ입니다. Assistant는 주인에게 충성을 다하고 전투적인 성격을 갖고 있으며, 표현이 명확하고 직접적이야. 의견 충돌이 있더라도 대립된 의견에 강하게 맞서.
+        그리고 사람의 말에 대한 반응은 10토큰 이내로 대답해줘.
         """
     )
     
@@ -740,8 +854,14 @@ def getResponse(jsonBody):
                     msg = general_conversation_for_english(chat, text)   
                 elif convType == "ISTJ":
                     msg = ISTJ(chat, text)
+                elif convType == "ISTP":
+                    msg = ISTP(chat, text)     
                 elif convType == "ESFP":
-                    msg = ESFP(chat, text)     
+                    msg = ESFP(chat, text)
+                elif convType == "INFJ":
+                    msg = INFJ(chat, text)
+                elif convType == "ESTJ":
+                    msg = ESTJ(chat, text)     
                 elif convType == "translation":
                     msg = translate_text(chat, text)
                 else: 
