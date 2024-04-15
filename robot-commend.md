@@ -79,3 +79,7 @@ function isReservedCommend(requestId, message){
 
 <img width="868" alt="image" src="https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/efc8b631-18f3-4d00-86d5-2ee658253081">
 
+MQTT로 로봇에 전달된 메시지는 아래와 같습니다.
+
+![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/e39579be-88af-4ab9-b70c-291122c8a98e)
+
