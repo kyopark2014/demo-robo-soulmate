@@ -74,3 +74,8 @@ function isReservedCommend(requestId, message){
     }    
 }
 ```
+
+동작 수행 결과는 아래와 같습니다. "엎드려"에 대해 동작을 수행하고, 방문자에게는 "엎드려 동작을 수행합니다."라고 설명하는 메시지를 내보냅니다.
+
+<img width="868" alt="image" src="https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/efc8b631-18f3-4d00-86d5-2ee658253081">
+
