@@ -31,7 +31,7 @@ Photo Booth에서는 Stable Diffusion 이미지를 생성합니다. 상세한 �
 
 ### Robot Commend의 수행
 
-미리 예약된 명령어에 대해서는 LLM에 대한 질의없이 바로 해당 명령어를 수행합니다. [robot-commend.md](https://github.com/kyopark2014/demo-ai-dansing-robot/blob/main/robot-commend.md)에 예약어 등록방법에 대해 설명하고 있습니다.
+미리 예약된 명령어에 대해서는 LLM에 대한 질의없이 바로 해당 명령어를 수행합니다. [robot-commend.md](https://github.com/kyopark2014/demo-ai-dansing-robot/blob/main/robot-commend.md)에서는 예약어 등록방법에 대해 설명하고 있습니다.
 
 ## 데모 준비
 
