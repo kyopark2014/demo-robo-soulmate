@@ -220,8 +220,8 @@ function isReservedCommend(requestId, message){
         return false;
     }
     else {
-        console.log('action: ', message);
-        sendControl(userId, "action", "", reservedCommend.get(message), 0, requestId)
+        console.log('commend: ', message);
+        sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
 
         addReceivedMessage(requestId, message+' 동작을 수행합니다.')
         return true;
