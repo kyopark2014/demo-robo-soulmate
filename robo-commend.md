@@ -40,3 +40,37 @@
 ```java
 {"show": "SAD", "move": "seq", "seq":["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT" ], "say": "안돼. 그러지마."}
 ```
+
+## 명령어의 처리
+
+[chat.js](./html/chat.js)에서는 아래와 같이 명령어를 설정합니다.
+
+```java
+function initializeCommend() {
+    reservedCommend.put('짖어', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
+    reservedCommend.put('앉아', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
+    reservedCommend.put('엎드려', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "엎드렸어."}));
+    reservedCommend.put('이리 와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
+    reservedCommend.put('저리가', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));    
+}
+initializeCommend();
+```
+
+이후, 아래와 같이 입력이 예약어인 명령어일 경우에 해당되는 동작을 수행합니다.
+
+```java
+function isReservedCommend(requestId, message){
+    console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
+
+    if(reservedCommend.get(message) == undefined) {        
+        return false;
+    }
+    else {
+        console.log('action: ', message);
+        sendControl(userId, "action", "", reservedCommend.get(message), 0, requestId)
+
+        addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+        return true;
+    }    
+}
+```
