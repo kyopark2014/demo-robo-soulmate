@@ -805,7 +805,7 @@ function onSend(e) {
         addSentMessage(requestId, timestr, message.value);
 
         if(protocol == 'WEBSOCKET') {
-            if(isReservedCommend(query)==false) {   
+            if(isReservedCommend(message.value)==false) {   
                 console.log('request to estimate the score');
                 getScore(userId, requestId, message.value);     
 
