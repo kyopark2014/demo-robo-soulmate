@@ -195,7 +195,7 @@ function initializeCommend() {
 }
 initializeCommend();
 
-function isReservedCommend(message){
+function isReservedCommend(requestId, message){
     console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
 
     if(reservedCommend.get(message) == undefined) {        
@@ -204,6 +204,8 @@ function isReservedCommend(message){
     else {
         console.log('action: ', message);
         sendControl(userId, "action", "", reservedCommend.get(message), 0, requestId)
+
+        addReceivedMessage(requestId, message+' 동작을 수행합니다.')
         return true;
     }    
 }
@@ -396,7 +398,7 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
 
         next = true;  // initiate valriable 'next' for audio play
 
-        if(isReservedCommend(query)==false) {
+        if(isReservedCommend(requestId, query)==false) {
             console.log('get score for ', query);
             if(scoreValue.get(requestId)==undefined) { // check duplication
                 getScore(userId, requestId, query); 
@@ -438,7 +440,7 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
 
             next = true;  // initiate valriable 'next' for audio play        
 
-            if(isReservedCommend(query)==false) {
+            if(isReservedCommend(requestId, query)==false) {
                 console.log('get score for ', query);
                 if(scoreValue.get(requestId)==undefined) { // check duplication
                     getScore(userId, requestId, query); 
@@ -805,7 +807,7 @@ function onSend(e) {
         addSentMessage(requestId, timestr, message.value);
 
         if(protocol == 'WEBSOCKET') {
-            if(isReservedCommend(message.value)==false) {   
+            if(isReservedCommend(requestId, message.value)==false) {   
                 console.log('request to estimate the score');
                 getScore(userId, requestId, message.value);     
 
