@@ -397,6 +397,12 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
         next = true;  // initiate valriable 'next' for audio play
 
         if(isReservedCommend(message)==false) {
+            console.log('get score for ', query);
+            if(scoreValue.get(requestId)==undefined) { // check duplication
+                getScore(userId, requestId, query); 
+                scoreValue.put(requestId, true);
+            }
+
             sendMessage({
                 "user_id": userId,
                 "request_id": requestId,
@@ -433,6 +439,12 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
             next = true;  // initiate valriable 'next' for audio play        
 
             if(isReservedCommend(message)==false) {
+                console.log('get score for ', query);
+                if(scoreValue.get(requestId)==undefined) { // check duplication
+                    getScore(userId, requestId, query); 
+                    scoreValue.put(requestId, true);
+                }
+
                 sendMessage({
                     "user_id": userId,
                     "request_id": requestId,
@@ -523,13 +535,6 @@ function voiceConnect(voiceEndpoint, type) {
                         else {  // in order to manipulate voice messages where the message will be delayed for one time
                             delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType);                                   
                         }
-                        
-                        console.log('get score for ', query);
-                        if(scoreValue.get(requestId)==undefined) { // check duplication
-                            getScore(userId, requestId, query); 
-                            scoreValue.put(requestId, true);
-                        }
-                         
                     }
                     else {  
                         console.log('ignore the duplicated message: ', query);
@@ -799,11 +804,11 @@ function onSend(e) {
         let requestId = uuidv4();
         addSentMessage(requestId, timestr, message.value);
 
-        console.log('request to estimate the score');
-        getScore(userId, requestId, message.value);
-        
         if(protocol == 'WEBSOCKET') {
-            if(isReservedCommend(message)==false) {        
+            if(isReservedCommend(message)==false) {   
+                console.log('request to estimate the score');
+                getScore(userId, requestId, message.value);     
+
                 sendMessage({
                     "user_id": userId,
                     "request_id": requestId,
