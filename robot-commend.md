@@ -43,7 +43,7 @@
 
 ## 명령어의 처리
 
-[chat.js](./html/chat.js)에서는 아래와 같이 명령어를 설정합니다.
+[chat.js](./html/chat.js)에 아래와 같이 명령어를 등록합니다.
 
 ```java
 function initializeCommend() {
