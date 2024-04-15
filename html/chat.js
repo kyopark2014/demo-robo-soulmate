@@ -182,6 +182,32 @@ let current = 0;
 let requestId = ""
 let next = true;
 let requested = new HashMap();
+
+// Robot commend
+let reservedCommend = new HashMap();
+
+function initializeCommend() {
+    reservedCommend.put('짓어', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
+    reservedCommend.put('앉아', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
+    reservedCommend.put('엎드려', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "엎드렸어."}));
+    reservedCommend.put('이리 와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
+    reservedCommend.put('저리가', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));    
+}
+initializeCommend();
+
+function isReservedCommend(message){
+    console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
+
+    if(reservedCommend.get(message) == undefined) {        
+        return false;
+    }
+    else {
+        console.log('action: ', message);
+        sendControl(userId, "action", "", reservedCommend.get(message), 0, requestId)
+        return true;
+    }    
+}
+
 function connect(endpoint, type) {
     const ws = new WebSocket(endpoint);
 
@@ -238,7 +264,7 @@ function connect(endpoint, type) {
                     console.log('speechType: ', speechType);
                     if(speechType=='robot') {
                         // thingName = "AI-Dancing-Robot-000"
-                        sendControl(userId, 'text', response.msg, 0, response.request_id);
+                        sendControl(userId, 'text', response.msg, "", 0, response.request_id);
                     }
                     else if(speechType=='local') { // local
                         if(requested[response.request_id] == undefined) {
@@ -257,7 +283,7 @@ function connect(endpoint, type) {
                         }    
                     }
                     else if(speechType=='both') {
-                        sendControl(userId, 'text', response.msg, 0, response.request_id);
+                        sendControl(userId, 'text', response.msg, "", 0, response.request_id);
 
                         if(requested[response.request_id] == undefined) {
                             requestId = response.request_id;
@@ -368,15 +394,18 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
     if(messageTransfered.get(requestId)==undefined) {
         console.log('--> sendMessage: ', query);
 
-        next = true;  // initiate valriable 'next' for audio play        
-        sendMessage({
-            "user_id": userId,
-            "request_id": requestId,
-            "request_time": requestTime,        
-            "type": "text",
-            "body": query,
-            "convType": conversationType
-        });
+        next = true;  // initiate valriable 'next' for audio play
+
+        if(isReservedCommend(message)==false) {
+            sendMessage({
+                "user_id": userId,
+                "request_id": requestId,
+                "request_time": requestTime,        
+                "type": "text",
+                "body": query,
+                "convType": conversationType
+            });
+        }
         messageMemory.put(requestId, query);      
         messageTransfered.put(requestId, true);
                 
@@ -402,14 +431,17 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
             console.log('--> sendMessage: ', query);
 
             next = true;  // initiate valriable 'next' for audio play        
-            sendMessage({
-                "user_id": userId,
-                "request_id": requestId,
-                "request_time": requestTime,        
-                "type": "text",
-                "body": query,
-                "convType": conversationType
-            });
+
+            if(isReservedCommend(message)==false) {
+                sendMessage({
+                    "user_id": userId,
+                    "request_id": requestId,
+                    "request_time": requestTime,        
+                    "type": "text",
+                    "body": query,
+                    "convType": conversationType
+                });
+            }
             messageMemory.put(requestId, query);      
             messageTransfered.put(requestId, true);
                 
@@ -771,14 +803,16 @@ function onSend(e) {
         getScore(userId, requestId, message.value);
         
         if(protocol == 'WEBSOCKET') {
-            sendMessage({
-                "user_id": userId,
-                "request_id": requestId,
-                "request_time": requestTime,        
-                "type": "text",
-                "body": message.value,
-                "convType": conversationType
-            })
+            if(isReservedCommend(message)==false) {        
+                sendMessage({
+                    "user_id": userId,
+                    "request_id": requestId,
+                    "request_time": requestTime,        
+                    "type": "text",
+                    "body": message.value,
+                    "convType": conversationType
+                })
+            }
         }
         else {
             sendRequest(message.value, requestId, requestTime);
@@ -893,7 +927,7 @@ function addSentMessageForSummary(requestId, timestr, text) {
     index++;
 }  
 
-function sendControl(thingName, type, message, score, requestId) {
+function sendControl(thingName, type, message, commend, score, requestId) {
     const uri = "control";
     const xhr = new XMLHttpRequest();
 
@@ -915,6 +949,14 @@ function sendControl(thingName, type, message, score, requestId) {
             "request_id": requestId,
             "type": type,
             "message": message
+        }
+    }
+    else if(type == 'commend') { // reserved commend
+        requestObj = {
+            "user_id": thingName,
+            "request_id": requestId,
+            "type": type,
+            "commend": commend
         }
     }
     else { // score
@@ -952,7 +994,7 @@ function getScore(userId, requestId, text) {
             addNotifyMessage('[debug] score: '+score+', description: '+description);
             
             if(speechType=='robot' || speechType=='both') {
-                sendControl(userId, "action", "", score, requestId)
+                sendControl(userId, "action", "", "", score, requestId)
             }   
         }
     };

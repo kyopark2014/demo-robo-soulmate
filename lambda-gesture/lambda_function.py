@@ -168,4 +168,4 @@ def lambda_handler(event, context):
             "msg": msg,
             "time_taken": str(time_for_gesture)
         })
-    }
+    }    

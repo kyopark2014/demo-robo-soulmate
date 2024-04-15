@@ -21,6 +21,11 @@ def lambda_handler(event, context):
         payload = json.dumps({
             "say": message, 
         })
+    elif type == 'commend':
+        commend = event['commend']
+        print('commend: ', commend)
+
+        payload = commend
     else:
         score = event['score']
         print('score: ', score)
