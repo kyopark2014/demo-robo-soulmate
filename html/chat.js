@@ -396,7 +396,7 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
 
         next = true;  // initiate valriable 'next' for audio play
 
-        if(isReservedCommend(message)==false) {
+        if(isReservedCommend(query)==false) {
             console.log('get score for ', query);
             if(scoreValue.get(requestId)==undefined) { // check duplication
                 getScore(userId, requestId, query); 
@@ -438,7 +438,7 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
 
             next = true;  // initiate valriable 'next' for audio play        
 
-            if(isReservedCommend(message)==false) {
+            if(isReservedCommend(query)==false) {
                 console.log('get score for ', query);
                 if(scoreValue.get(requestId)==undefined) { // check duplication
                     getScore(userId, requestId, query); 
@@ -805,7 +805,7 @@ function onSend(e) {
         addSentMessage(requestId, timestr, message.value);
 
         if(protocol == 'WEBSOCKET') {
-            if(isReservedCommend(message)==false) {   
+            if(isReservedCommend(query)==false) {   
                 console.log('request to estimate the score');
                 getScore(userId, requestId, message.value);     
 
