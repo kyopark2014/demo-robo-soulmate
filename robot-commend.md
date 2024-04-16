@@ -136,5 +136,9 @@ MQTT로 로봇에 전달된 메시지는 아래와 같습니다.
 
 ![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/e39579be-88af-4ab9-b70c-291122c8a98e)
 
+제한된 명령어의 경우에 1회만 수행하도록 제한합니다. 게임이 끝나면 제한이 해제됩니다.
+
+<img width="859" alt="image" src="https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/9147835f-b7a4-43fd-a4cc-315b4a3fc060">
+
 
 
