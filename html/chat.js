@@ -225,7 +225,6 @@ function initializeCommend() {
 }
 initializeCommend();
 
-
 let counter = new HashMap();
 function isReservedCommend(requestId, message){
     console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
@@ -270,6 +269,11 @@ function isReservedCommend(requestId, message){
         
         return true;
     }    
+}
+
+function initCommendCounter() {
+    counter.put(1, 0);
+    counter.put(2, 0);
 }
 
 function connect(endpoint, type) {
@@ -618,9 +622,13 @@ function voiceConnect(voiceEndpoint, type) {
 
                     if(state == 'start') {
                         addNotifyMessage('start the game.');
+                        console.log('start a game');
                     }
                     else if (state == 'end') {
-                        addNotifyMessage('end the game.');                        
+                        addNotifyMessage('end the game.');
+
+                        console.log('initiate commend counter');
+                        initCommendCounter();                   
                     }
                     else {
                         addNotifyMessage('game event: '+state);
