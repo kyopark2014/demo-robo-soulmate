@@ -523,45 +523,64 @@ function voiceConnect(voiceEndpoint, type) {
                 console.log('response: ', response);
                 
                 let msg = JSON.parse(response.msg)
+
                 requestId = msg.requestId;
                 query = msg.query;
                 state = msg.state;
 
-                console.log('requestId: ', requestId);
-                console.log('query: ', query);
-                console.log('voice state: ', state);
+                type = msg.type;
+                console.log('type: ', type);
 
-                let current = new Date();
-                let datastr = getDate(current);
-                let timestr = getTime(current);
-                let requestTime = datastr+' '+timestr;
+                if(type == 'message') {
+                    console.log('requestId: ', requestId);
+                    console.log('query: ', query);
+                    console.log('voice state: ', state);
 
-                console.log('remainingRedirectedMessage', remainingRedirectedMessage);    // last redirected message but not delivered
+                    let current = new Date();
+                    let datastr = getDate(current);
+                    let timestr = getTime(current);
+                    let requestTime = datastr+' '+timestr;
 
-                if(state=='completed') {
-                    if (remainingRedirectedMessage && requestId != remainingRedirectedMessage['requestId']) {
-                        requestId = remainingRedirectedMessage['requestId']; // use the remained requestId for display
-                       
-                        remainingRedirectedMessage['message'] = remainingRedirectedMessage['message']+'\n'+query; // add new message
-                        query = remainingRedirectedMessage['message'];
+                    console.log('remainingRedirectedMessage', remainingRedirectedMessage);    // last redirected message but not delivered
+
+                    if(state=='completed') {
+                        if (remainingRedirectedMessage && requestId != remainingRedirectedMessage['requestId']) {
+                            requestId = remainingRedirectedMessage['requestId']; // use the remained requestId for display
+                        
+                            remainingRedirectedMessage['message'] = remainingRedirectedMessage['message']+'\n'+query; // add new message
+                            query = remainingRedirectedMessage['message'];
+                        }
+
+                        if(messageMemory.get(requestId)==undefined) { 
+                            addSentMessage(requestId, timestr, query);
+
+                            if(enableDelayedMessage == false) {
+                                requestReDirectMessage(requestId, query, userId, requestTime, conversationType)
+                            }
+                            else {  // in order to manipulate voice messages where the message will be delayed for one time
+                                delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType);                                   
+                            }
+                        }
+                        else {  
+                            console.log('ignore the duplicated message: ', query);
+                        }                    
                     }
-
-                    if(messageMemory.get(requestId)==undefined) { 
+                    else {
                         addSentMessage(requestId, timestr, query);
-
-                        if(enableDelayedMessage == false) {
-                            requestReDirectMessage(requestId, query, userId, requestTime, conversationType)
-                        }
-                        else {  // in order to manipulate voice messages where the message will be delayed for one time
-                            delayedRequestForRedirectionMessage(requestId, query, userId, requestTime, conversationType);                                   
-                        }
                     }
-                    else {  
-                        console.log('ignore the duplicated message: ', query);
-                    }                    
                 }
-                else {
-                    addSentMessage(requestId, timestr, query);
+                else { // game event
+                    console.log('state: ', state);
+
+                    if(state == 'start') {
+                        addNotifyMessage('start the game.');
+                    }
+                    else if (state == end) {
+                        addNotifyMessage('end the game.');                        
+                    }
+                    else {
+                        addNotifyMessage('game event: '+state);
+                    }
                 }                            
             }      
             else if(response.status == 'error') {
