@@ -181,7 +181,7 @@ let playList = [];
 let current = 0;
 let requestId = ""
 let next = true;
-let requested = new HashMap();
+let isPlayedTTS = new HashMap();
 
 // Robot commend
 let reservedCommend = new HashMap();
@@ -330,14 +330,14 @@ function connect(endpoint, type) {
                 addReceivedMessage(response.request_id, response.msg);  
                 // console.log('response.msg: ', response.msg);
 
-                if(enableTTS) {
-                    console.log('requested: ', requested[response.request_id]);
+                if(enableTTS) {                    
                     console.log('speechType: ', speechType);
                     if(speechType=='robot') {
                         sendControl(userId, 'text', response.msg, "", 0, response.request_id);
                     }
                     else if(speechType=='local') { // local
-                        if(requested[response.request_id] == undefined) {
+                        console.log('Is already played? ', isPlayedTTS[response.request_id]);
+                        if(isPlayedTTS[response.request_id] == undefined) {
                             requestId = response.request_id;
                             playList.push({
                                 'played': false,
@@ -355,7 +355,8 @@ function connect(endpoint, type) {
                     else if(speechType=='both') {
                         sendControl(userId, 'text', response.msg, "", 0, response.request_id);
 
-                        if(requested[response.request_id] == undefined) {
+                        console.log('Is already played? ', isPlayedTTS[response.request_id]);
+                        if(isPlayedTTS[response.request_id] == undefined) {
                             requestId = response.request_id;
                             playList.push({
                                 'played': false,
@@ -402,7 +403,7 @@ function connect(endpoint, type) {
                         });
                         lineText = "";
             
-                        requested[response.request_id] = true;
+                        isPlayedTTS[response.request_id] = true;
                         loadAudio(response.request_id, text);
                     }
                     
