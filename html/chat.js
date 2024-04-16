@@ -484,7 +484,7 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
             });
         }
         else {  // reservice commend
-            actionforReservedCommend(requestId, message);
+            actionforReservedCommend(requestId, query);
         }
         messageMemory.put(requestId, query);      
         messageTransfered.put(requestId, true);
@@ -529,7 +529,7 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
                 });
             }
             else {  // reservice commend
-                actionforReservedCommend(requestId, message);
+                actionforReservedCommend(requestId, query);
             }
 
             messageMemory.put(requestId, query);      
@@ -922,7 +922,7 @@ function onSend(e) {
                 })
             }
             else {  // reservice commend
-                actionforReservedCommend(requestId, message);
+                actionforReservedCommend(requestId, message.value);
             }
         }
         else {
