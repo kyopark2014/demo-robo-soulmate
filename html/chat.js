@@ -388,7 +388,7 @@ function connect(endpoint, type) {
                 sentance.put(response.request_id, sentance.get(response.request_id)+response.msg);              
                 
                 addReceivedMessage(response.request_id, sentance.get(response.request_id));
-                // console.log('response.msg: ', response.msg);
+                console.log('response.msg: ', response.msg);
 
                 if(enableTTS && (speechType=='local' || speechType=='both')) {
                     lineText += response.msg;
