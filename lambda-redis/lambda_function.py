@@ -35,12 +35,10 @@ def push_game_event(state):
     }
     
     for userId in list:    
-        requestId = str(uuid.uuid4())
-        
         msg = {
             "type": "game",
             "userId": userId,
-            "requestId": requestId,
+            "requestId": str(uuid.uuid4()),
             "query": "",
             "state": state
         }
@@ -57,6 +55,7 @@ def push_game_event(state):
    
 requestId = str(uuid.uuid4())          
 def lambda_handler(event, context):
+    global requestId
     print('event: ', json.dumps(event))
     
     userId = event['userId']        
