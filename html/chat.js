@@ -244,6 +244,7 @@ function isReservedCommend(requestId, message){
         }
         else { 
             let cnt = counter.get(commendId);
+            console.log('commend counter: ', cnt);
 
             if(cnt == undefined || cnt == 0) {
                 console.log('commend: ', message);
