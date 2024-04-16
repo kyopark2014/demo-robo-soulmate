@@ -56,9 +56,32 @@ function initializeCommend() {
 initializeCommend();
 ```
 
-이후, 아래와 같이 입력이 예약어인 명령어일 경우에 해당되는 동작을 수행합니다.
+### 유사 명령어의 등록
+
+아래와 같이 유사 명령어의 처리를 위하여 '~봐', '~줘'를 포함한 명령어를 추가로 정의합니다.
 
 ```java
+    reservedCommend.put('짖어', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
+    reservedCommend.put('짖어봐', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
+    reservedCommend.put('짖어줘', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
+```
+
+### 제한된 명령어의 아이디 지정
+
+유사 명령어는 1건으로 count하기 위하여 '이리 와', '이리 와봐', '이리 와줘'로 같은 아이디를 갖도록 합니다.
+
+```java
+    limitedCommendId.put('이리 와', 1)
+    limitedCommendId.put('이리 와봐', 1)
+    limitedCommendId.put('이리 와줘', 1)
+```
+
+### 명령어의 수행
+
+아래와 같이 입력이 예약어인 명령어일 경우에 해당되는 동작을 수행합니다.
+
+```java
+let counter = new HashMap();
 function isReservedCommend(requestId, message){
     console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
 
@@ -66,10 +89,40 @@ function isReservedCommend(requestId, message){
         return false;
     }
     else {
-        console.log('action: ', message);
-        sendControl(userId, "action", "", reservedCommend.get(message), 0, requestId)
+        let commendId = limitedCommendId.get(message);
+        console.log('commendId: ', commendId);
+        if(commendId == undefined) {
+            console.log('commend: ', message);
+            sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
 
-        addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+            addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+        }
+        else { 
+            let cnt = counter.get(commendId);
+            console.log('commend counter: ', cnt);
+
+            if(cnt == undefined || cnt == 0) {
+                console.log('commend: ', message);
+                sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+
+                addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+
+                counter.put(commendId, 1);
+            }
+            else if (cnt>=1) {
+                console.log(message+' is only allowed for a time.');
+
+                message = '안돼. 그러지마.';
+                console.log('new commend: ', message);
+                sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+
+                addReceivedMessage(requestId, message)
+            }
+            else {
+                console.log('not deifned: '+message+' (cnt='+cnt);
+            }
+        }
+        
         return true;
     }    
 }
@@ -82,4 +135,6 @@ function isReservedCommend(requestId, message){
 MQTT로 로봇에 전달된 메시지는 아래와 같습니다.
 
 ![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/e39579be-88af-4ab9-b70c-291122c8a98e)
+
+
 
