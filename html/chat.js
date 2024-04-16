@@ -638,7 +638,17 @@ function voiceConnect(voiceEndpoint, type) {
                         let current = new Date();
                         let datastr = getDate(current);
                         let timestr = getTime(current);
-                        addSentMessage(uuidv4(), timestr, 'clearMemory');
+                        let requestTime = datastr+' '+timestr;
+                        // addSentMessage(uuidv4(), timestr, 'clearMemory');
+                        sendMessage({
+                            "user_id": userId,
+                            "request_id": uuidv4(),
+                            "request_time": requestTime,        
+                            "type": "text",
+                            "body": 'clearMemory',
+                            "convType": conversationType
+                        })
+                        console.log('clearMemory');
                     }
                     else if (state == 'end') {
                         addNotifyMessage('end the game.');
