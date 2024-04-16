@@ -226,6 +226,14 @@ function initializeCommend() {
 initializeCommend();
 
 let counter = new HashMap();
+function initCommendCounter() {
+    counter.put(1, 0);
+    counter.put(2, 0);
+    counter.put(3, 0);
+    counter.put(4, 0);
+    counter.put(5, 0);
+}
+
 function isReservedCommend(message){
     console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
 
@@ -272,11 +280,6 @@ function actionforReservedCommend(requestId, message) {
             console.log('not deifned: '+message+' (cnt='+cnt);
         }
     }
-}
-
-function initCommendCounter() {
-    counter.put(1, 0);
-    counter.put(2, 0);
 }
 
 function connect(endpoint, type) {
