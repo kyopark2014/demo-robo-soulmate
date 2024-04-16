@@ -252,7 +252,7 @@ function isReservedCommend(requestId, message){
 
                 addReceivedMessage(requestId, message+' 동작을 수행합니다.')
 
-                counter.put(commendId, cnt+1);
+                counter.put(commendId, 1);
             }
             else if (cnt>=1) {
                 console.log(message+' is only allowed for a time.');
