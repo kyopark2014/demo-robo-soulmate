@@ -185,6 +185,7 @@ let requested = new HashMap();
 
 // Robot commend
 let reservedCommend = new HashMap();
+let limitedCommendId = new HashMap(); // once per a game
 
 function initializeCommend() {
     reservedCommend.put('짖어', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
@@ -202,17 +203,30 @@ function initializeCommend() {
     reservedCommend.put('이리 와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
     reservedCommend.put('이리 와봐', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
     reservedCommend.put('이리 와줘', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
+    limitedCommendId.put('이리 와', 1)
+    limitedCommendId.put('이리 와봐', 1)
+    limitedCommendId.put('이리 와줘', 1)
     
     reservedCommend.put('이리와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
     reservedCommend.put('이리와봐', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
     reservedCommend.put('이리와줘', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
+    limitedCommendId.put('이리와', 1)
+    limitedCommendId.put('이리와봐', 1)
+    limitedCommendId.put('이리와줘', 1)    
     
     reservedCommend.put('저리가', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));   
     reservedCommend.put('저리가봐', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));    
     reservedCommend.put('저리가줘', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));     
+    limitedCommendId.put('저리가', 2)    
+    limitedCommendId.put('저리가봐', 2)    
+    limitedCommendId.put('저리가줘', 2)      
+    
+    reservedCommend.put('안돼. 그러지마.', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT" ], "say": "안돼. 그러지마."}));
 }
 initializeCommend();
 
+
+let counter = new HashMap();
 function isReservedCommend(requestId, message){
     console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
 
@@ -220,10 +234,36 @@ function isReservedCommend(requestId, message){
         return false;
     }
     else {
-        console.log('commend: ', message);
-        sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+        let commendId = limitedCommendId.get(message);
+        if(commendId == undefined) {
+            console.log('commend: ', message);
+            sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
 
-        addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+            addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+        }
+        else { 
+            let cnt = counter.get(commendId);
+
+            if(cnt == undefined || cnt == 0) {
+                console.log('commend: ', message);
+                sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+
+                addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+            }
+            else if (cnt>=1) {
+                console.log(message+' is only allowed for a time.');
+
+                message = '안돼. 그러지마.';
+                console.log('new commend: ', message);
+                sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+
+                addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+            }
+            else {
+                console.log('not deifned: '+message+' (cnt='+cnt);
+            }
+        }
+        
         return true;
     }    
 }
