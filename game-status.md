@@ -8,7 +8,7 @@
 POST  https://dxt1m1ae24b28.cloudfront.net/redis
 {
 	"userId": "all",
-  "state": "start"
+	"state": "start"
 }
 ```
 
@@ -18,7 +18,7 @@ POST  https://dxt1m1ae24b28.cloudfront.net/redis
 POST  https://dxt1m1ae24b28.cloudfront.net/redis
 {
 	"userId": "all",
-  "state": "end"
+  	"state": "end"
 }
 ```
 
