@@ -389,7 +389,7 @@ function connect(endpoint, type) {
                 addReceivedMessage(response.request_id, sentance.get(response.request_id));
                 // console.log('response.msg: ', response.msg);
 
-            /*    if(enableTTS && (speechType=='local' || speechType=='both')) {
+                if(enableTTS && (speechType=='local' || speechType=='both')) {
                     lineText += response.msg;
                     lineText = lineText.replace('\n','');
                     if(lineText.length>3 && (response.msg == '.' || response.msg == '?' || response.msg == '!'|| response.msg == ':')) {     
@@ -408,7 +408,7 @@ function connect(endpoint, type) {
                     
                     requestId = response.request_id;
                     playAudioList();
-                } */
+                } 
             }                
             else if(response.status == 'debug') {
                 feedback.style.display = 'none';
