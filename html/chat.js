@@ -467,7 +467,7 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
 
         next = true;  // initiate valriable 'next' for audio play
 
-        if(isReservedCommend(requestId, query)==false) {  // message
+        if(isReservedCommend(query)==false) {  // message
             console.log('get score for ', query);
             if(scoreValue.get(requestId)==undefined) { // check duplication
                 getScore(userId, requestId, query); 
@@ -512,7 +512,7 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
 
             next = true;  // initiate valriable 'next' for audio play        
 
-            if(isReservedCommend(requestId, query)==false) {
+            if(isReservedCommend(query)==false) {
                 console.log('get score for ', query);
                 if(scoreValue.get(requestId)==undefined) { // check duplication
                     getScore(userId, requestId, query); 
@@ -528,6 +528,10 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
                     "convType": conversationType
                 });
             }
+            else {  // reservice commend
+                actionforReservedCommend(requestId, message);
+            }
+
             messageMemory.put(requestId, query);      
             messageTransfered.put(requestId, true);
                 
@@ -904,7 +908,7 @@ function onSend(e) {
         addSentMessage(requestId, timestr, message.value);
 
         if(protocol == 'WEBSOCKET') {
-            if(isReservedCommend(requestId, message.value)==false) {   
+            if(isReservedCommend(message.value)==false) {   
                 console.log('request to estimate the score');
                 getScore(userId, requestId, message.value);     
 
@@ -916,6 +920,9 @@ function onSend(e) {
                     "body": message.value,
                     "convType": conversationType
                 })
+            }
+            else {  // reservice commend
+                actionforReservedCommend(requestId, message);
             }
         }
         else {
