@@ -575,7 +575,7 @@ function voiceConnect(voiceEndpoint, type) {
                     if(state == 'start') {
                         addNotifyMessage('start the game.');
                     }
-                    else if (state == end) {
+                    else if (state == 'end') {
                         addNotifyMessage('end the game.');                        
                     }
                     else {
