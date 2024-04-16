@@ -94,7 +94,7 @@ def lambda_handler(event, context):
         "isBase64Encoded": False,
         'statusCode': 200,
         'body': json.dumps({ 
-            "channel": channel,
+            "channel": f"{userId}",
             "state": state
         })
     }
