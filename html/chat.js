@@ -108,7 +108,7 @@ function sendMessage(message) {
     }
     else {
         webSocket.send(JSON.stringify(message));     
-        console.log('message: ', message);   
+        console.log('sendMessage: ', message);   
 
         return true;
     }     
@@ -389,6 +389,7 @@ function connect(endpoint, type) {
                 
                 addReceivedMessage(response.request_id, sentance.get(response.request_id));
                 console.log('response.msg: ', response.msg);
+                console.log('sentance: ', sentance.get(response.request_id));
 
                 if(enableTTS && (speechType=='local' || speechType=='both')) {
                     lineText += response.msg;
@@ -1071,7 +1072,7 @@ function sendControl(thingName, type, message, commend, score, requestId) {
         }
     }
     
-    console.log("request: " + JSON.stringify(requestObj));
+    console.log("sendControl: " + JSON.stringify(requestObj));
 
     var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
 
