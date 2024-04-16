@@ -635,6 +635,10 @@ function voiceConnect(voiceEndpoint, type) {
                         console.log('start a game');
 
                         // To-DO: clear memory 
+                        let current = new Date();
+                        let datastr = getDate(current);
+                        let timestr = getTime(current);
+                        addSentMessage(uuidv4(), timestr, 'clearMemory');
                     }
                     else if (state == 'end') {
                         addNotifyMessage('end the game.');
