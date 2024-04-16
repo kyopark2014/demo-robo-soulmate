@@ -235,6 +235,7 @@ function isReservedCommend(requestId, message){
     }
     else {
         let commendId = limitedCommendId.get(message);
+        console.log('commendId: ', commendId);
         if(commendId == undefined) {
             console.log('commend: ', message);
             sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
