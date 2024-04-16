@@ -226,49 +226,52 @@ function initializeCommend() {
 initializeCommend();
 
 let counter = new HashMap();
-function isReservedCommend(requestId, message){
+function isReservedCommend(message){
     console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
 
     if(reservedCommend.get(message) == undefined) {        
         return false;
     }
     else {
-        let commendId = limitedCommendId.get(message);
-        console.log('commendId: ', commendId);
-        if(commendId == undefined) {
+        return true;
+    }    
+}
+
+function actionforReservedCommend(requestId, message) {
+    let commendId = limitedCommendId.get(message);
+    console.log('commendId: ', commendId);
+    
+    if(commendId == undefined) {  // reserved commend but not a limited commend
+        console.log('commend: ', message);
+        sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+
+        addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+    }
+    else {  // limited commend
+        let cnt = counter.get(commendId);
+        console.log('commend counter: ', cnt);
+
+        if(cnt == undefined || cnt == 0) {
             console.log('commend: ', message);
             sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
 
             addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+
+            counter.put(commendId, 1);
         }
-        else { 
-            let cnt = counter.get(commendId);
-            console.log('commend counter: ', cnt);
+        else if (cnt>=1) {
+            console.log(message+' is only allowed for a time.');
 
-            if(cnt == undefined || cnt == 0) {
-                console.log('commend: ', message);
-                sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+            message = '안돼. 그러지마.';
+            console.log('new commend: ', message);
+            sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
 
-                addReceivedMessage(requestId, message+' 동작을 수행합니다.')
-
-                counter.put(commendId, 1);
-            }
-            else if (cnt>=1) {
-                console.log(message+' is only allowed for a time.');
-
-                message = '안돼. 그러지마.';
-                console.log('new commend: ', message);
-                sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
-
-                addReceivedMessage(requestId, message)
-            }
-            else {
-                console.log('not deifned: '+message+' (cnt='+cnt);
-            }
+            addReceivedMessage(requestId, message)
         }
-        
-        return true;
-    }    
+        else {
+            console.log('not deifned: '+message+' (cnt='+cnt);
+        }
+    }
 }
 
 function initCommendCounter() {
@@ -320,18 +323,17 @@ function connect(endpoint, type) {
             response = JSON.parse(event.data)
 
             if(response.status == 'completed') {     
-                console.log('dialog status: completed');    
+                console.log('transaction status: completed');
                 console.log('next: ', next); 
                 feedback.style.display = 'none';       
                    
                 addReceivedMessage(response.request_id, response.msg);  
                 // console.log('response.msg: ', response.msg);
 
-                if(enableTTS) {
+            /*    if(enableTTS) {
                     console.log('requested: ', requested[response.request_id]);
                     console.log('speechType: ', speechType);
                     if(speechType=='robot') {
-                        // thingName = "AI-Dancing-Robot-000"
                         sendControl(userId, 'text', response.msg, "", 0, response.request_id);
                     }
                     else if(speechType=='local') { // local
@@ -367,20 +369,20 @@ function connect(endpoint, type) {
                             next = true;
                             playAudioList();
                         }    
-                    }
+                    } */
                     
                     retryCounter = 10;
                     checkingDelayedPlayList();
                     // playList = [];
                 }                              
             }          
-            else if(response.status == 'istyping') {
+            else if(response.status == 'istyping') {                
                 feedback.style.display = 'inline';
                 // feedback.innerHTML = '<i>typing a message...</i>'; 
                 sentance.put(response.request_id, "");
             }
             else if(response.status == 'proceeding') {
-                // console.log('status: proceeding...')
+                console.log('transaction status: proceeding...');
                 feedback.style.display = 'none';
                 sentance.put(response.request_id, sentance.get(response.request_id)+response.msg);              
                 
@@ -398,10 +400,10 @@ function connect(endpoint, type) {
                             'requestId': requestId,
                             'text': text
                         });
-                        lineText = "";      
+                        lineText = "";
             
                         requested[response.request_id] = true;
-                        loadAudio(response.request_id, text);                                  
+                        loadAudio(response.request_id, text);
                     }
                     
                     requestId = response.request_id;
@@ -423,8 +425,7 @@ function connect(endpoint, type) {
                 }
                 else {
                     addNotifyMessage(response.msg);
-                }
-                
+                }                
             }   
         }        
     };
@@ -464,7 +465,7 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
 
         next = true;  // initiate valriable 'next' for audio play
 
-        if(isReservedCommend(requestId, query)==false) {
+        if(isReservedCommend(requestId, query)==false) {  // message
             console.log('get score for ', query);
             if(scoreValue.get(requestId)==undefined) { // check duplication
                 getScore(userId, requestId, query); 
@@ -479,6 +480,9 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
                 "body": query,
                 "convType": conversationType
             });
+        }
+        else {  // reservice commend
+            actionforReservedCommend(requestId, message);
         }
         messageMemory.put(requestId, query);      
         messageTransfered.put(requestId, true);
@@ -623,6 +627,8 @@ function voiceConnect(voiceEndpoint, type) {
                     if(state == 'start') {
                         addNotifyMessage('start the game.');
                         console.log('start a game');
+
+                        // To-DO: clear memory 
                     }
                     else if (state == 'end') {
                         addNotifyMessage('end the game.');
@@ -729,7 +735,7 @@ function playAudioList() {
     
     for(let i=0; i<playList.length;i++) {
         // console.log('audio data--> ', audioData[requestId+playList[i].text])
-        console.log('playedList: ', playList);
+        console.log('playList: ', playList);
 
         if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
             console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
