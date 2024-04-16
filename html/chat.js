@@ -261,7 +261,7 @@ function isReservedCommend(requestId, message){
                 console.log('new commend: ', message);
                 sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
 
-                addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+                addReceivedMessage(requestId, message)
             }
             else {
                 console.log('not deifned: '+message+' (cnt='+cnt);
