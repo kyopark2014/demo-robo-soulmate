@@ -63,11 +63,11 @@ def get_secret():
         for id in access_key_id:
             print('id: ', id)
         #print('access_key_id: ', access_key_id)    
-        
-        return access_key_id, secret_access_key
 
     except Exception as e:
         raise e
+    
+    return access_key_id, secret_access_key
 
 access_key_id, secret_access_key = get_secret()
 selected_credential = 0
