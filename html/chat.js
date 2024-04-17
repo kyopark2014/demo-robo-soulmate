@@ -409,6 +409,8 @@ function connect(endpoint, type) {
             
                         isPlayedTTS[response.request_id] = true;
                         loadAudio(response.request_id, text);
+
+                        sendControl(userId, 'text', text, "", 0, response.request_id);
                     }
                     
                     requestId = response.request_id;
