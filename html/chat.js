@@ -885,7 +885,8 @@ function updateChatHistory() {
         msglist[i].innerHTML = `<div></div>`
     }
     
-    msglist = [];
+    // msglist = [];
+    msglist = Array.from([]);
     index = 0;
 
     msgHistory = new HashMap();
