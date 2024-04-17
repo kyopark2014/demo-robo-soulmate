@@ -653,7 +653,7 @@ function voiceConnect(voiceEndpoint, type) {
                         })
                         console.log('clearMemory');
                         
-                        updateChatHistory();
+                        initializeItems(userId)
                         console.log('initialize chat history');
                     }
                     else if (state == 'end') {
@@ -881,12 +881,11 @@ depart.addEventListener('click', function(){
 });
 
 function updateChatHistory() {
-    msglist = [];
     for(let i=0;i<maxMsgItems;i++) {
         msglist[i].innerHTML = `<div></div>`
     }
     
-    // msglist = [];
+    msglist = [];
     index = 0;
 
     msgHistory = new HashMap();
@@ -1551,6 +1550,30 @@ function deleteItems(userId) {
             console.log("response: " + JSON.stringify(response));
 
             window.location.href = "index.html";
+        }
+    };
+    
+    var requestObj = {
+        "userId": userId
+    }
+    console.log("request: " + JSON.stringify(requestObj));
+
+    var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
+
+    xhr.send(blob);            
+}
+
+function initializeItems(userId) {
+    const uri = "delete";
+    const xhr = new XMLHttpRequest();
+
+    xhr.open("POST", uri, true);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            let response = JSON.parse(xhr.responseText);
+            console.log("response: " + JSON.stringify(response));
+
+            window.location.href = "chat.html";
         }
     };
     
