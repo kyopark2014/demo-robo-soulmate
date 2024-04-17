@@ -1123,7 +1123,7 @@ function getScore(userId, requestId, text) {
             console.log("description: " + description);    
 
             //addNotifyMessage('[debug] score: '+score+', description: '+description);
-            addNotifyMessage('Score: '+score+', ('+description+')');
+            addNotifyMessage('Score: '+score+'점, ('+description+')');
             
             if(speechType=='robot' || speechType=='both') {
                 sendControl(userId, "action", "", "", score, requestId)
