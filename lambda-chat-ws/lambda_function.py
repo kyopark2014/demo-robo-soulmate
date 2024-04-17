@@ -27,6 +27,7 @@ from langchain_community.embeddings import BedrockEmbeddings
 from langchain_community.vectorstores.faiss import FAISS
 from langchain_core.messages import HumanMessage, SystemMessage
 from multiprocessing import Process, Pipe
+from firebase_admin import credentials
 
 s3 = boto3.client('s3')
 s3_bucket = os.environ.get('s3_bucket') # bucket name
@@ -62,23 +63,30 @@ def get_secret():
         for id in access_key_id:
             print('id: ', id)
         #print('access_key_id: ', access_key_id)    
+        
+        return access_key_id, secret_access_key
 
     except Exception as e:
         raise e
-get_secret()
+
+access_key_id, secret_access_key = get_secret()
+selected_credential = 0
 
 # Multi-LLM
-def get_chat(profile_of_LLMs, selected_LLM):
+def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_credential):
     profile = profile_of_LLMs[selected_LLM]
     bedrock_region =  profile['bedrock_region']
     modelId = profile['model_id']
     print(f'LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
     maxOutputTokens = int(profile['maxOutputTokens'])
-                          
+    
+    print('access_key_id: ', access_key[selected_credential])
     # bedrock   
     boto3_bedrock = boto3.client(
         service_name='bedrock-runtime',
         region_name=bedrock_region,
+        #aws_access_key_id=access_key[selected_credential],
+        #aws_secret_access_key=secret_key[selected_credential],
         config=Config(
             retries = {
                 'max_attempts': 30
@@ -822,7 +830,7 @@ def getResponse(jsonBody):
     print(f'selected_LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
     # print('profile: ', profile)
     
-    chat = get_chat(profile_of_LLMs, selected_LLM)    
+    chat = get_chat(profile_of_LLMs, selected_LLM, access_key_id, secret_access_key, selected_credential)    
     # bedrock_embedding = get_embedding(profile_of_LLMs, selected_LLM)
     
     # create memory
@@ -1013,9 +1021,13 @@ def getResponse(jsonBody):
         selected_LLM = 0
     else:
         selected_LLM = selected_LLM + 1
+        
+    if selected_credential >= len(access_key_id)-1:
+        selected_credential = 0
+    else:
+        selected_credential = selected_credential + 1
     
-    sendResultMessage(msg)  
-    
+    sendResultMessage(msg)      
     return msg
 
 def lambda_handler(event, context):
