@@ -27,7 +27,6 @@ from langchain_community.embeddings import BedrockEmbeddings
 from langchain_community.vectorstores.faiss import FAISS
 from langchain_core.messages import HumanMessage, SystemMessage
 from multiprocessing import Process, Pipe
-from firebase_admin import credentials
 
 s3 = boto3.client('s3')
 s3_bucket = os.environ.get('s3_bucket') # bucket name
@@ -73,15 +72,14 @@ access_key_id, secret_access_key = get_secret()
 selected_credential = 0
 
 # Multi-LLM
-#def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_credential):
-def get_chat(profile_of_LLMs, selected_LLM):
+def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_credential):
     profile = profile_of_LLMs[selected_LLM]
     bedrock_region =  profile['bedrock_region']
     modelId = profile['model_id']
     print(f'LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
     maxOutputTokens = int(profile['maxOutputTokens'])
     
-    # print('access_key_id: ', access_key[selected_credential])
+    print('access_key_id: ', access_key[selected_credential])
     # bedrock   
     boto3_bedrock = boto3.client(
         service_name='bedrock-runtime',
@@ -831,9 +829,7 @@ def getResponse(jsonBody):
     print(f'selected_LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
     # print('profile: ', profile)
     
-    chat = get_chat(profile_of_LLMs, selected_LLM)    
-    
-    #chat = get_chat(profile_of_LLMs, selected_LLM, access_key_id, secret_access_key, selected_credential)    
+    chat = get_chat(profile_of_LLMs, selected_LLM, access_key_id, secret_access_key, selected_credential)    
     # bedrock_embedding = get_embedding(profile_of_LLMs, selected_LLM)
     
     # create memory
