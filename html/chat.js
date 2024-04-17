@@ -653,6 +653,7 @@ function voiceConnect(voiceEndpoint, type) {
                         })
                         console.log('clearMemory');
 
+                        console.log('initialize chat history');
                         updateChatHistory();
                     }
                     else if (state == 'end') {
