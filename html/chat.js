@@ -766,9 +766,7 @@ function playAudioList() {
         if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
             console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
             current = i;
-            playAudioLine(audioData[requestId+playList[i].text]);            
-
-            sendControl(userId, 'text', playList[i].text, "", 0, requestId);
+            playAudioLine(audioData[requestId+playList[i].text], requestId, playList[i].text);            
 
             next = false;
             break;
@@ -779,13 +777,15 @@ function playAudioList() {
     }
 }
 
-async function playAudioLine(audio_body){    
+async function playAudioLine(audio_body, requestId, text){    
     var sound = "data:audio/ogg;base64,"+audio_body;
     
     var audio = document.querySelector('audio');
     audio.src = sound;
     
     console.log('play audio');
+
+    sendControl(userId, 'text', text, "", 0, requestId);
     await playAudio(audio)
 }
 
