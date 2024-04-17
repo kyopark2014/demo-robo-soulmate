@@ -356,7 +356,7 @@ function connect(endpoint, type) {
                         }    
                     }
                     else if(speechType=='both') {
-                        sendControl(userId, 'text', response.msg, "", 0, response.request_id);
+                        // sendControl(userId, 'text', response.msg, "", 0, response.request_id);
 
                         console.log('Is already played? ', isPlayedTTS[response.request_id]);
                         if(isPlayedTTS[response.request_id] == undefined) {
@@ -767,6 +767,9 @@ function playAudioList() {
             console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
             current = i;
             playAudioLine(audioData[requestId+playList[i].text]);            
+
+            sendControl(userId, 'text', playList[i].text, "", 0, requestId);
+
             next = false;
             break;
         }
