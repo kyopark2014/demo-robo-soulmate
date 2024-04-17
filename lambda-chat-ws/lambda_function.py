@@ -55,8 +55,8 @@ def get_secret():
         print('get_secret_value_response: ', get_secret_value_response)
         secret = json.loads(get_secret_value_response['SecretString'])
         print('secret: ', secret)
-        secret_access_key = secret['secret_access_key']
-        access_key_id = secret['access_key_id']
+        secret_access_key = json.loads(secret['secret_access_key'])
+        access_key_id = json.loads(secret['access_key_id'])
         
         print('length: ', len(access_key_id))
         for id in access_key_id:
