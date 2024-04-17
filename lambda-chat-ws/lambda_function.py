@@ -67,10 +67,12 @@ def get_secret():
     except Exception as e:
         raise e
     
-    return access_key_id, secret_access_key
+    
 
-access_key_id, secret_access_key = get_secret()
+#access_key_id, secret_access_key = get_secret()
 selected_credential = 0
+access_key_id = ""
+secret_access_key = ""
 
 # Multi-LLM
 def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_credential):
