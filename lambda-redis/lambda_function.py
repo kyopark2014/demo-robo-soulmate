@@ -68,7 +68,7 @@ def lambda_handler(event, context):
     else: # user input
         query = event['query']    
         msg = {
-            "type": "messages",
+            "type": "message",
             "userId": userId,
             "requestId": requestId,
             "query": query,
