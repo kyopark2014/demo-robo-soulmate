@@ -820,7 +820,7 @@ def getResponse(jsonBody):
     convType = jsonBody['convType']
     print('convType: ', convType)
             
-    global map_chain, memory_chain, selected_LLM
+    global map_chain, memory_chain, selected_LLM, selected_credential
     
     # Multi-LLM
     profile = profile_of_LLMs[selected_LLM]
