@@ -356,7 +356,7 @@ function connect(endpoint, type) {
                         }    
                     }
                     else if(speechType=='both') {
-                        // sendControl(userId, 'text', response.msg, "", 0, response.request_id);
+                        sendControl(userId, 'text', response.msg, "", 0, response.request_id);
 
                         console.log('Is already played? ', isPlayedTTS[response.request_id]);
                         if(isPlayedTTS[response.request_id] == undefined) {
@@ -766,7 +766,7 @@ function playAudioList() {
         if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
             console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
             current = i;
-            playAudioLine(audioData[requestId+playList[i].text], requestId, playList[i].text);            
+            playAudioLine(audioData[requestId+playList[i].text]);            
 
             next = false;
             break;
@@ -777,7 +777,7 @@ function playAudioList() {
     }
 }
 
-async function playAudioLine(audio_body, requestId, text){    
+async function playAudioLine(audio_body){    
     var sound = "data:audio/ogg;base64,"+audio_body;
     
     var audio = document.querySelector('audio');
@@ -785,7 +785,6 @@ async function playAudioLine(audio_body, requestId, text){
     
     console.log('play audio');
 
-    sendControl(userId, 'text', text, "", 0, requestId);
     await playAudio(audio)
 }
 
