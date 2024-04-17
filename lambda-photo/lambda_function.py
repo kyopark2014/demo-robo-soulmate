@@ -56,7 +56,7 @@ def get_client(profile_of_Image_LLMs, selected_LLM):
 def img_resize(image):
     imgWidth, imgHeight = image.size 
     
-    max_length = 1024
+    max_length = 512
 
     if imgWidth < imgHeight:
         imgWidth = int(max_length/imgHeight*imgWidth)
@@ -341,7 +341,7 @@ def lambda_handler(event, context):
         processes = []
         parent_connections = []
         
-        outpaint_prompt = ['forrest', 'sea', 'mount', 'desert']
+        outpaint_prompt = ['desert', 'sea', 'mount']
         
         for i in range(k):
             parent_conn, child_conn = Pipe()
