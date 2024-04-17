@@ -881,16 +881,12 @@ depart.addEventListener('click', function(){
 });
 
 function updateChatHistory() {
+    msglist = [];
     for(let i=0;i<maxMsgItems;i++) {
         msglist[i].innerHTML = `<div></div>`
     }
     
     // msglist = [];
-    // msglist = [];
-    while(msglist.length > 0) {
-        msglist.pop();
-    }
-
     index = 0;
 
     msgHistory = new HashMap();
