@@ -58,7 +58,8 @@ def get_secret():
         secret_access_key = secret['secret_access_key']
         access_key_id = secret['access_key_id']
         
-        for id in access_key_id
+        print('length: ', len(access_key_id))
+        for id in access_key_id:
             print('id: ', id)
         #print('access_key_id: ', access_key_id)    
 
