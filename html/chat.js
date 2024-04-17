@@ -356,7 +356,7 @@ function connect(endpoint, type) {
                         }    
                     }
                     else if(speechType=='both') {
-                        // sendControl(userId, 'text', response.msg, "", 0, response.request_id);
+                        sendControl(userId, 'text', response.msg, "", 0, response.request_id);
 
                         console.log('Is already played? ', isPlayedTTS[response.request_id]);
                         if(isPlayedTTS[response.request_id] == undefined) {
@@ -369,7 +369,6 @@ function connect(endpoint, type) {
                             lineText = "";      
                     
                             loadAudio(response.request_id, response.msg);
-                            sendControl(userId, 'text', response.msg, "", 0, response.request_id);
                             
                             next = true;
                             playAudioList();
@@ -410,8 +409,6 @@ function connect(endpoint, type) {
             
                         isPlayedTTS[response.request_id] = true;
                         loadAudio(response.request_id, text);
-
-                        sendControl(userId, 'text', text, "", 0, response.request_id);
                     }
                     
                     requestId = response.request_id;
