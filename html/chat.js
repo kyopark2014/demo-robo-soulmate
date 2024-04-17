@@ -652,9 +652,9 @@ function voiceConnect(voiceEndpoint, type) {
                             "convType": conversationType
                         })
                         console.log('clearMemory');
-
-                        console.log('initialize chat history');
+                        
                         updateChatHistory();
+                        console.log('initialize chat history');
                     }
                     else if (state == 'end') {
                         addNotifyMessage('end the game.');
