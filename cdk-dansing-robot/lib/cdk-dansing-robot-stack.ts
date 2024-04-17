@@ -573,15 +573,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     const secrets = new secretsmanager.Secret(this, `bedrock-api-secret-for-${projectName}`, {
       description: 'secrets for bedrock api key for demo',
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-      secretName: 'bedrock_access_key',
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ 
-          access_key_id: 'access_key_id'
-        }),
-        generateStringKey: 'secret_access_key',
-        excludeCharacters: '/@"',
-      },
-
+      secretName: 'bedrock_access_key',      
     });
     secrets.grantRead(roleLambdaWebsocket)
     
