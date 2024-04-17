@@ -652,6 +652,8 @@ function voiceConnect(voiceEndpoint, type) {
                             "convType": conversationType
                         })
                         console.log('clearMemory');
+
+                        updateChatHistory();
                     }
                     else if (state == 'end') {
                         addNotifyMessage('end the game.');
@@ -878,7 +880,7 @@ depart.addEventListener('click', function(){
 });
 
 function updateChatHistory() {
-    for(i=0;i<maxMsgItems;i++) {
+    for(let i=0;i<maxMsgItems;i++) {
         msglist[i].innerHTML = `<div></div>`
     }
     
