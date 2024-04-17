@@ -46,6 +46,23 @@ print('connection_url: ', connection_url)
 HUMAN_PROMPT = "\n\nHuman:"
 AI_PROMPT = "\n\nAssistant:"
 
+secretsmanager = boto3.client('secretsmanager')
+def get_secret():
+    try:
+        get_secret_value_response = secretsmanager.get_secret_value(
+            SecretId='secret_access_key'
+        )
+        print('get_secret_value_response: ', get_secret_value_response)
+        secret = json.loads(get_secret_value_response['SecretString'])
+        print('secret: ', secret)
+        secret_access_key = secret['secret_access_key']
+        access_key_id = secret['access_key_id']
+        print('access_key_id: ', access_key_id)    
+
+    except Exception as e:
+        raise e
+
+
 # Multi-LLM
 def get_chat(profile_of_LLMs, selected_LLM):
     profile = profile_of_LLMs[selected_LLM]

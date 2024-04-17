@@ -14,6 +14,7 @@ import * as elasticache from 'aws-cdk-lib/aws-elasticache';
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import { Role, ManagedPolicy, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import * as rekognition from 'aws-cdk-lib/aws-rekognition';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 const region = process.env.CDK_DEFAULT_REGION;    
 const accountId = process.env.CDK_DEFAULT_ACCOUNT
@@ -216,6 +217,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
       description: 'The domain name of the Distribution',
     });
 
+    // vpc
     const vpc = new ec2.Vpc(this, `vpc-for-${projectName}`, {
       vpcName: `vpc-for-${projectName}`,
       maxAzs: 1,
@@ -566,6 +568,22 @@ export class CdkDansingRobotStack extends cdk.Stack {
         statements: [apiInvokePolicy],
       }),
     );  
+
+    // access and secret keys for bedrock
+    const secrets = new secretsmanager.Secret(this, `bedrock-api-secret-for-${projectName}`, {
+      description: 'secrets for bedrock api key for demo',
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      secretName: 'bedrock_access_key',
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({ 
+          access_key_id: 'access_key_id'
+        }),
+        generateStringKey: 'secret_access_key',
+        excludeCharacters: '/@"',
+      },
+
+    });
+    secrets.grantRead(roleLambdaWebsocket)
     
     const lambdaChatWebsocket = new lambda.DockerImageFunction(this, `lambda-chat-ws-for-${projectName}`, {
       description: 'lambda for chat using websocket',
