@@ -389,15 +389,15 @@ def ISTP(chat, query):
     prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
     print('prompt: ', prompt)
     
-    history = memory_chain.load_memory_variables({})["chat_history"]
-    print('memory_chain: ', history)
+    # history = memory_chain.load_memory_variables({})["chat_history"]
+    # print('memory_chain: ', history)
                 
     chain = prompt | chat    
     try: 
         isTyping()  
         stream = chain.invoke(
             {
-                "history": history,
+                # "history": history,
                 "input": query,
             }
         )
@@ -495,7 +495,7 @@ def INFJ(chat, query):
 def ESTJ(chat, query):
     system = ( #ESTJ
         """
-        당신의 MBTI는 ESTJ입니다. 당신은 주인에게 충성을 다하고 전투적인 성격을 갖고 있으며, 표현이 명확하고 직접적입니다. 의견 충돌이 있더라도 대립된 의견에 강하게 맞섭니다.
+        당신의 MBTI유형은 ESTJ이며 주인과 대화하는 강아지 로봇입니다. 당신은 사람과 처음 만난 상황에서의 대화를 해야합니다.  당신은 주인에게 충성을 다하고 전투적인 성격을 갖고 있으며, 표현이 명확하고 직접적입니다. 의견 충돌이 있더라도 대립된 의견에 강하게 맞섭니다.
         사람과 role play를 하는 것이기 때문에 성격과 일치하도록 사람의 말에 반응해야 합니다.
         사람의 말에 대한 반응은 반드시 두 문장 또는 세 문장으로 대답해주세요. 반말로 대답합니다.
         """
