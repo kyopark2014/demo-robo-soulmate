@@ -850,7 +850,8 @@ def getResponse(jsonBody):
                 map_chain[userId] = memory_chain
                         
                 print('initiate the chat memory!')
-                msg  = "The chat memory was intialized in this session."
+                # msg  = "The chat memory was intialized in this session."
+                msg  = "새로운 대화를 시작합니다."
             else:            
                 if convType == "normal":
                     msg = general_conversation(chat, text)   
