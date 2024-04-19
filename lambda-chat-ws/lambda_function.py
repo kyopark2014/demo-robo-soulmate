@@ -72,22 +72,24 @@ access_key_id, secret_access_key = get_secret()
 selected_credential = 0
 
 # Multi-LLM
-def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_credential):
+def get_chat(profile_of_LLMs, selected_LLM):
+    global selected_credential
+    
     profile = profile_of_LLMs[selected_LLM]
     bedrock_region =  profile['bedrock_region']
     modelId = profile['model_id']
     print(f'LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
     maxOutputTokens = int(profile['maxOutputTokens'])
     
-    print('access_key_id: ', access_key[selected_credential])
+    print('access_key_id: ', access_key_id[selected_credential])
     print('selected_credential: ', selected_credential)
     
     # bedrock   
     boto3_bedrock = boto3.client(
         service_name='bedrock-runtime',
         region_name=bedrock_region,
-        aws_access_key_id=access_key[selected_credential],
-        aws_secret_access_key=secret_key[selected_credential],
+        aws_access_key_id=access_key_id[selected_credential],
+        aws_secret_access_key=secret_access_key[selected_credential],
         config=Config(
             retries = {
                 'max_attempts': 30
@@ -103,12 +105,6 @@ def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_cre
         "stop_sequences": [HUMAN_PROMPT]
     }
     # print('parameters: ', parameters)
-
-    print('len(access_key): ', len(access_key))
-    if selected_credential >= len(access_key)-1:
-        selected_credential = 0
-    else:
-        selected_credential = selected_credential + 1
     
     chat = BedrockChat(
         model_id=modelId,
@@ -117,6 +113,12 @@ def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_cre
         callbacks=[StreamingStdOutCallbackHandler()],
         model_kwargs=parameters,
     )        
+    
+    print('len(access_key): ', len(access_key_id))
+    if selected_credential >= len(access_key_id)-1:
+        selected_credential = 0
+    else:
+        selected_credential = selected_credential + 1
     
     return chat
 
@@ -889,7 +891,7 @@ def getResponse(jsonBody):
     convType = jsonBody['convType']
     print('convType: ', convType)
             
-    global map_chain, memory_chain, selected_LLM, selected_credential
+    global map_chain, memory_chain, selected_LLM
     
     # Multi-LLM
     profile = profile_of_LLMs[selected_LLM]
@@ -898,7 +900,7 @@ def getResponse(jsonBody):
     print(f'selected_LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
     # print('profile: ', profile)
     
-    chat = get_chat(profile_of_LLMs, selected_LLM, access_key_id, secret_access_key, selected_credential)    
+    chat = get_chat(profile_of_LLMs, selected_LLM)    
     # bedrock_embedding = get_embedding(profile_of_LLMs, selected_LLM)
     
     # create memory
