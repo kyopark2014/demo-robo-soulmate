@@ -16,6 +16,7 @@ def lambda_handler(event, context):
     request_id = event['request_id']
     print('request_id: ', request_id)
     
+    isAction = True
     if type == 'text':
         message = event['message']
         payload = json.dumps({
@@ -33,15 +34,16 @@ def lambda_handler(event, context):
         if score == 5:
             show = 'HAPPY'
             move = 'seq'
-            seq = ["STAND", "SIT"]
+            seq = ["MOVE_FORWARD", "TURN_LEFT", "SIT", "TURN_RIGHT", "SIT", "MOVE_BACKWARD"]
         elif score == 4:
             show = 'HAPPY'
             move = 'seq'
-            seq = ["STAND", "SIT"]
+            seq = ["MOVE_FORWARD", "TURN_LEFT", "SIT", "TURN_RIGHT", "SIT", "MOVE_BACKWARD"]
         elif score == 3:
-            show = 'HAPPY'
-            move = 'seq'
-            seq = ["STAND", "SIT"]
+            #show = 'HAPPY'
+            #move = 'seq'
+            #seq = ["STAND", "SIT"]
+            isAction = False
         elif score == 2:
             show = 'HAPPY'
             move = 'seq'
@@ -49,7 +51,7 @@ def lambda_handler(event, context):
         else:
             show = 'HAPPY'
             move = 'seq'
-            seq = ["STAND", "SIT"]
+            seq = ["MOVE_BACKWARD", "LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT", "MOVE_FORWARD"]
         
         payload = json.dumps({
             "show": show,  
@@ -59,19 +61,20 @@ def lambda_handler(event, context):
         
     topic = f"pupper/do/{thingName}"
     print('topic: ', topic)
-    
-    try:         
-        response = client.publish(
-            topic = topic,
-            qos = 1,
-            payload = payload
-        )
-        print('response: ', response)        
-            
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
-        raise Exception ("Not able to request to LLM")
+
+    if isAction == True:    
+        try:         
+            response = client.publish(
+                topic = topic,
+                qos = 1,
+                payload = payload
+            )
+            print('response: ', response)        
+                
+        except Exception:
+            err_msg = traceback.format_exc()
+            print('error message: ', err_msg)                    
+            raise Exception ("Not able to request to LLM")
 
     return {
         'statusCode': 200,
