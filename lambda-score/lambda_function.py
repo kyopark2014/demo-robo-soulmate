@@ -77,6 +77,9 @@ def get_prompt():
     return ChatPromptTemplate.from_messages([("system", system), ("human", human)])
 
 def get_character(mbti):
+    # ESTJ 로 점수 통일
+    mbti = "ESTJ"
+
     mbti_character = {
         "ISTP": """
 만사 귀찮아함
