@@ -104,6 +104,7 @@ def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_cre
     }
     # print('parameters: ', parameters)
 
+    print('len(access_key): ', len(access_key))
     if selected_credential >= len(access_key)-1:
         selected_credential = 0
     else:
