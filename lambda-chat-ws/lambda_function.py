@@ -80,6 +80,7 @@ def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_cre
     maxOutputTokens = int(profile['maxOutputTokens'])
     
     print('access_key_id: ', access_key[selected_credential])
+    print('selected_credential: ', selected_credential)
     
     # bedrock   
     boto3_bedrock = boto3.client(
