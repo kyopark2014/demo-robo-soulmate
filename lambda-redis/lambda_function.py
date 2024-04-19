@@ -31,7 +31,8 @@ def push_game_event(state):
         "AI-Dancing-Robot-006",
         "AI-Dancing-Robot-007",
         "AI-Dancing-Robot-008",
-        "AI-Dancing-Robot-kyoungsu",        
+        "AI-Dancing-Robot-jinseony",
+        "AI-Dancing-Robot-kyoungsu"        
     }
     
     for userId in list:    
