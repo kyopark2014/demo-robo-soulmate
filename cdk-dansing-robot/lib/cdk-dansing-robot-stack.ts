@@ -136,7 +136,7 @@ const claude2 = [
   }
 ];
 
-const profile_of_LLMs = claude3_sonnet;
+const profile_of_LLMs = claude3_haiku;
 
 export class CdkDansingRobotStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -597,7 +597,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
         path: 'https://'+distribution.domainName+'/',   
         callLogTableName: callLogTableName,
         connection_url: connection_url,
-        profile_of_LLMs:JSON.stringify(claude3_sonnet),
+        profile_of_LLMs:JSON.stringify(profile_of_LLMs),
         // profile_of_LLMs:JSON.stringify(claude3_sonnet),
       }
     });     
