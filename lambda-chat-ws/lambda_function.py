@@ -430,7 +430,7 @@ def ISTP(chat, query):
     
     human = "{input}"
     
-    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
+    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
     print('prompt: ', prompt)
     
     # history = memory_chain.load_memory_variables({})["chat_history"]
