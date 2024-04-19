@@ -84,8 +84,8 @@ def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_cre
     boto3_bedrock = boto3.client(
         service_name='bedrock-runtime',
         region_name=bedrock_region,
-        #aws_access_key_id=access_key[selected_credential],
-        #aws_secret_access_key=secret_key[selected_credential],
+        aws_access_key_id=access_key[selected_credential],
+        aws_secret_access_key=secret_key[selected_credential],
         config=Config(
             retries = {
                 'max_attempts': 30
