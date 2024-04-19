@@ -80,6 +80,7 @@ def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_cre
     maxOutputTokens = int(profile['maxOutputTokens'])
     
     print('access_key_id: ', access_key[selected_credential])
+    
     # bedrock   
     boto3_bedrock = boto3.client(
         service_name='bedrock-runtime',
@@ -92,6 +93,7 @@ def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_cre
             }            
         )
     )
+    
     parameters = {
         "max_tokens":maxOutputTokens,     
         "temperature":0.1,
@@ -101,6 +103,11 @@ def get_chat(profile_of_LLMs, selected_LLM, access_key, secret_key, selected_cre
     }
     # print('parameters: ', parameters)
 
+    if selected_credential >= len(access_key_id)-1:
+        selected_credential = 0
+    else:
+        selected_credential = selected_credential + 1
+    
     chat = BedrockChat(
         model_id=modelId,
         client=boto3_bedrock, 
@@ -1020,12 +1027,7 @@ def getResponse(jsonBody):
         selected_LLM = 0
     else:
         selected_LLM = selected_LLM + 1
-        
-    if selected_credential >= len(access_key_id)-1:
-        selected_credential = 0
-    else:
-        selected_credential = selected_credential + 1
-    
+            
     sendResultMessage(msg)      
     return msg
 
