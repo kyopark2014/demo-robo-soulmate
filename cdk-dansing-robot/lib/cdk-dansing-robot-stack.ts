@@ -867,6 +867,25 @@ export class CdkDansingRobotStack extends cdk.Stack {
         statements: [ioTPolicy],
       }),
     ); 
+    
+    // Lambda (score-gesture) - Role
+    const roleLambdaScoreGesture = new iam.Role(this, `role-lambda-score-gesture-for-${projectName}`, {
+      roleName: `role-lambda-score-gesture-for-${projectName}-${region}`,
+      assumedBy: new iam.CompositePrincipal(
+        new iam.ServicePrincipal("lambda.amazonaws.com"),
+      )
+    });
+
+    roleLambdaScoreGesture.addManagedPolicy({
+      managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+    });
+    roleLambdaScoreGesture.addToPolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        'lambda:InvokeFunction',
+        'cloudwatch:*'
+      ]
+    }));
 
     // lambda - score-gesture
     const lambdaScoreGesture = new lambda.Function(this, `lambda-score-gesture-for-${projectName}`, {
@@ -876,6 +895,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
       runtime: lambda.Runtime.PYTHON_3_11,
       code: lambda.Code.fromAsset(path.join(__dirname, '../../lambda-score-gesture')),
       timeout: cdk.Duration.seconds(30),
+      role: roleLambdaScoreGesture,
       environment: {
         endpoint_dashboard: endpoint_dashboard,
       }
