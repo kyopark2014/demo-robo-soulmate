@@ -15,7 +15,7 @@
 - 사용자의 접속 및 관련 메트릭은 DynamoDB를 통해 수집되어 QuickSight로 표시됩니다.
 - IoT 관련 정보는 IoT SiteWise등을 이용해 별도의 Dashboard에 각종 IoT 정보와 함께 방문객이 확인할 수 있습니다.
 
-![image](./pictures/main-architecture.png)
+![image](./pictures/main-architecture.jpg)
 
 ### Controller
 
