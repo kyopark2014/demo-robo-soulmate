@@ -48,8 +48,12 @@ def lambda_handler(event, context):
             show = 'SAD'
             move = 'seq'
             seq = ["MOVE_BACKWARD", "SIT", "MOVE_FORWARD"]
-        else:
+        elif score == 1:
             show = 'ANGRY'
+            move = 'seq'
+            seq = ["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT"]
+        else:
+            show = 'NEUTRAL'
             move = 'seq'
             seq = ["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT"]
         
