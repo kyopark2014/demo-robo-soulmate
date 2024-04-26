@@ -209,12 +209,12 @@ function initializeCommend() {
     reservedCommend.put('이리 와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
     reservedCommend.put('이리 와봐', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
     reservedCommend.put('이리 와줘', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
-    reservedCommend.put('이리와.', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
+    reservedCommend.put('이리와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
     reservedCommend.put('이리와봐.', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
     reservedCommend.put('이리와줘.', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
 
     limitedCommendId.put('이리 와', 1)
-    limitedCommendId.put('이리와.', 1)
+    limitedCommendId.put('이리와', 1)
     limitedCommendId.put('이리 와봐', 1)
     limitedCommendId.put('이리 와줘', 1)
     
