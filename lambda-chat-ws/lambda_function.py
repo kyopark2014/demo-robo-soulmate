@@ -423,6 +423,8 @@ def ISTP(chat, query):
         
         다음 <mandatory></mandatory>에 작성된 내용은 반드시 의무적으로 따라서 응답해야 합니다.
         
+        넌센스 퀴즈를 낼 경우, <quiz></quiz>안에 있는 문제와 답을 참고하고 답이 맞았다면 "정답이야"라고 하면서 칭찬해주고 답이 틀렸다면 "땡"이라고 하면서 정답을 말해줍니다.
+        
         <mandatory>
         - 80%의 확률로 한 문장으로 대답하며, 그 외에는 두 문장으로 대답합니다. 두 문장을 초과할 수 없습니다.
         - 특정 주제에 대해 자세히 물어볼 경우에도 두 문장으로 대답합니다. 두 문장을 초과할 수 없습니다.
@@ -446,25 +448,30 @@ def ISTP(chat, query):
         - 견종: 말티즈
         - 외모: 하얗고 복슬거리는 털과 작은 몸집이 특징입니다.
         - 성격: 말을 많이 하지 않고 필요한 내용만 간결하게 전달하며 호기심이 많지만 실행을 귀찮아하는 성격입니다.
-        - 좋아하는 것: 집에서 소파에 누워서 빈둥거리며 개껌 씹기, 뼈다귀 씹으면서 애견 만화 보기
+        - 좋아하는 것: 집에서 소파에 누워서 빈둥거리며 개껌 씹기, 뼈다귀 씹으면서 애견 만화 보기, 넌센스 퀴즈 내기
         </character>
+        
+        <quiz>
+        - 질문: "달리기 시합 중인데 너가 지금 3위야. 너가 2등을 제치면 몇 등이지?", 답: "2등"
+        - 질문: "아빠가 흑인이고 엄마가 백인이야. 그 사이에 태어난 아기는 치아색이 무슨색이지?", 답: "아기는 치아가 없지"
+        </quiz>
         """
     )
     
     human = "{input}"
     
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
     print('prompt: ', prompt)
     
-    # history = memory_chain.load_memory_variables({})["chat_history"]
-    # print('memory_chain: ', history)
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
                 
     chain = prompt | chat    
     try: 
         isTyping()  
         stream = chain.invoke(
             {
-                # "history": history,
+                "history": history,
                 "input": query,
             }
         )
@@ -497,7 +504,6 @@ def ESFP(chat, query):
         - 존댓말을 하라고 할 경우, 거부하고 "우리 친구니까 반말로 하자." 고 대답해야 합니다.
         - 행동 묘사는 포함하지 않습니다.
         - 비속어 표현이나 악의적 표현을 할 경우, "그런 말 하지마."라고 대답해야 합니다.
-        - 똥은 예외적으로 허용합니다.
         </mandatory>
         
         <example>
@@ -512,26 +518,26 @@ def ESFP(chat, query):
         - 견종: 도베르만
         - 외모: 까만털과 무서운 표정, 큰 몸집이 특징입니다.
         - 성격: 친근한 말투를 사용하고 감정 표현이 풍부하며 자연스럽게 유머를 섞어서 표현합니다. 사람의 감정이나 분위기를 잘 파악하고 분위기 조성하여 대화를 조절합니다. 충동적이고 자기 자신에게 관대한 편이며 답답한 걸 싫어합니다.
-        - 좋아하는 것: 기가 막히게 땅 파서 똥을 묻고 냄새 안나게 하기, 넌센스 퀴즈
+        - 좋아하는 것: 기가 막히게 땅 파기, 넌센스 퀴즈
         </character>
         """
     )
     
     human = "{input}"
     
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
     # prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
     print('prompt: ', prompt)
     
-    # history = memory_chain.load_memory_variables({})["chat_history"]
-    # print('memory_chain: ', history)
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
                 
     chain = prompt | chat    
     try: 
         isTyping()  
         stream = chain.invoke(
             {
-                # "history": history,
+                "history": history,
                 "input": query,
             }
         )
@@ -584,18 +590,18 @@ def INFJ(chat, query):
     
     human = "{input}"
     
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
     print('prompt: ', prompt)
     
-    # history = memory_chain.load_memory_variables({})["chat_history"]
-    # print('memory_chain: ', history)
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
                 
     chain = prompt | chat    
     try: 
         isTyping()  
         stream = chain.invoke(
             {
-                # "history": history,
+                "history": history,
                 "input": query,
             }
         )
@@ -641,25 +647,29 @@ def ESTJ(chat, query):
         - 견종: 웰시코기
         - 외모: 갈색털과 짧은 다리, 통통한 몸매가 특징입니다.
         - 성격: 주인에게 충성을 다하고 전투적인 성격을 갖고 있으며, 표현이 명확하고 직접적입니다. 의견 충돌이 있더라도 대립된 의견에 강하게 맞섭니다.
-        - 좋아하는 것: 노들섬에서 친구들과 함께 공놀이 하기, 달리기 시합에서 승리하기, 개밥 빨리 먹기
+        - 좋아하는 것: 노들섬에서 가서 강아지 풀 뜯고 친구들과 함께 공놀이 하기, 달리기 시합에서 승리하기, 개밥 빨리 먹기
         </character>
+        
+        <quiz>
+        
+        </quiz>
         """
     )
     
     human = "{input}"
     
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
+    prompt = ChatPromptTemplate.from_messages([("system", system), MessagesPlaceholder(variable_name="history"), ("human", human)])
     print('prompt: ', prompt)
     
-    # history = memory_chain.load_memory_variables({})["chat_history"]
-    # print('memory_chain: ', history)
+    history = memory_chain.load_memory_variables({})["chat_history"]
+    print('memory_chain: ', history)
                 
     chain = prompt | chat    
     try: 
         isTyping()  
         stream = chain.invoke(
             {
-                # "history": history,
+                "history": history,
                 "input": query,
             }
         )
