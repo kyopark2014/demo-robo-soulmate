@@ -34,24 +34,24 @@ def lambda_handler(event, context):
         if score == 5:
             show = 'HAPPY'
             move = 'seq'
-            seq = ["MOVE_FORWARD", "TURN_LEFT", "SIT", "TURN_RIGHT", "SIT", "MOVE_BACKWARD"]
+            seq = ["MOVE_FORWARD", "SIT", "MOVE_BACKWARD"]
         elif score == 4:
-            show = 'HAPPY'
+            show = 'NEUTRAL'
             move = 'seq'
-            seq = ["MOVE_FORWARD", "TURN_LEFT", "SIT", "TURN_RIGHT", "SIT", "MOVE_BACKWARD"]
+            seq = ["TURN_LEFT", "SIT", "TURN_RIGHT"]
         elif score == 3:
-            #show = 'HAPPY'
+            #show = 'NEUTRAL'
             #move = 'seq'
-            #seq = ["STAND", "SIT"]
+            #seq = ["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT"]
             isAction = False
         elif score == 2:
-            show = 'HAPPY'
+            show = 'SAD'
             move = 'seq'
-            seq = ["STAND", "SIT"]
+            seq = ["MOVE_BACKWARD", "SIT", "MOVE_FORWARD"]
         else:
-            show = 'HAPPY'
+            show = 'ANGRY'
             move = 'seq'
-            seq = ["MOVE_BACKWARD", "LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT", "MOVE_FORWARD"]
+            seq = ["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT"]
         
         payload = json.dumps({
             "show": show,  
