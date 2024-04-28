@@ -9,8 +9,7 @@ from botocore.config import Config
 from botocore.exceptions import ClientError
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.chat_models import BedrockChat
-
+from langchain_aws import ChatBedrock
 
 HUMAN_PROMPT = "\n\nHuman:"
 AI_PROMPT = "\n\nAssistant:"
@@ -34,14 +33,12 @@ def get_chat(region, model_id, max_output_token):
         "top_p": 0.9,
         "stop_sequences": [HUMAN_PROMPT]
     }
-
-    chat = BedrockChat(
+    
+    chat = ChatBedrock(   
         model_id=model_id,
-        client=boto3_bedrock,
-        # streaming=True,
-        # callbacks=[StreamingStdOutCallbackHandler()],
+        client=boto3_bedrock, 
         model_kwargs=parameters,
-    )
+    )  
 
     return chat
 
