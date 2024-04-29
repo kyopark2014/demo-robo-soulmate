@@ -31,24 +31,24 @@ def lambda_handler(event, context):
         score = event['score']
         print('score: ', score)
     
-        if score == 5:
+        if score == '5':
             show = 'HAPPY'
             move = 'seq'
             seq = ["MOVE_FORWARD", "SIT", "MOVE_BACKWARD"]
-        elif score == 4:
+        elif score == '4':
             show = 'NEUTRAL'
             move = 'seq'
             seq = ["TURN_LEFT", "SIT", "TURN_RIGHT"]
-        elif score == 3:
+        elif score == '3':
             #show = 'NEUTRAL'
             #move = 'seq'
             #seq = ["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT"]
             isAction = False
-        elif score == 2:
+        elif score == '2':
             show = 'SAD'
             move = 'seq'
             seq = ["MOVE_BACKWARD", "SIT", "MOVE_FORWARD"]
-        elif score == 1:
+        elif score == '1':
             show = 'ANGRY'
             move = 'seq'
             seq = ["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT"]
