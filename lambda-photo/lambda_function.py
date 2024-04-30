@@ -341,7 +341,7 @@ def lambda_handler(event, context):
         processes = []
         parent_connections = []
         
-        outpaint_prompt = ['desert', 'sea', 'mount']
+        outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
         
         for i in range(k):
             parent_conn, child_conn = Pipe()
