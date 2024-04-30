@@ -28,7 +28,7 @@ cfgScale = 7.5
 # height = 1152
 # width = 768
 
-enableParallel = False
+enableParallel = True
 k = 3
 
 smr_client = boto3.client("sagemaker-runtime")
@@ -56,7 +56,7 @@ def get_client(profile_of_Image_LLMs, selected_LLM):
 def img_resize(image):
     imgWidth, imgHeight = image.size 
     
-    max_length = 512
+    max_length = 1024
 
     if imgWidth < imgHeight:
         imgWidth = int(max_length/imgHeight*imgWidth)
