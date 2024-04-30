@@ -28,7 +28,7 @@ cfgScale = 7.5
 # height = 1152
 # width = 768
 
-enableParallel = True
+enableParallel = False
 k = 3
 
 smr_client = boto3.client("sagemaker-runtime")
