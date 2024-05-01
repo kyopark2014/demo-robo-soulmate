@@ -33,7 +33,7 @@ def get_score(text):
     return score
 
 
-def send_dashboard(userId, text, score):
+def send_dashboard(userId, score, text, type):
     # 스코어 보드 호출
     function_name = "lambda-score-update-for-demo-dansing-robot"
     
@@ -44,8 +44,10 @@ def send_dashboard(userId, text, score):
             'userId': userId,
             'score': score,
             "text": text,
-            "type": "gesture"            
+            "type": type     
         }
+        print("Payload: ", payload)
+        
         response = lambda_client.invoke(
             FunctionName=function_name,
             Payload=json.dumps(payload),
@@ -71,7 +73,7 @@ def lambda_handler(event, context):
     print('score: ', score)
 
     # send the score to the dashboard
-    send_dashboard(userId, text, score)
+    send_dashboard(userId, score, text, type)
     
     # To-do: Push the text for the last message   
     return {

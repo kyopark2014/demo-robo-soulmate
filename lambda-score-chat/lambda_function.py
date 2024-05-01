@@ -21,6 +21,8 @@ def send_dashboard(userId, text, type):
             "text": text,
             "type": type
         }
+        print("Payload: ", payload)
+        
         response = lambda_client.invoke(
             FunctionName=function_name,
             Payload=json.dumps(payload),
