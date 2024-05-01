@@ -723,7 +723,20 @@ function voiceConnect(voiceEndpoint, type) {
                         addNotifyMessage('end the game.');
 
                         console.log('initiate commend counter');
-                        initCommendCounter();                   
+                        initCommendCounter();             
+                                                
+                        // play audio                        
+                        console.log('speechType: ', speechType);
+                        
+                        let startMsg = "잘가! 즐거운 하루 보내!";
+                        if(speechType=='robot' || speechType=='both') {
+                            sendControl(userId, 'text', startMsg, "", 0, requestId);
+                        }
+
+                        if(speechType=='local' || speechType=='both') { // local
+                            addReceivedMessage(requestId, startMsg);  
+                            playAudioMessage(startMsg);
+                        }
                     }
                     else if(state == 'message') {
                         // play audio                        
