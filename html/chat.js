@@ -684,7 +684,7 @@ function voiceConnect(voiceEndpoint, type) {
                         addNotifyMessage('start in photo booth.');
                         console.log('start in photo booth');
 
-                        // To-DO: clear memory 
+                        /*
                         let current = new Date();
                         let datastr = getDate(current);
                         let timestr = getTime(current);
@@ -704,6 +704,7 @@ function voiceConnect(voiceEndpoint, type) {
                         
                         initializeItems(userId)
                         console.log('initialize chat history');
+                        */
 
                         // play audio                        
                         console.log('speechType: ', speechType);
