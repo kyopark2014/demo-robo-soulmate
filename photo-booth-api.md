@@ -42,3 +42,42 @@ HTTP POST https://dxt1m1ae24b28.cloudfront.net/redis
     "message": "표정을 보니 오늘 멋진 하루를 보냈나 보네! 나도 기쁘다!"
 }
 ```
+
+## 감정 분석
+
+감정(emotion) 분석용 API는 아래와 같습니다. 
+
+```text
+HTTP POST https://dxt1m1ae24b28.cloudfront.net/emotion
+바이너리 이미지
+```
+
+아래는 Postman의 실행화면입니다. '/emiton' API로 바이너리를 전송합니다. 
+
+<img width="820" alt="image" src="https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/1d311d2e-484c-4790-bbeb-1d3545e4a35c">
+
+
+이때의 결과는 아래와 같습니다.
+
+```java
+{
+    "id": "8e02439e-03fd-4d40-afef-49ba4d5470d4",
+    "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
+    "key": "profile/41435838-75c5-4c9c-a45b-ce6fbaf77548.jpeg",
+    "ageRange": {
+        "Low": 40,
+        "High": 48
+    },
+    "smile": false,
+    "eyeglasses": true,
+    "sunglasses": false,
+    "gender": "male",
+    "beard": false,
+    "mustache": false,
+    "eyesOpen": true,
+    "mouthOpen": false,
+    "emotions": "CALM",
+    "generation": "adult"
+}
+```
+
