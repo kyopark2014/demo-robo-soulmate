@@ -983,12 +983,7 @@ const sendBtn = document.querySelector('#sendBtn');
 const message = document.querySelector('#chatInput')
 const chatPanel = document.querySelector('#chatPanel');
 
-// let profileImage;
-// profileImage.push(document.getElementById('profileImage'));
-// profileImage.innerHTML = `<img class="profile-image" src="Pug.jpg" alt="" id="profileImage"></img>`
-
 let profileImage = document.getElementById('profileImage');
-profileImage.src = "Pug.jpg";
 
 let isResponsed = new HashMap();
 let indexList = new HashMap();
@@ -1052,6 +1047,7 @@ function initiate() {
         calleeName.textContent = "AWS";  
     }
     sender = calleeName.textContent;
+    profileImage.src = userName+".jpg";
 
     if(langstate=='korean') {
         addNotifyMessage("Amazon Bedrock을 이용하여 채팅을 시작합니다.");
