@@ -63,7 +63,7 @@ def lambda_handler(event, context):
     # print('userId: ', userId)
     state = event['state']    
     
-    if userId == 'all':  # game event
+    if state == 'start' or state == 'end':  # game event
         push_game_event(state)
         
     else: # user input
