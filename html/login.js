@@ -58,6 +58,9 @@ function onSubmit(e) {
     localStorage.setItem('convType',convtypeInput.value);
     console.log('Save Profile> convtype:', convtypeInput.value)
 
+    localStorage.setItem('userName',nameInput.value);
+    console.log('Save Profile> userName:', nameInput.value)
+
     window.location.href = "chat.html";
 }
 

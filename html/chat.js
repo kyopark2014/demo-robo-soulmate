@@ -20,13 +20,13 @@ if(enableTTS && (speechType=='local' || speechType=='both')) {
 
 // Common
 let userId = localStorage.getItem('userId'); // set userID if exists 
-if(userId=="") {
+if(userId=="" || userName==null) {
     userId = uuidv4();
 }
 console.log('userId: ', userId);
 
 let userName = localStorage.getItem('userName'); // set userID if exists 
-if(userName=="") {
+if(userName=="" || userName==null) {
     userName = 'Maltese';
 }
 console.log('userName: ', userName);
