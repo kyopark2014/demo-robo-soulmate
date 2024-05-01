@@ -16,3 +16,16 @@ HTTP POST https://dxt1m1ae24b28.cloudfront.net/redis
 이때의 결과는 아래와 같습니다. "사진 찍으러 왔구나~ 방문을 환영해! 지금 어떤 기분인지 기념 사진을 남겨보자! 준비 됐지?"와 같은 환영 인사를 합니다.
 
 ![image](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/6ed5e455-2d0e-4998-9287-46b156873f12)
+
+## Boradcase 메시지
+
+로봇에게 보내는 메시지를 위한 API를 정의합니다. state를 "broadcast"로 보내면 로봇에 해당 메시지를 출력합니다.
+
+```text
+HTTP POST https://dxt1m1ae24b28.cloudfront.net/redis
+{
+    "userId": "AI-Dancing-Robot-kyoungsu",
+    "state": "broadcast", 
+    "message": "표정을 보니 오늘 멋진 하루를 보냈나 보네! 나도 기쁘다!"
+}
+```
