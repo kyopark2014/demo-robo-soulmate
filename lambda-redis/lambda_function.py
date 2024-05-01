@@ -53,6 +53,25 @@ def push_game_event(state):
             err_msg = traceback.format_exc()
             print('error message: ', err_msg)                    
             raise Exception ("Not able to request to LLM")
+
+def push_photo_event(userId, state):
+    msg = {
+        "type": "photo",
+        "userId": userId,
+        "requestId": str(uuid.uuid4()),
+        "query": "",
+        "state": state
+    }
+        
+    channel = f"{userId}"   
+    try: 
+        redis_client.publish(channel=channel, message=json.dumps(msg))
+        print('successfully published: ', json.dumps(msg))
+        
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)                    
+        raise Exception ("Not able to request to LLM")
    
 requestId = str(uuid.uuid4())          
 def lambda_handler(event, context):
@@ -65,6 +84,9 @@ def lambda_handler(event, context):
     
     if state == 'start' or state == 'end':  # game event
         push_game_event(state)
+        
+    elif state == 'start-photo' or state == 'end-photo':  # photo booth event
+        push_photo_event(userId, state)
         
     else: # user input
         if state == 'completed':
