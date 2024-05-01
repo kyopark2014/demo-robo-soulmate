@@ -2,7 +2,7 @@
 
 여기서는 Photo Booth 운영에 필요한 API를 정의합니다.
 
-## Welcome
+## Welcome 메시지
 
 패드에 있는 포토앱에서 'Start' 버튼 선택시에 대한 이벤트 전송방법입니다. 로봇의 아이디가 "AI-Dancing-Robot-001"인 경우에 아래와 같이 "state"를 "start-photo"로 전송합니다.
 
