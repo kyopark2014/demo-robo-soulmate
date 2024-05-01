@@ -744,7 +744,7 @@ function voiceConnect(voiceEndpoint, type) {
                     console.log('state: ', state);
                     console.log('speechType: ', speechType);
 
-                    broadcastMsg = msg.message;
+                    broadcastMsg = msg.query;
                     console.log('broadcastMsg: ', broadcastMsg);
                         
                     if(speechType=='robot' || speechType=='both') {
