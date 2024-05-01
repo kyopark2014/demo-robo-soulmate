@@ -983,6 +983,13 @@ const sendBtn = document.querySelector('#sendBtn');
 const message = document.querySelector('#chatInput')
 const chatPanel = document.querySelector('#chatPanel');
 
+// let profileImage;
+// profileImage.push(document.getElementById('profileImage'));
+// profileImage.innerHTML = `<img class="profile-image" src="Pug.jpg" alt="" id="profileImage"></img>`
+
+let profileImage = document.getElementById('profileImage');
+profileImage.src = "Pug.jpg";
+
 let isResponsed = new HashMap();
 let indexList = new HashMap();
 let retryNum = new HashMap();
