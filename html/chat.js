@@ -641,7 +641,7 @@ function voiceConnect(voiceEndpoint, type) {
                         addSentMessage(requestId, timestr, query);
                     }
                 }
-                else { // game event
+                else if(type == 'game') { // game event
                     console.log('state: ', state);
 
                     if(state == 'start') {
@@ -668,6 +668,64 @@ function voiceConnect(voiceEndpoint, type) {
                         console.log('initialize chat history');
                     }
                     else if (state == 'end') {
+                        addNotifyMessage('end the game.');
+
+                        console.log('initiate commend counter');
+                        initCommendCounter();                   
+                    }
+                    else {
+                        addNotifyMessage('game event: '+state);
+                    }
+                }
+                else if(type == 'photo') { // photo event
+                    console.log('state: ', state);
+
+                    if(state == 'start-photo') {
+                        addNotifyMessage('start in photo booth.');
+                        console.log('start in photo booth');
+
+                        // To-DO: clear memory 
+                        let current = new Date();
+                        let datastr = getDate(current);
+                        let timestr = getTime(current);
+                        let requestTime = datastr+' '+timestr;
+                        // addSentMessage(uuidv4(), timestr, 'clearMemory');
+
+                        let requestId = uuidv4();
+                        sendMessage({
+                            "user_id": userId,
+                            "request_id": requestId,
+                            "request_time": requestTime,        
+                            "type": "text",
+                            "body": 'clearMemory',
+                            "convType": conversationType
+                        })
+                        console.log('clearMemory');
+                        
+                        initializeItems(userId)
+                        console.log('initialize chat history');
+
+                        // play audio                        
+                        console.log('speechType: ', speechType);
+                        
+                        let startMsg = "사진 찍으러 왔구나~ 방문을 환영해! 지금 어떤 기분인지 기념 사진을 남겨보자! 준비 됐지?";
+                        if(speechType=='robot' || speechType=='both') {
+                            sendControl(userId, 'text', startMsg, "", 0, requestId);
+                        }
+
+                        if(speechType=='local' || speechType=='both') { // local
+                            playList.push({
+                                'played': false,
+                                'requestId': requestId,
+                                'text': response.msg
+                            });
+                        
+                            loadAudio(requestId, startMsg);
+                            next = true;
+                            playAudioList();
+                        }
+                    }
+                    else if (state == 'end-photo') {
                         addNotifyMessage('end the game.');
 
                         console.log('initiate commend counter');
