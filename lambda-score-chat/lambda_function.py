@@ -34,8 +34,8 @@ def send_dashboard(userId, text, type):
 def lambda_handler(event, context):
     print('event: ', event)
     
-    userId = event["userId"]
-    requestId = event["requestId"]
+    userId = event["user_id"]
+    requestId = event["request_id"]
     type = event["type"]
     text = event["text"]
     
