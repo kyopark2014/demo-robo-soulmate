@@ -715,15 +715,7 @@ function voiceConnect(voiceEndpoint, type) {
                         }
 
                         if(speechType=='local' || speechType=='both') { // local
-                            playList.push({
-                                'played': false,
-                                'requestId': requestId,
-                                'text': response.msg
-                            });
-                        
-                            loadAudio(requestId, startMsg);
-                            next = true;
-                            playAudioList();
+                            playAudioMessage(startMsg);
                         }
                     }
                     else if (state == 'end-photo') {
@@ -764,6 +756,63 @@ function voiceConnect(voiceEndpoint, type) {
     };
 
     return ws_voice;
+}
+
+function playAudioMessage(text) {
+    const uri = "speech";
+    const xhr = new XMLHttpRequest();
+
+    let speed = 120;
+    let voiceId;
+    let langCode;
+    if(conversationType=='english') {
+        langCode = 'en-US';
+        voiceId = 'Ivy';
+    }
+    else {
+        langCode = 'ko-KR';  // ko-KR en-US(영어)) ja-JP(일본어)) cmn-CN(중국어)) sv-SE(스페인어))
+        voiceId = 'Seoyeon';
+    }
+    
+    // voiceId: 'Aditi'|'Amy'|'Astrid'|'Bianca'|'Brian'|'Camila'|'Carla'|'Carmen'|'Celine'|'Chantal'|'Conchita'|'Cristiano'|'Dora'|'Emma'|'Enrique'|'Ewa'|'Filiz'|'Gabrielle'|'Geraint'|'Giorgio'|'Gwyneth'|'Hans'|'Ines'|'Ivy'|'Jacek'|'Jan'|'Joanna'|'Joey'|'Justin'|'Karl'|'Kendra'|'Kevin'|'Kimberly'|'Lea'|'Liv'|'Lotte'|'Lucia'|'Lupe'|'Mads'|'Maja'|'Marlene'|'Mathieu'|'Matthew'|'Maxim'|'Mia'|'Miguel'|'Mizuki'|'Naja'|'Nicole'|'Olivia'|'Penelope'|'Raveena'|'Ricardo'|'Ruben'|'Russell'|'Salli'|'Seoyeon'|'Takumi'|'Tatyana'|'Vicki'|'Vitoria'|'Zeina'|'Zhiyu'|'Aria'|'Ayanda'|'Arlet'|'Hannah'|'Arthur'|'Daniel'|'Liam'|'Pedro'|'Kajal'|'Hiujin'|'Laura'|'Elin'|'Ida'|'Suvi'|'Ola'|'Hala'|'Andres'|'Sergio'|'Remi'|'Adriano'|'Thiago'|'Ruth'|'Stephen'|'Kazuha'|'Tomoko'
+
+    // Aditi: neural is not support
+    // Amy: good
+    // Astrid: neural is not support
+    // Bianca: 스페인어? (x)
+    // Brian: 
+    // Camila (o)
+   
+    if(conversationType == 'translation') {
+        langCode = langCode;
+        voiceId = voiceId; // child Ivy, adult Joanna
+        speed = '120';
+    }    
+    console.log('voiceId: ', voiceId);
+    
+    xhr.open("POST", uri, true);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            response = JSON.parse(xhr.responseText);
+            // console.log("response: ", response);
+
+            playAudioLine(response.body);        
+
+            console.log('successfully played. text= '+text);
+        }
+    };
+    
+    var requestObj = {
+        "text": text,
+        "voiceId": voiceId,
+        "langCode": langCode,
+        "speed": speed
+    }
+    // console.log("request: " + JSON.stringify(requestObj));
+
+    var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
+
+    xhr.send(blob);            
 }
 
 let audioData = new HashMap();
