@@ -715,6 +715,7 @@ function voiceConnect(voiceEndpoint, type) {
                         }
 
                         if(speechType=='local' || speechType=='both') { // local
+                            addReceivedMessage(requestId, startMsg);  
                             playAudioMessage(startMsg);
                         }
                     }
