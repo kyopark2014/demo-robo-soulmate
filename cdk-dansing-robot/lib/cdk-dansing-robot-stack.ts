@@ -901,9 +901,9 @@ export class CdkDansingRobotStack extends cdk.Stack {
       }
     });
 
-    // POST method - provisioning
-    const scorGesture = api.root.addResource("score_gesture");
-    scorGesture.addMethod('POST', new apiGateway.LambdaIntegration(lambdaScoreGesture, {
+    // POST method 
+    const scoreGesture = api.root.addResource("score_gesture");
+    scoreGesture.addMethod('POST', new apiGateway.LambdaIntegration(lambdaScoreGesture, {
       passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
       credentialsRole: role,
       integrationResponses: [{
@@ -928,6 +928,48 @@ export class CdkDansingRobotStack extends cdk.Stack {
       viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });
 
+    // lambda - score-chat
+    const lambdaScoreChat = new lambda.Function(this, `lambda-score-chat-for-${projectName}`, {
+      description: 'lambda to send chat message to score board',
+      functionName: `lambda-score-chat-${projectName}`,
+      handler: 'lambda_function.lambda_handler',
+      runtime: lambda.Runtime.PYTHON_3_11,
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambda-score-chat')),
+      timeout: cdk.Duration.seconds(30),
+      role: roleLambdaScoreGesture,
+      environment: {
+        endpoint_dashboard: endpoint_dashboard,
+      }
+    });
+
+    // POST method
+    const scoreChat = api.root.addResource("score_chat");
+    scoreChat.addMethod('POST', new apiGateway.LambdaIntegration(lambdaScoreChat, {
+      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+      credentialsRole: role,
+      integrationResponses: [{
+        statusCode: '200',
+      }], 
+      proxy:false, 
+    }), {
+      methodResponses: [  
+        {
+          statusCode: '200',
+          responseModels: {
+            'application/json': apiGateway.Model.EMPTY_MODEL,
+          }, 
+        }
+      ]
+    }); 
+
+    // cloudfront setting for score_chat
+    distribution.addBehavior("/score_chat", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
+
+    // lambda - controller
     const lambdaController = new lambda.Function(this, `lambda-controller-for-${projectName}`, {
       description: 'lambda for robot controller',
       functionName: `lambda-conroller-for-${projectName}`,

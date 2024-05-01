@@ -9,31 +9,7 @@ def get_lambda_client(region):
         region_name=region
     )
 
-
-def get_score(text):
-    # "heart", "X", "O", "1 thumb-up", "1 thumb-down", "2 thumb-up", "2 thumb-down", "1 victory", "2 victory"
-
-    if text == "heart":
-        score = 5
-    elif text == "2 thumb-up":
-        score = 5
-    elif text == "2 victory":
-        score = 5
-    elif text == "1 thumb-up":
-        score = 4
-    elif text == "1 victory":
-        score = 4
-    elif text == "2 thumb-down":
-        score = 1
-    elif text == "1 thumb-down":
-        score = 2
-    else: # "X", "O"
-        score = 1
-
-    return score
-
-
-def send_dashboard(userId, text, score):
+def send_dashboard(userId, text, type):
     # 스코어 보드 호출
     function_name = "lambda-score-update-for-demo-dansing-robot"
     
@@ -41,10 +17,9 @@ def send_dashboard(userId, text, score):
     try:
         lambda_client = get_lambda_client(region=lambda_region)
         payload = {
-            'userId': userId,
-            'score': score,
+            "userId": userId,
             "text": text,
-            "type": "gesture"            
+            "type": type
         }
         response = lambda_client.invoke(
             FunctionName=function_name,
@@ -56,7 +31,6 @@ def send_dashboard(userId, text, score):
         print("Couldn't invoke function %s.", function_name)
         raise
 
-
 def lambda_handler(event, context):
     print('event: ', event)
     
@@ -65,13 +39,8 @@ def lambda_handler(event, context):
     type = event["type"]
     text = event["text"]
     
-    # Get Score
-    if type == 'gesture':
-        score = get_score(text)
-    print('score: ', score)
-
-    # send the score to the dashboard
-    send_dashboard(userId, text, score)
+    # send message to the dashboard
+    send_dashboard(userId, text, type)
     
     # To-do: Push the text for the last message   
     return {
@@ -80,6 +49,6 @@ def lambda_handler(event, context):
         'body': json.dumps({        
             "userId": userId,
             "requestId": requestId,
-            "score": score
+            "type": type
         })
     }

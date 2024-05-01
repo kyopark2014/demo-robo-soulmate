@@ -350,6 +350,9 @@ function connect(endpoint, type) {
                 addReceivedMessage(response.request_id, response.msg);  
                 // console.log('response.msg: ', response.msg);
 
+                // send received message to score board
+                sendMessageToScoreBoard(userId, 'chat', response.msg, response.request_id) 
+
                 if(enableTTS) {                    
                     console.log('speechType: ', speechType);
                     if(speechType=='robot') {
@@ -1295,6 +1298,36 @@ function sendControl(thingName, type, message, commend, score, requestId) {
     }
     
     console.log("sendControl: " + JSON.stringify(requestObj));
+
+    var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
+
+    xhr.send(blob);            
+}
+
+function sendMessageToScoreBoard(thingName, type, message, requestId) {
+    const uri = "score_chat";
+    const xhr = new XMLHttpRequest();
+
+    xhr.open("POST", uri, true);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            response = JSON.parse(xhr.responseText);
+            console.log("response: " + JSON.stringify(response));
+        }
+        else if(xhr.readyState ===4 && xhr.status === 504) {
+            console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
+        }
+    };
+
+    let requestObj;
+    requestObj = {
+        "user_id": thingName,
+        "request_id": requestId,
+        "type": type,
+        "text": message
+    }
+    
+    console.log("sendMessageToScoreBoard: " + JSON.stringify(requestObj));
 
     var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
 
