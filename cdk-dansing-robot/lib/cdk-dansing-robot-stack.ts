@@ -1382,7 +1382,69 @@ export class CdkDansingRobotStack extends cdk.Stack {
 
     // deploy components
     new voiceComponentDeployment(scope, `voice-deployment-for-${projectName}`, voiceWebsocketapi.attrApiId)   
-  
+
+
+    // collection of rekognition
+    const collectionId = `collectionId-for-${projectName}`;
+    const cfnCollection = new rekognition.CfnCollection(this, 'MyCfnCollection', {
+      collectionId: collectionId,
+    });
+    if (debug) {
+      new cdk.CfnOutput(this, 'Collection-attrArn', {
+        value: cfnCollection.attrArn,
+        description: 'The arn of correction in Rekognition',
+      }); 
+    }
+
+    // Lambda - emotion
+    const lambdaEmotion = new lambda.Function(this, "lambdaEmotion", {
+      runtime: lambda.Runtime.NODEJS_16_X,
+      functionName: "lambda-emotion",
+      code: lambda.Code.fromAsset("../lambda-emotion"),
+      handler: "index.handler",
+      timeout: cdk.Duration.seconds(10),
+      environment: {
+        bucketName: s3Bucket.bucketName,
+        collectionId: collectionId
+      }
+    });
+    s3Bucket.grantReadWrite(lambdaEmotion);
+    //userDataTable.grantReadWriteData(lambdaEmotion); // permission for dynamo
+
+    lambdaEmotion.role?.attachInlinePolicy(
+      new iam.Policy(this, 'rekognition-policy', {
+        statements: [RekognitionPolicy],
+      }),
+    );    
+
+    // POST method
+    const emotionName = "emotion";
+    const emotion = api.root.addResource(emotionName);
+    emotion.addMethod('POST', new apiGateway.LambdaIntegration(lambdaEmotion, {
+      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+      credentialsRole: role,
+      integrationResponses: [{
+        statusCode: '200',
+      }],
+      proxy: true,
+    }), {
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseModels: {
+            'application/json': apiGateway.Model.EMPTY_MODEL,
+          },
+        }
+      ]
+    });
+
+    // cloudfront setting for api gateway of emotion
+    distribution.addBehavior("/emotion", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
+
   }
 }
 
