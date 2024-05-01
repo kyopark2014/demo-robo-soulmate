@@ -1,14 +1,9 @@
 body {
   /* background-image: : url('https://image... '); */
-  background-color: #fff;
+  background-color: #3498db;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-}
-
-.chat-panel {
-  height: 46em;
-  overflow: auto;
 }
 
 .container {
@@ -287,6 +282,11 @@ hr {
 
 .chat-box-tray i:last-of-type {
   margin-left: 25px;
+}
+
+.chat-panel {
+  height: 30em;
+  overflow: auto;
 }
 
 .chat-receiver {
