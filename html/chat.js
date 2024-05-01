@@ -725,8 +725,35 @@ function voiceConnect(voiceEndpoint, type) {
                         console.log('initiate commend counter');
                         initCommendCounter();                   
                     }
-                    else {
-                        addNotifyMessage('game event: '+state);
+                    else if(state == 'message') {
+                        // play audio                        
+                        console.log('speechType: ', speechType);
+                        
+                        let startMsg = "사진 찍으러 왔구나~ 방문을 환영해! 지금 어떤 기분인지 기념 사진을 남겨보자! 준비 됐지?";
+                        if(speechType=='robot' || speechType=='both') {
+                            sendControl(userId, 'text', startMsg, "", 0, requestId);
+                        }
+
+                        if(speechType=='local' || speechType=='both') { // local
+                            addReceivedMessage(requestId, startMsg);  
+                            playAudioMessage(startMsg);
+                        }
+                    }
+                }
+                else if(type == 'broadcast') { // broadcast message
+                    console.log('state: ', state);
+                    console.log('speechType: ', speechType);
+
+                    broadcastMsg = msg.message;
+                    console.log('broadcastMsg: ', broadcastMsg);
+                        
+                    if(speechType=='robot' || speechType=='both') {
+                        sendControl(userId, 'text', broadcastMsg, "", 0, requestId);
+                    }
+
+                    if(speechType=='local' || speechType=='both') { // local
+                        addReceivedMessage(requestId, broadcastMsg);  
+                        playAudioMessage(broadcastMsg);
                     }
                 }                            
             }      
