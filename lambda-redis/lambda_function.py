@@ -67,17 +67,21 @@ def lambda_handler(event, context):
         push_game_event(state)
         
     else: # user input
-        query = event['query']    
+        if state == 'completed':
+            requestId = str(uuid.uuid4())  
+            
+        if 'query' in event: 
+            query = event['query']    
+        else: 
+            query = ""
+            
         msg = {
             "type": "message",
             "userId": userId,
             "requestId": requestId,
             "query": query,
             "state": state
-        }
-        
-        if state == 'completed':
-            requestId = str(uuid.uuid4())  
+        }            
         
         channel = f"{userId}"   
         try: 
