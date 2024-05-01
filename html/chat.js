@@ -20,7 +20,7 @@ if(enableTTS && (speechType=='local' || speechType=='both')) {
 
 // Common
 let userId = localStorage.getItem('userId'); // set userID if exists 
-if(userId=="" || userName==null) {
+if(userId=="" || userId==null) {
     userId = uuidv4();
 }
 console.log('userId: ', userId);
