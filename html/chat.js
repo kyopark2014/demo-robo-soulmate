@@ -30,7 +30,6 @@ if(userName=="" || userName==null) {
     userName = 'Maltese';    
 }
 console.log('userName: ', userName);
-sender = userName;
 
 // chat session
 let endpoint = localStorage.getItem('wss_url');  
@@ -1016,7 +1015,7 @@ function initiate() {
     }
 
     if (userName == 'Maltese') {
-        calleeName.textContent = "베드락";  
+        calleeName.textContent = "베드락";          
     }
     else if (userName == 'WelshCorgi') {
         calleeName.textContent = "람다";  
@@ -1042,6 +1041,7 @@ function initiate() {
     else {
         calleeName.textContent = "AWS";  
     }
+    sender = calleeName.textContent;
 
     if(langstate=='korean') {
         addNotifyMessage("Amazon Bedrock을 이용하여 채팅을 시작합니다.");
