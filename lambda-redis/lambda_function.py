@@ -73,6 +73,25 @@ def push_photo_event(userId, state):
         print('error message: ', err_msg)                    
         raise Exception ("Not able to request to LLM")
    
+def broadcast_message(userId, state, msg):
+    msg = {
+        "type": "broadcast",
+        "userId": userId,
+        "requestId": str(uuid.uuid4()),
+        "query": msg,
+        "state": state
+    }
+        
+    channel = f"{userId}"   
+    try: 
+        redis_client.publish(channel=channel, message=json.dumps(msg))
+        print('successfully published: ', json.dumps(msg))
+        
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)                    
+        raise Exception ("Not able to request to LLM")
+       
 requestId = str(uuid.uuid4())          
 def lambda_handler(event, context):
     global requestId
@@ -87,6 +106,9 @@ def lambda_handler(event, context):
         
     elif state == 'start-photo' or state == 'end-photo':  # photo booth event
         push_photo_event(userId, state)
+    
+    elif state == 'broadcast':  
+        broadcast_message(userId, state, event['message'])
         
     else: # user input
         if state == 'completed':
