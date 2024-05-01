@@ -22,29 +22,34 @@ Controller에 전달되는 정보는 아래와 같습니다.
 점수를 이용하여 action을 정의는 [관련 코드](./lambda-controller/lambda_function.py)을 참조합니다. 아래의 점수별로 show, move, seq에 대한 정의가 되면 업데이트 하겠습니다.
 
 ```python
-        score = event['score']
+score = event['score']
         print('score: ', score)
     
-        if score == 5:
+        if score == '5':
             show = 'HAPPY'
             move = 'seq'
-            seq = ["STAND", "SIT"]
-        elif score == 4:
-            show = 'HAPPY'
+            seq = ["MOVE_FORWARD", "SIT", "MOVE_BACKWARD"]
+        elif score == '4':
+            show = 'NEUTRAL'
             move = 'seq'
-            seq = ["STAND", "SIT"]
-        elif score == 3:
-            show = 'HAPPY'
+            seq = ["TURN_LEFT", "SIT", "TURN_RIGHT"]
+        elif score == '3':
+            #show = 'NEUTRAL'
+            #move = 'seq'
+            #seq = ["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT"]
+            isAction = False
+        elif score == '2':
+            show = 'SAD'
             move = 'seq'
-            seq = ["STAND", "SIT"]
-        elif score == 2:
-            show = 'HAPPY'
+            seq = ["MOVE_BACKWARD", "SIT", "MOVE_FORWARD"]
+        elif score == '1':
+            show = 'ANGRY'
             move = 'seq'
-            seq = ["STAND", "SIT"]
+            seq = ["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT"]
         else:
-            show = 'HAPPY'
+            show = 'NEUTRAL'
             move = 'seq'
-            seq = ["STAND", "SIT"]
+            seq = ["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT"]
         
         payload = json.dumps({
             "show": show,  
