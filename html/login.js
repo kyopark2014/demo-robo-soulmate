@@ -8,6 +8,7 @@ function uuidv4() {
 // Chat UI
 const myForm = document.querySelector('#my-form');
 const userInput = document.querySelector('#userId');
+const nameInput = document.querySelector('#userName');
 const convtypeInput = document.querySelector('#convtype');
 
 // Common
@@ -19,6 +20,15 @@ else {
     userInput.value = userId
 }
 console.log('userId: ', userId);
+
+let userName = localStorage.getItem('userName'); // set userID if exists 
+if(userName=="") {
+    userName = 'Maltese';
+}
+else {
+    nameInput.value = userName
+}
+console.log('userName: ', userName);
 
 myForm.addEventListener('submit', onSubmit);
 

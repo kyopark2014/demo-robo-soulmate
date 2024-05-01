@@ -25,6 +25,12 @@ if(userId=="") {
 }
 console.log('userId: ', userId);
 
+let userName = localStorage.getItem('userName'); // set userID if exists 
+if(userName=="") {
+    userName = 'Maltese';
+}
+console.log('userName: ', userName);
+
 // chat session
 let endpoint = localStorage.getItem('wss_url');  
 if(endpoint=="") {
@@ -1007,8 +1013,34 @@ function initiate() {
             })
         })(i);
     }
-    calleeName.textContent = "Chatbot";  
-    // calleeId.textContent = "AWS";
+
+    if (userName == 'Maltese') {
+        calleeName.textContent = "베드락";  
+    }
+    else if (userName == 'WelshCorgi') {
+        calleeName.textContent = "람다";  
+    }
+    else if (userName == 'Chihuahua') {
+        calleeName.textContent = "폴리";  
+    }
+    else if (userName == 'Jindogae') {
+        calleeName.textContent = "그린그래스";  
+    }
+    else if (userName == 'Poodle') {
+        calleeName.textContent = "에스3";  
+    }
+    else if (userName == 'Schnauzer') {
+        calleeName.textContent = "다이나모";  
+    }
+    else if (userName == 'Pug') {
+        calleeName.textContent = "아이엠";  
+    }
+    else if (userName == 'Shepherd') {
+        calleeName.textContent = "세이지메이커";  
+    }
+    else {
+        calleeName.textContent = "AWS";  
+    }
 
     if(langstate=='korean') {
         addNotifyMessage("Amazon Bedrock을 이용하여 채팅을 시작합니다.");
