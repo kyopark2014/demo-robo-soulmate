@@ -27,9 +27,10 @@ console.log('userId: ', userId);
 
 let userName = localStorage.getItem('userName'); // set userID if exists 
 if(userName=="" || userName==null) {
-    userName = 'Maltese';
+    userName = 'Maltese';    
 }
 console.log('userName: ', userName);
+sender = userName;
 
 // chat session
 let endpoint = localStorage.getItem('wss_url');  
@@ -1345,8 +1346,6 @@ function getScore(userId, requestId, text) {
 
 function addReceivedMessage(requestId, msg) {
     // console.log("add received message: "+msg);
-    sender = "Chatbot"
-
     if(!indexList.get(requestId+':receive')) {
         indexList.put(requestId+':receive', index);             
     }
