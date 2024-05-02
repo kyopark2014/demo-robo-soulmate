@@ -401,11 +401,11 @@ function connect(endpoint, type) {
                 }      
                 
                 if(index>maxMsgItems-maxLengthOfHistoryReadable) {
-                    print('index: ', index)
+                    console.log('index: ', index)
                     
                     updateChatHistory();
 
-                    print('updated index: ', index)
+                    console.log('updated index: ', index)
                     
                 } 
             }          
