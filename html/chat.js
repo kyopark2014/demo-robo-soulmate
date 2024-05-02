@@ -492,7 +492,7 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
 
         if(isReservedCommend(query)==false) {  // message
             console.log('get score for ', query);
-            if(scoreValue.get(requestId)==undefined) { // check duplication
+            if(scoreValue.get(requestId)==undefined && isGame) { // check duplication
                 getScore(userId, requestId, query); 
                 scoreValue.put(requestId, true);
             }
@@ -537,7 +537,7 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
 
             if(isReservedCommend(query)==false) {
                 console.log('get score for ', query);
-                if(scoreValue.get(requestId)==undefined) { // check duplication
+                if(scoreValue.get(requestId)==undefined && isGame) { // check duplication
                     getScore(userId, requestId, query); 
                     scoreValue.put(requestId, true);
                 }
@@ -1002,6 +1002,12 @@ if(conversationType=="") {
 }
 console.log('conversationType: ', conversationType);
 
+let isGame = true;
+if(conversationType=='normal') {
+    isGame = false;
+}
+console.log('isGame: ', isGame);
+
 initiate();
 
 function initiate() {
@@ -1131,7 +1137,10 @@ function onSend(e) {
         if(protocol == 'WEBSOCKET') {
             if(isReservedCommend(message.value)==false) {   
                 console.log('request to estimate the score');
-                getScore(userId, requestId, message.value);     
+
+                if(isGame) {
+                    getScore(userId, requestId, message.value);     
+                }
 
                 sendMessage({
                     "user_id": userId,
