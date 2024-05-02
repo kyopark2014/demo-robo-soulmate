@@ -344,7 +344,7 @@ function connect(endpoint, type) {
 
             if(response.status == 'completed') {     
                 console.log('transaction status: completed');
-                console.log('next: ', next); 
+                // console.log('next: ', next); 
                 feedback.style.display = 'none';       
                    
                 addReceivedMessage(response.request_id, response.msg);  
@@ -354,7 +354,7 @@ function connect(endpoint, type) {
                 sendMessageToScoreBoard(userId, 'chat', response.msg, response.request_id) 
 
                 if(enableTTS) {                    
-                    console.log('speechType: ', speechType);
+                    // console.log('speechType: ', speechType);
                     if(speechType=='robot') {
                         sendControl(userId, 'text', response.msg, "", 0, response.request_id);
                     }
@@ -378,7 +378,7 @@ function connect(endpoint, type) {
                     else if(speechType=='both') {
                         sendControl(userId, 'text', response.msg, "", 0, response.request_id);
 
-                        console.log('Is already played? ', isPlayedTTS[response.request_id]);
+                        // console.log('Is already played? ', isPlayedTTS[response.request_id]);
                         if(isPlayedTTS[response.request_id] == undefined) {
                             requestId = response.request_id;
                             playList.push({
@@ -900,7 +900,7 @@ function loadAudio(requestId, text) {
         voiceId = voiceId; // child Ivy, adult Joanna
         speed = '120';
     }    
-    console.log('voiceId: ', voiceId);
+    // console.log('voiceId: ', voiceId);
     
     xhr.open("POST", uri, true);
     xhr.onreadystatechange = () => {
@@ -910,7 +910,7 @@ function loadAudio(requestId, text) {
 
             audioData[requestId+text] = response.body;
 
-            console.log('successfully loaded. text= '+text);
+            // console.log('successfully loaded. text= '+text);
             // console.log(response.body);
             // console.log(audioData[requestId+text]);
         }
@@ -956,7 +956,7 @@ async function playAudioLine(audio_body){
     var audio = document.querySelector('audio');
     audio.src = sound;
     
-    console.log('play audio');
+    // console.log('play audio');
 
     await playAudio(audio)
 }
@@ -964,7 +964,7 @@ async function playAudioLine(audio_body){
 // audio play
 var audio = document.querySelector('audio');
 audio.addEventListener("ended", function() {
-    console.log("finish audio, text= ", playList[current].text)
+    console.log("audio = ", playList[current].text)
     delay(1000)
 
     next = true;
@@ -1199,9 +1199,9 @@ function addSentMessage(requestId, timestr, text) {
     }
     else {
         idx = indexList.get(requestId+':send');
-        console.log("reused index="+idx+', id='+requestId+':send');        
+        // console.log("reused index="+idx+', id='+requestId+':send');        
     }
-    console.log("index (sendMessage):", idx);   
+    // console.log("index (sendMessage):", idx);   
 
     let length = text.length;    
     // console.log('length: ', length);
@@ -1314,7 +1314,7 @@ function sendControl(thingName, type, message, commend, score, requestId) {
         }
     }
     
-    console.log("sendControl: " + JSON.stringify(requestObj));
+    // console.log("sendControl: " + JSON.stringify(requestObj));
 
     var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
 
@@ -1403,9 +1403,9 @@ function addReceivedMessage(requestId, msg) {
     }
     else {
         idx = indexList.get(requestId+':receive');
-        console.log("reused index="+idx+', id='+requestId+':receive');        
+        // console.log("reused index="+idx+', id='+requestId+':receive');        
     }
-    console.log("index (receiveMessage):", idx);   
+    // console.log("index (receiveMessage):", idx);   
 
     msg = msg.replaceAll("\n", "<br/>");
 
