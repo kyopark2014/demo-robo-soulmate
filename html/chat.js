@@ -939,7 +939,7 @@ function playAudioList() {
         // console.log('playList: ', playList);
 
         if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
-            console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
+            // console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
             current = i;
             playAudioLine(audioData[requestId+playList[i].text]);            
 
@@ -1283,7 +1283,7 @@ function sendControl(thingName, type, message, commend, score, requestId) {
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
             response = JSON.parse(xhr.responseText);
-            console.log("response: " + JSON.stringify(response));
+            // console.log("response: " + JSON.stringify(response));
         }
         else if(xhr.readyState ===4 && xhr.status === 504) {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
@@ -1447,7 +1447,7 @@ function addReceivedMessage(requestId, msg) {
 }
 
 function addNotifyMessage(msg) {
-    console.log("index:", index);   
+    // console.log("index:", index);   
 
     msglist[index].innerHTML =  
         `<div class="notification-text">${msg}</div>`;     
