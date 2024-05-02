@@ -978,14 +978,15 @@ audio.addEventListener("ended", function() {
 
     if(playList[playId] != undefined) {
         console.log("played audio: ", playList[playId].text)
-    }    
-    delay(1000)
 
-    next = true;
-    playList[playId].played = true;
-    audioData.remove([requestId+playList[playId].text]);
+        delay(1000)
 
-    playAudioList()
+        next = true;
+        playList[playId].played = true;
+        audioData.remove([requestId+playList[playId].text]);
+
+        playAudioList()
+    }        
 });
 
 function playAudio(audio) {
