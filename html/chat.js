@@ -1118,10 +1118,6 @@ function onSend(e) {
     e.preventDefault();
 
     if(message.value != '') {
-        if(index>maxMsgItems-20) {
-            updateChatHistory();
-        } 
-
         console.log("msg: ", message.value);
 
         let current = new Date();
@@ -1155,7 +1151,11 @@ function onSend(e) {
         }
         else {
             sendRequest(message.value, requestId, requestTime);
-        }           
+        }       
+        
+        if(index>maxMsgItems-maxLengthOfHistoryReadable) {
+            updateChatHistory();
+        } 
     }
     message.value = "";
 
