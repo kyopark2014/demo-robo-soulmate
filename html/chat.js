@@ -1189,82 +1189,87 @@ function getTime(current) {
 }
 
 function addSentMessage(requestId, timestr, text) {
+    let idx = index;
+
     if(!indexList.get(requestId+':send')) {
-        indexList.put(requestId+':send', index);             
+        indexList.put(requestId+':send', idx);
+
+        index++;
     }
     else {
-        index = indexList.get(requestId+':send');
-        console.log("reused index="+index+', id='+requestId+':send');        
+        idx = indexList.get(requestId+':send');
+        console.log("reused index="+idx+', id='+requestId+':send');        
     }
-    console.log("index (sendMessage):", index);   
+    console.log("index (sendMessage):", idx);   
 
-    var length = text.length;    
-    console.log('length: ', length);
+    let length = text.length;    
+    // console.log('length: ', length);
     if(length < 10) {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender20 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;   
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender20 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;   
     }
     else if(length < 14) {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender25 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;   
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender25 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;   
     }
     else if(length < 17) {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender30 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender30 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;
     }  
     else if(length < 21) {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender35 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender35 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;
     }
     else if(length < 26) {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender40 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender40 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;
     }
     else if(length < 35) {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender50 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender50 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;
     }
     else if(length < 80) {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender60 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender60 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;
     }  
     else if(length < 145) {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender70 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender70 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;
     }  
     else {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender80 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender80 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;
     }     
 
-    index++;       
     chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
 }       
 
 function addSentMessageForSummary(requestId, timestr, text) {  
+    let idx = index;
     console.log("sent message: "+text);
 
     if(!indexList.get(requestId+':send')) {
-        indexList.put(requestId+':send', index);             
+        indexList.put(requestId+':send', idx);
+
+        index++;
     }
     else {
-        index = indexList.get(requestId+':send');
-        console.log("reused index="+index+', id='+requestId+':send');        
+        idx = indexList.get(requestId+':send');
+        console.log("reused index="+idx+', id='+requestId+':send');        
     }
-    console.log("index (sendMessage):", index);   
+    console.log("index (sendMessage):", idx);   
 
     let length = text.length;
     if(length < 100) {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender60 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;   
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender60 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;   
     }
     else {
-        msglist[index].innerHTML = 
-            `<div class="chat-sender80 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${index}"></h2></div>`;
+        msglist[idx].innerHTML = 
+            `<div class="chat-sender80 chat-sender--right"><h1>${timestr}</h1>${text}&nbsp;<h2 id="status${idx}"></h2></div>`;
     }   
 
     chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
-    index++;
 }  
 
 function sendControl(thingName, type, message, commend, score, requestId) {
@@ -1323,10 +1328,10 @@ function sendMessageToScoreBoard(thingName, type, message, requestId) {
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
             response = JSON.parse(xhr.responseText);
-            console.log("response: " + JSON.stringify(response));
+            // console.log("response: " + JSON.stringify(response));
         }
         else if(xhr.readyState ===4 && xhr.status === 504) {
-            console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
+            // console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
         }
     };
 
@@ -1336,9 +1341,8 @@ function sendMessageToScoreBoard(thingName, type, message, requestId) {
         "request_id": requestId,
         "type": type,
         "text": message
-    }
-    
-    console.log("sendMessageToScoreBoard: " + JSON.stringify(requestObj));
+    }    
+    // console.log("sendMessageToScoreBoard: " + JSON.stringify(requestObj));
 
     var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
 
@@ -1389,15 +1393,18 @@ function getScore(userId, requestId, text) {
 }
 
 function addReceivedMessage(requestId, msg) {
+    let idx = index;
+
     // console.log("add received message: "+msg);
     if(!indexList.get(requestId+':receive')) {
-        indexList.put(requestId+':receive', index);             
+        indexList.put(requestId+':receive', idx);
+        index++;
     }
     else {
-        index = indexList.get(requestId+':receive');
-        console.log("reused index="+index+', id='+requestId+':receive');        
+        idx = indexList.get(requestId+':receive');
+        console.log("reused index="+idx+', id='+requestId+':receive');        
     }
-    console.log("index (receiveMessage):", index);   
+    console.log("index (receiveMessage):", idx);   
 
     msg = msg.replaceAll("\n", "<br/>");
 
@@ -1406,35 +1413,34 @@ function addReceivedMessage(requestId, msg) {
     // console.log("length: ", length);
 
     if(length < 10) {
-        msglist[index].innerHTML = `<div class="chat-receiver20 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[idx].innerHTML = `<div class="chat-receiver20 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 14) {
-        msglist[index].innerHTML = `<div class="chat-receiver25 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[idx].innerHTML = `<div class="chat-receiver25 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 17) {
-        msglist[index].innerHTML = `<div class="chat-receiver30 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[idx].innerHTML = `<div class="chat-receiver30 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 21) {
-        msglist[index].innerHTML = `<div class="chat-receiver35 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[idx].innerHTML = `<div class="chat-receiver35 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 25) {
-        msglist[index].innerHTML = `<div class="chat-receiver40 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[idx].innerHTML = `<div class="chat-receiver40 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 35) {
-        msglist[index].innerHTML = `<div class="chat-receiver50 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[idx].innerHTML = `<div class="chat-receiver50 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 80) {
-        msglist[index].innerHTML = `<div class="chat-receiver60 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[idx].innerHTML = `<div class="chat-receiver60 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else if(length < 145) {
-        msglist[index].innerHTML = `<div class="chat-receiver70 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[idx].innerHTML = `<div class="chat-receiver70 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
     else {
-        msglist[index].innerHTML = `<div class="chat-receiver80 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
+        msglist[idx].innerHTML = `<div class="chat-receiver80 chat-receiver--left"><h1>${sender}</h1>${msg}&nbsp;</div>`;  
     }
 
-    chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
-    index++;
+    chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom    
 }
 
 function addNotifyMessage(msg) {
@@ -1745,13 +1751,13 @@ function getHistory(userId, state) {
                 if(history[i].type=='text') {                
                     // let timestr = history[i].request_time.substring(11, 19);
                     let requestId = history[i].request_id;
-                    console.log("requestId: ", requestId);
+                    // console.log("requestId: ", requestId);
                     let timestr = history[i].request_time;
-                    console.log("timestr: ", timestr);
+                    // console.log("timestr: ", timestr);
                     let body = history[i].body;
-                    console.log("question: ", body);
+                    // console.log("question: ", body);
                     let msg = history[i].msg;
-                    console.log("answer: ", msg);
+                    // console.log("answer: ", msg);
 
                     addSentMessage(requestId, timestr, body)
                     addReceivedMessage(requestId, msg);                            
