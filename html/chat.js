@@ -1003,7 +1003,7 @@ if(conversationType=="") {
 console.log('conversationType: ', conversationType);
 
 let isGame = true;
-if(conversationType=='normal') {
+if(conversationType=='normal' || onversationType=='english') {
     isGame = false;
 }
 console.log('isGame: ', isGame);
