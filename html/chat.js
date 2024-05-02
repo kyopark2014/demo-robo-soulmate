@@ -995,7 +995,7 @@ let retryNum = new HashMap();
 
 // message log list
 let msglist = [];
-let maxMsgItems = 20;
+let maxMsgItems = 200;
 let maxLengthOfHistoryReadable = maxMsgItems/4;
 let msgHistory = new HashMap();
 let callee = "AWS";
@@ -1101,7 +1101,7 @@ function updateChatHistory() {
     index = 0;
 
     indexList = new HashMap();
-    
+
     for (i=0;i<maxMsgItems;i++) {
         msglist.push(document.getElementById('msgLog'+i));
     
