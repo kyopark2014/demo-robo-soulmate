@@ -7,7 +7,7 @@ body {
 }
 
 .chat-panel {
-  height: 44em;
+  height: 25em;
   overflow: auto;
 }
 
