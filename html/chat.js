@@ -987,6 +987,10 @@ audio.addEventListener("ended", function() {
 
         playAudioList()
     }        
+    else {
+        playList = [];
+        playId = 0;
+    }
 });
 
 function playAudio(audio) {
