@@ -976,7 +976,7 @@ var audio = document.querySelector('audio');
 audio.addEventListener("ended", function() {
     console.log("playId: ", playId)
 
-    if(playList[playId].text) {
+    if(playList[playId].text != undefined) {
         console.log("played audio: ", playList[playId].text)
     }    
     delay(1000)
