@@ -1089,7 +1089,7 @@ depart.addEventListener('click', function(){
 });
 
 function updateChatHistory() {
- /*   for(let i=0;i<maxMsgItems;i++) {
+    for(let i=0;i<maxMsgItems;i++) {
         msglist[i].innerHTML = `<div></div>`
     }
     
@@ -1110,9 +1110,7 @@ function updateChatHistory() {
         })(i);
     } 
 
-    getHistory(userId, 'update');    */
-
-    window.location.href = "chat.html";
+    getHistory(userId, 'update');    
 }
 
 sendBtn.addEventListener('click', onSend);
