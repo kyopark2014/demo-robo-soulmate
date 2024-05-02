@@ -1114,6 +1114,7 @@ function updateChatHistory() {
         })(i);
     } 
 
+    console.log('Update history! index =', index);
     getHistory(userId, 'update');    
 }
 
