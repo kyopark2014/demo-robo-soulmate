@@ -401,12 +401,7 @@ function connect(endpoint, type) {
                 }      
                 
                 if(index>maxMsgItems-maxLengthOfHistoryReadable) {
-                    console.log('index: ', index)
-                    
-                    updateChatHistory();
-
-                    console.log('updated index: ', index)
-                    
+                    updateChatHistory();                    
                 } 
             }          
             else if(response.status == 'istyping') {                
@@ -1119,9 +1114,9 @@ function updateChatHistory() {
         })(i);
     } 
 
-    console.log('Update history! index =', index);
-    getHistory(userId, 'update');    
-    console.log('new index =', index);
+    //console.log('Update history! index =', index);
+    //getHistory(userId, 'update');    
+    //console.log('new index =', index);
 }
 
 sendBtn.addEventListener('click', onSend);
