@@ -127,7 +127,7 @@ function ping() {
     console.log('->ping');
     webSocket.send('__ping__');
 
-    chromeTimer = chromeTimer - 5;
+    chromeTimer = chromeTimer - 50;
     if(chromeTimer<60) {
         chromeTimer = 300;
         window.location.href = "chat.html";
