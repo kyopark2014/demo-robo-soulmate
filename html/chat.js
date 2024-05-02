@@ -1100,6 +1100,8 @@ function updateChatHistory() {
     msglist = [];
     index = 0;
 
+    indexList = new HashMap();
+    
     for (i=0;i<maxMsgItems;i++) {
         msglist.push(document.getElementById('msgLog'+i));
     
@@ -1114,9 +1116,7 @@ function updateChatHistory() {
         })(i);
     } 
 
-    //console.log('Update history! index =', index);
-    //getHistory(userId, 'update');    
-    //console.log('new index =', index);
+    getHistory(userId, 'update');    
 }
 
 sendBtn.addEventListener('click', onSend);
