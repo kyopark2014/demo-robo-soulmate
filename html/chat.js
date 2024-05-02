@@ -1196,7 +1196,7 @@ function addSentMessage(requestId, timestr, text) {
         index = indexList.get(requestId+':send');
         console.log("reused index="+index+', id='+requestId+':send');        
     }
-    console.log("index:", index);   
+    console.log("index (sendMessage):", index);   
 
     var length = text.length;    
     console.log('length: ', length);
@@ -1251,7 +1251,7 @@ function addSentMessageForSummary(requestId, timestr, text) {
         index = indexList.get(requestId+':send');
         console.log("reused index="+index+', id='+requestId+':send');        
     }
-    console.log("index:", index);   
+    console.log("index (sendMessage):", index);   
 
     let length = text.length;
     if(length < 100) {
@@ -1395,9 +1395,9 @@ function addReceivedMessage(requestId, msg) {
     }
     else {
         index = indexList.get(requestId+':receive');
-        // console.log("reused index="+index+', id='+requestId+':receive');        
+        console.log("reused index="+index+', id='+requestId+':receive');        
     }
-    // console.log("index:", index);   
+    console.log("index (receiveMessage):", index);   
 
     msg = msg.replaceAll("\n", "<br/>");
 
