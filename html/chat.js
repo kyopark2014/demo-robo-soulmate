@@ -252,12 +252,14 @@ function initCommendCounter() {
 }
 
 function isReservedCommend(message){
-    console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
+    // console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
 
     if(reservedCommend.get(message) == undefined) {        
         return false;
     }
     else {
+        console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
+
         return true;
     }    
 }
@@ -964,7 +966,7 @@ async function playAudioLine(audio_body){
 // audio play
 var audio = document.querySelector('audio');
 audio.addEventListener("ended", function() {
-    console.log("audio = ", playList[current].text)
+    console.log("played audio: ", playList[current].text)
     delay(1000)
 
     next = true;
@@ -1745,8 +1747,8 @@ function getHistory(userId, state) {
                 start = history.length - maxLengthOfHistoryReadable;
             }
 
-            console.log('history length of dynamodb: ', history.length);
-            console.log('start position of history: ', start)
+            // console.log('history length of dynamodb: ', history.length);
+            // console.log('start position of history: ', start)
 
             for(let i=start; i<history.length; i++) {
                 if(history[i].type=='text') {                
