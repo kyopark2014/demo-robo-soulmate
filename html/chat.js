@@ -184,7 +184,7 @@ function checkingDelayedPlayList() {
 let sentance = new HashMap();
 let lineText = "";
 let playList = [];
-let current = 0;
+let playId = 0;
 let requestId = ""
 let next = true;
 let isPlayedTTS = new HashMap();
@@ -940,7 +940,7 @@ function playAudioList() {
 
         if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
             // console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
-            current = i;
+            playId = i;
             playAudioLine(audioData[requestId+playList[i].text]);            
 
             next = false;
@@ -966,12 +966,13 @@ async function playAudioLine(audio_body){
 // audio play
 var audio = document.querySelector('audio');
 audio.addEventListener("ended", function() {
-    console.log("played audio: ", playList[current].text)
+    console.log("playId: ", playId)
+    console.log("played audio: ", playList[playId].text)
     delay(1000)
 
     next = true;
-    playList[current].played = true;
-    audioData.remove([requestId+playList[current].text]);
+    playList[playId].played = true;
+    audioData.remove([requestId+playList[playId].text]);
 
     playAudioList()
 });
