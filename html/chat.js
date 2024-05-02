@@ -1,6 +1,6 @@
 const protocol = 'WEBSOCKET'; // WEBSOCKET 
 const langstate = 'korean'; // korean or english
-const enableTTS = true;
+const enableTTS = false;
 const enableDelayedMessage = false; // in order to manipulate the voice messages
 const speechType = 'both';  // local or robot or both
 
