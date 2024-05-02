@@ -2,7 +2,7 @@ const protocol = 'WEBSOCKET'; // WEBSOCKET
 const langstate = 'korean'; // korean or english
 const enableTTS = true;
 const enableDelayedMessage = false; // in order to manipulate the voice messages
-const speechType = 'robot';  // local or robot or both
+const speechType = 'both';  // local or robot or both
 
 if(enableTTS && (speechType=='local' || speechType=='both')) {
     var AudioContext;
@@ -494,9 +494,9 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
 
         next = true;  // initiate valriable 'next' for audio play
 
-        if(isReservedCommend(query)==false) {  // message
-            console.log('get score for ', query);
+        if(isReservedCommend(query)==false) {  // message            
             if(scoreValue.get(requestId)==undefined && isGame) { // check duplication
+                console.log('get score for ', query);
                 getScore(userId, requestId, query); 
                 scoreValue.put(requestId, true);
             }
@@ -539,9 +539,9 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
 
             next = true;  // initiate valriable 'next' for audio play        
 
-            if(isReservedCommend(query)==false) {
-                console.log('get score for ', query);
+            if(isReservedCommend(query)==false) {                
                 if(scoreValue.get(requestId)==undefined && isGame) { // check duplication
+                    console.log('get score for ', query);
                     getScore(userId, requestId, query); 
                     scoreValue.put(requestId, true);
                 }
@@ -1062,7 +1062,7 @@ function initiate() {
 
     if(langstate=='korean') {
         addNotifyMessage("Amazon Bedrock을 이용하여 채팅을 시작합니다.");
-        addReceivedMessage(uuidv4(), "안녕하세요. Robo SoleMate 와의 대화를 즐겨보세요")
+        addReceivedMessage(uuidv4(), "안녕하세요. Robo SoleMate와 즐거운 대화를 시작합니다.")
     }
     else {
         addNotifyMessage("Start chat with Amazon Bedrock");             
@@ -1135,10 +1135,9 @@ function onSend(e) {
         addSentMessage(requestId, timestr, message.value);
 
         if(protocol == 'WEBSOCKET') {
-            if(isReservedCommend(message.value)==false) {   
-                console.log('request to estimate the score');
-
+            if(isReservedCommend(message.value)==false) {                   
                 if(isGame) {
+                    console.log('request to estimate the score');
                     getScore(userId, requestId, message.value);     
                 }
 
