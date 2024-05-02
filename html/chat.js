@@ -276,7 +276,7 @@ function actionforReservedCommend(requestId, message) {
     }
     else {  // limited commend
         let cnt = counter.get(commendId);
-        console.log('commend counter: ', cnt);
+        // console.log('commend counter: ', cnt);
 
         if(cnt == undefined || cnt == 0) {
             console.log('commend: ', message);
@@ -1010,7 +1010,7 @@ if(conversationType=="") {
 console.log('conversationType: ', conversationType);
 
 let isGame = true;
-if(conversationType=='normal' || onversationType=='english') {
+if(conversationType=='normal' || conversationType=='english') {
     isGame = false;
 }
 console.log('isGame: ', isGame);
