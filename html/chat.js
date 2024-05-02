@@ -1116,6 +1116,7 @@ function updateChatHistory() {
 
     console.log('Update history! index =', index);
     getHistory(userId, 'update');    
+    console.log('new index =', index);
 }
 
 sendBtn.addEventListener('click', onSend);
