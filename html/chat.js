@@ -1737,8 +1737,8 @@ function getHistory(userId, state) {
                 start = history.length - maxLengthOfHistoryReadable;
             }
 
-            print('history length of dynamodb: ', history.length);
-            print('start position of history: ', start)
+            console.log('history length of dynamodb: ', history.length);
+            console.log('start position of history: ', start)
 
             for(let i=start; i<history.length; i++) {
                 if(history[i].type=='text') {                
