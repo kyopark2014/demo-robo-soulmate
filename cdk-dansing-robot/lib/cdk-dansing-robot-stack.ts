@@ -192,10 +192,10 @@ export class CdkDansingRobotStack extends cdk.Stack {
     });
 
     // copy web application files into s3 bucket
-    new s3Deploy.BucketDeployment(this, `upload-HTML-for-${projectName}`, {
+    /* new s3Deploy.BucketDeployment(this, `upload-HTML-for-${projectName}`, {
       sources: [s3Deploy.Source.asset("../html/")],
       destinationBucket: s3Bucket,
-    });
+    }); */
 
     new cdk.CfnOutput(this, 'HtmlUpdateCommend', {
       value: 'aws s3 cp ../html/ ' + 's3://' + s3Bucket.bucketName + '/ --recursive',
