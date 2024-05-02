@@ -122,15 +122,23 @@ function sendMessage(message) {
 
 // keep alive
 let tm;
+let chromeTimer = 300;
 function ping() {
     console.log('->ping');
     webSocket.send('__ping__');
+
+    chromeTimer = chromeTimer - 5;
+    if(chromeTimer<60) {
+        chromeTimer = 300;
+        window.location.href = "chat.html";
+    }
+
     tm = setTimeout(function () {
         console.log('reconnect...');    
         
         isConnected = false
         webSocket = connect(endpoint, 'reconnect');
-        
+
     }, 5000);
 }
 function pong() {
