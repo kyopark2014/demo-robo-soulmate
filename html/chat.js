@@ -991,7 +991,8 @@ let retryNum = new HashMap();
 
 // message log list
 let msglist = [];
-let maxMsgItems = 30;
+let maxMsgItems = 20;
+let maxLengthOfHistoryReadable = maxMsgItems/4;
 let msgHistory = new HashMap();
 let callee = "AWS";
 let index=0;
@@ -1095,9 +1096,6 @@ function updateChatHistory() {
     msglist = [];
     index = 0;
 
-    msgHistory = new HashMap();
-    indexList = new HashMap();
-    
     for (i=0;i<maxMsgItems;i++) {
         msglist.push(document.getElementById('msgLog'+i));
     
@@ -1112,7 +1110,7 @@ function updateChatHistory() {
         })(i);
     } 
 
-    // getHistory(userId, 'update');    
+    getHistory(userId, 'update');    
 }
 
 sendBtn.addEventListener('click', onSend);
@@ -1720,7 +1718,6 @@ function sendRequestForRetry(requestId) {
     xhr.send(blob);            
 }
 
-let initialHistoryLength = 5;
 function getHistory(userId, state) {
     const uri = "history";
     const xhr = new XMLHttpRequest();
@@ -1733,12 +1730,16 @@ function getHistory(userId, state) {
             let response = JSON.parse(xhr.responseText);
             let history = JSON.parse(response['msg']);
             // console.log("history: " + JSON.stringify(history));
-                      
+
             let start = 0;
-            if(history.length > initialHistoryLength) {
+            if(history.length > maxLengthOfHistoryReadable) {
                 index = 0;
-                start = history.length - initialHistoryLength;
+                start = history.length - maxLengthOfHistoryReadable;
             }
+
+            print('history length of dynamodb: ', history.length);
+            print('start position of history: ', start)
+
             for(let i=start; i<history.length; i++) {
                 if(history[i].type=='text') {                
                     // let timestr = history[i].request_time.substring(11, 19);
@@ -1750,10 +1751,12 @@ function getHistory(userId, state) {
                     console.log("question: ", body);
                     let msg = history[i].msg;
                     console.log("answer: ", msg);
+
                     addSentMessage(requestId, timestr, body)
                     addReceivedMessage(requestId, msg);                            
                 }                 
-            }         
+            }
+            
             if(history.length>=1 && state=='initiate') {
                 if(langstate=='korean') {
                     addNotifyMessage("대화를 다시 시작하였습니다.");
