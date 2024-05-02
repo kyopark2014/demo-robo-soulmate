@@ -398,7 +398,11 @@ function connect(endpoint, type) {
                     retryCounter = 10;
                     checkingDelayedPlayList();
                     // playList = [];
-                }                              
+                }      
+                
+                if(index>maxMsgItems-maxLengthOfHistoryReadable) {
+                    updateChatHistory();
+                } 
             }          
             else if(response.status == 'istyping') {                
                 feedback.style.display = 'inline';
@@ -1152,10 +1156,6 @@ function onSend(e) {
         else {
             sendRequest(message.value, requestId, requestTime);
         }       
-        
-        if(index>maxMsgItems-maxLengthOfHistoryReadable) {
-            updateChatHistory();
-        } 
     }
     message.value = "";
 
