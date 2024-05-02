@@ -975,7 +975,10 @@ async function playAudioLine(audio_body){
 var audio = document.querySelector('audio');
 audio.addEventListener("ended", function() {
     console.log("playId: ", playId)
-    console.log("played audio: ", playList[playId].text)
+
+    if(playList[playId].text) {
+        console.log("played audio: ", playList[playId].text)
+    }    
     delay(1000)
 
     next = true;
