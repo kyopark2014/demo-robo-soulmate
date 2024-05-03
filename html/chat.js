@@ -225,7 +225,7 @@ function initializeCommend() {
       limitedCommendId.put(cGoOut[i], 2)
     }
 
-    cNo = ['안돼', '그러지마', '하지마', '스탑', '멈춰', '그만해', '제발그만해', '이제그만해', '더이상하지마', '금지야', '하면안돼', '절대로하지마', '삼가해', '자제해', '참아', '참아줘', '인내해', '인내하렴', '견뎌내', '참을성있어']
+    cNo = ['안돼 그러지마', '안돼', '그러지마', '하지마', '스탑', '멈춰', '그만해', '제발그만해', '이제그만해', '더이상하지마', '금지야', '하면안돼', '절대로하지마', '삼가해', '자제해', '참아', '참아줘', '인내해', '인내하렴', '견뎌내', '참을성있어']
     for (let i = 0; i < cNo.length; i++) {
       reservedCommend.put(cNo[i], JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT" ], "say": "알았어 안할게!"}));
     }
@@ -310,9 +310,9 @@ function actionforReservedCommend(requestId, message) {
     
     if(commendId == undefined) {  // reserved commend but not a limited commend
         console.log('commend: ', message);
-        sendControl(userId, "commend", "", getCommand(reservedCommend, message), 0, requestId)
-
-        addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+        let command = getCommand(reservedCommend, message)
+        sendControl(userId, "commend", "", command, 0, requestId)
+        addReceivedMessage(requestId, JSON.parse(command)["say"])
     }
     else {  // limited commend
         let cnt = counter.get(commendId);
@@ -320,9 +320,9 @@ function actionforReservedCommend(requestId, message) {
 
         if(cnt == undefined || cnt == 0) {
             console.log('commend: ', message);
-            sendControl(userId, "commend", "", getCommand(reservedCommend, message), 0, requestId)
-
-            addReceivedMessage(requestId, message+' 동작을 수행합니다.')
+            let command = getCommand(reservedCommend, message)
+            sendControl(userId, "commend", "", command, 0, requestId)
+            addReceivedMessage(requestId, JSON.parse(command)["say"])
 
             counter.put(commendId, 1);
         }
@@ -332,7 +332,6 @@ function actionforReservedCommend(requestId, message) {
             message = '안돼. 그러지마.';
             console.log('new commend: ', message);
             sendControl(userId, "commend", "", getCommand(reservedCommend, message),0, requestId)
-
             addReceivedMessage(requestId, message)
         }
         else {
