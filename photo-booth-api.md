@@ -2,12 +2,27 @@
 
 여기서는 Photo Booth 운영에 필요한 API를 정의합니다.
 
+## Stand Alone으로 메시지 전송하기
+
+Contrl API를 이용한 메시지 정송하기는 아래와 같습니다.
+
+```text
+POST https://dxt1m1ae24b28.cloudfront.net/control
+{
+  "type": "text",
+  "user_id": "AI-Dancing-Robot-007",
+  "request_id": "a1234",
+  "message": "안녕하세요. 반가워요"
+}
+```
+
+
 ## Welcome 메시지
 
 패드에 있는 포토앱에서 'Start' 버튼 선택하면 Welcome 메시지를 전송합니다. 로봇의 아이디가 "AI-Dancing-Robot-001"인 경우에 아래와 같이 "state"를 "start-photo"로 전송합니다.
 
 ```text
-HTTP POST https://dxt1m1ae24b28.cloudfront.net/redis
+POST https://dxt1m1ae24b28.cloudfront.net/redis
 {
 	"userId": "AI-Dancing-Robot-001",
 	"state": "start-photo"
