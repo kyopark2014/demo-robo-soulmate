@@ -16,6 +16,25 @@ POST https://dxt1m1ae24b28.cloudfront.net/control
 }
 ```
 
+동작 제어는 아래와 같이 사용합니다. 여기서 commend는 json.dumps()을 이용해 아래와 같은 json 명령어를 사용합니다.
+
+```java
+{
+   "show":"ANGRY",
+   "move":"seq",
+   "seq":["TURN_LEFT", "SIT", "TURN_RIGHT"]
+}
+```
+
+```text
+POST  https://dxt1m1ae24b28.cloudfront.net/control
+{
+  "type": "commend",
+  "user_id": "AI-Dancing-Robot-007",
+  "request_id": "a1234",
+  "commend": "{\n   \"show\":\"ANGRY\",\n   \"move\":\"seq\",\n   \"seq\":[\"TURN_LEFT\", \"SIT\", \"TURN_RIGHT\"]\n}"
+}
+```
 
 ## Welcome 메시지
 
@@ -45,7 +64,7 @@ HTTP POST https://dxt1m1ae24b28.cloudfront.net/redis
 }
 ```
 
-## Boradcase 메시지
+## Broadcase 메시지
 
 로봇에게 보내는 메시지를 위한 API를 정의합니다. state를 "broadcast"로 보내면 로봇에 해당 메시지를 출력합니다.
 
