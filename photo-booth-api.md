@@ -26,6 +26,8 @@ POST https://dxt1m1ae24b28.cloudfront.net/control
 }
 ```
 
+아래처럼 '/control'을 이용해서 json으로 된 commend를 전송합니다. 
+
 ```text
 POST  https://dxt1m1ae24b28.cloudfront.net/control
 {
