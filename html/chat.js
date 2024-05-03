@@ -202,52 +202,40 @@ let reservedCommend = new HashMap();
 let limitedCommendId = new HashMap(); // once per a game
 
 function initializeCommend() {
-    reservedCommend.put('짖어', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
-    reservedCommend.put('짖어봐', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
-    reservedCommend.put('짖어줘', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
-    reservedCommend.put('말해봐', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
-    reservedCommend.put('말해봐', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
-    reservedCommend.put('말해봐', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
-    
-    reservedCommend.put('앉아', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
-    reservedCommend.put('앉아봐', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
-    reservedCommend.put('앉아줘', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
-    reservedCommend.put('안자', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
-    reservedCommend.put('안자봐', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
-    reservedCommend.put('안자줘', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
 
-    reservedCommend.put('엎드려', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "엎드렸어."}));
-    reservedCommend.put('엎드려봐', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "엎드렸어."}));
-    reservedCommend.put('엎드려줘', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "엎드렸어."}));
-    
-    reservedCommend.put('이리 와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
-    reservedCommend.put('이리 와봐', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
-    reservedCommend.put('이리 와줘', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
-    reservedCommend.put('이리와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
-    reservedCommend.put('이리와봐.', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
-    reservedCommend.put('이리와줘.', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
+    cBark = ['짖어', '짖어봐', '짖어줘', '짖어라', '말해봐', '말해', '소리내봐', '울어봐', '하울링해봐', '하울링해줘', '멍멍해봐', '멍멍해줘', '왈왈해봐', '왈왈해줘', '컹컹해봐', '컹컹해줘']
+    for (let i = 0; i < cBark.length; i++) {
+      reservedCommend.put(cBark[i], JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
+    }
 
-    limitedCommendId.put('이리 와', 1)
-    limitedCommendId.put('이리와', 1)
-    limitedCommendId.put('이리 와봐', 1)
-    limitedCommendId.put('이리 와줘', 1)
-    
-    reservedCommend.put('이리와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
-    reservedCommend.put('이리와봐', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
-    reservedCommend.put('이리와줘', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
-    limitedCommendId.put('이리와', 1)
-    limitedCommendId.put('이리와봐', 1)
-    limitedCommendId.put('이리와줘', 1)    
-    
-    reservedCommend.put('저리가', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));   
-    reservedCommend.put('저리가봐', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));    
-    reservedCommend.put('저리가줘', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));     
-    limitedCommendId.put('저리가', 2)    
-    limitedCommendId.put('저리가봐', 2)    
-    limitedCommendId.put('저리가줘', 2)      
-    
-    reservedCommend.put('안돼. 그러지마.', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT" ], "say": "안돼. 그러지마."}));
+    cDown = ['앉아', '앉아봐', '앉아줘', '안자', '안자봐', '안자줘', '업드려', '업드려봐', '업드려줘', '앉아있어', '앉아있어봐', '앉아있어줘', '안자있어', '안자있어봐', '안자있어줘','누워있어', '누워있어봐', '누워있어줘', '엎드려있어', '엎드려있어봐', '엎드려있어줘', '앉아있기', '안자있기', '누워있기', '엎드려있기',]
+    for (let i = 0; i < cDown.length; i++) {
+      reservedCommend.put(cDown[i], JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
+    }
+
+    cCome = ['이리와', '이리와봐', '이리와줘', '여기로와', '이쪽으로와', '내곁으로와', '이리로오렴', '이쪽으로오렴', '가까이다가와', '내곁으로오렴', '이리로와줘', '이리로접근해', '여기로접근해', '이쪽으로접근해', '내곁으로접근해', '이리로다가와', '여기로다가와', '이쪽으로다가와', '내곁으로다가와', '이리로모여', '여기로모여', '이쪽으로모여', '내곁으로모여']
+    for (let i = 0; i < cCome.length; i++) {
+      reservedCommend.put(cCome[i], JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
+      limitedCommendId.put(cCome[i], 1)
+    }
+
+    cGoOut = ['저리가', '저리가봐', '저리가줘', '저리로가', '멀리가', '떨어져', '저쪽으로가', '저곳으로가', '저리로떨어져', '저쪽으로떨어져', '저곳으로떨어져', '저리로물러나', '저쪽으로물러나', '저곳으로물러나', '저리로이동해', '저쪽으로이동해', '저곳으로이동해', '저리로걸어가', '저쪽으로걸어가', '저곳으로걸어가']
+    for (let i = 0; i < cGoOut.length; i++) {
+      reservedCommend.put(cGoOut[i], JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));
+      limitedCommendId.put(cGoOut[i], 2)
+    }
+
+    cNo = ['안돼', '그러지마', '하지마', '스탑', '멈춰', '그만해', '제발그만해', '이제그만해', '더이상하지마', '금지야', '하면안돼', '절대로하지마', '삼가해', '자제해', '참아', '참아줘', '인내해', '인내하렴', '견뎌내', '참을성있어']
+    for (let i = 0; i < cNo.length; i++) {
+      reservedCommend.put(cNo[i], JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_LEFT","LOOK_RIGHT", "LOOK_LEFT", "LOOK_RIGHT" ], "say": "알았어 안할게!"}));
+    }
+
+    cTurn = ['돌아봐', '돌아', '한바퀴돌아']
+    for (let i = 0; i < cTurn.length; i++) {
+      reservedCommend.put(cTurn[i], JSON.stringify({"show": "SAD", "move": "seq", "seq":["TURN_LEFT", "TURN_LEFT","TURN_LEFT","TURN_LEFT","TURN_LEFT", "TURN_RIGHT", "TURN_RIGHT","TURN_RIGHT","TURN_RIGHT","TURN_RIGHT"], "say": "알겠어 잘 봐봐!"}));
+    }
 }
+
 initializeCommend();
 
 let counter = new HashMap();
