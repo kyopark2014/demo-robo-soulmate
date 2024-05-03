@@ -234,7 +234,13 @@ function initializeCommend() {
     for (let i = 0; i < cTurn.length; i++) {
       reservedCommend.put(cTurn[i], JSON.stringify({"show": "SAD", "move": "seq", "seq":["TURN_LEFT", "TURN_LEFT","TURN_LEFT","TURN_LEFT","TURN_LEFT", "TURN_RIGHT", "TURN_RIGHT","TURN_RIGHT","TURN_RIGHT","TURN_RIGHT"], "say": "알겠어 잘 봐봐!"}));
     }
+
+    cMove = ['움직여', '움직여봐', '갸우뚱해봐', '움직일 수 있어', '고개 흔들어봐', '갸우뚱']
+    for (let i = 0; i < cMove.length; i++) {
+      reservedCommend.put(cMove[i], JSON.stringify({"show": "SAD", "move": "seq", "seq":[ "ROLL_LEFT","ROLL_LEFT","ROLL_RIGHT","ROLL_RIGHT"], "say": "이렇게요?"}));
+    }
 }
+
 
 initializeCommend();
 
@@ -247,26 +253,64 @@ function initCommendCounter() {
     counter.put(5, 0);
 }
 
+function removeSpecialChars(str) {
+    return str.replace(/[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣 ]/g, '').trim();
+}
+
+function calculateSimilarity(str1, str2) {
+    str1 = removeSpecialChars(str1)
+    str2 = removeSpecialChars(str2)
+    const longer = str1.length >= str2.length ? str1 : str2;
+    const shorter = str1.length < str2.length ? str1 : str2;
+
+    let sameChars = 0;
+    for (let i = 0; i < shorter.length; i++) {
+        if (str1[i] === str2[i]) {
+            sameChars++;
+        }
+    }
+
+    const similarity = (sameChars / longer.length) * 100;
+    return similarity.toFixed(2);
+}
+
+function getCommand(commands, message) {
+    selectedKey = ""
+    selectedScore = -1
+    for (const key of commands.getKeys()) {
+        score = calculateSimilarity(key, message)
+        if (calculateSimilarity(key, message) > 50) {
+            if (score > selectedScore ) {
+                score = selectedScore
+                selectedKey = key
+            }
+        }
+    }
+    return commands.get(selectedKey)
+}
+
 function isReservedCommend(message){
     // console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
 
-    if(reservedCommend.get(message) == undefined) {        
+    if(getCommand(reservedCommend, message) == undefined) {
         return false;
     }
     else {
-        console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
+        console.log('reservedCommend.get('+message+'): '+ getCommand(reservedCommend, message));
 
         return true;
     }    
 }
 
+
+
 function actionforReservedCommend(requestId, message) {
-    let commendId = limitedCommendId.get(message);
+    let commendId = getCommand(limitedCommendId, message)
     console.log('commendId: ', commendId);
     
     if(commendId == undefined) {  // reserved commend but not a limited commend
         console.log('commend: ', message);
-        sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+        sendControl(userId, "commend", "", getCommand(reservedCommend, message), 0, requestId)
 
         addReceivedMessage(requestId, message+' 동작을 수행합니다.')
     }
@@ -276,7 +320,7 @@ function actionforReservedCommend(requestId, message) {
 
         if(cnt == undefined || cnt == 0) {
             console.log('commend: ', message);
-            sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+            sendControl(userId, "commend", "", getCommand(reservedCommend, message), 0, requestId)
 
             addReceivedMessage(requestId, message+' 동작을 수행합니다.')
 
@@ -287,7 +331,7 @@ function actionforReservedCommend(requestId, message) {
 
             message = '안돼. 그러지마.';
             console.log('new commend: ', message);
-            sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+            sendControl(userId, "commend", "", getCommand(reservedCommend, message),0, requestId)
 
             addReceivedMessage(requestId, message)
         }
