@@ -4,7 +4,7 @@
 
 ## Stand Alone으로 메시지 전송하기
 
-Contrl API를 이용한 메시지 정송하기는 아래와 같습니다.
+Contrl API를 이용한 메시지 전송하기는 아래와 같습니다.
 
 ```text
 POST https://dxt1m1ae24b28.cloudfront.net/control
