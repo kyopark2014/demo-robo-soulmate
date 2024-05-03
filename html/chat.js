@@ -2,7 +2,8 @@ const protocol = 'WEBSOCKET'; // WEBSOCKET
 const langstate = 'korean'; // korean or english
 const enableTTS = true;
 const enableDelayedMessage = false; // in order to manipulate the voice messages
-const speechType = 'local';  // local or robot or both
+const speechType = 'both';  // local or robot or both
+const silientMode = true; // true: no voice of robot
 
 if(enableTTS && (speechType=='local' || speechType=='both')) {
     var AudioContext;
@@ -417,7 +418,9 @@ function connect(endpoint, type) {
                         }    
                     }
                     else if(speechType=='both') {
-                        sendControl(userId, 'text', response.msg, "", 0, response.request_id);
+                        if (silientMode==false) {
+                            sendControl(userId, 'text', response.msg, "", 0, response.request_id);
+                        }
 
                         // console.log('Is already played? ', isPlayedTTS[response.request_id]);
                         if(isPlayedTTS[response.request_id] == undefined) {
@@ -766,7 +769,9 @@ function voiceConnect(voiceEndpoint, type) {
                         
                         let startMsg = "사진 찍으러 왔구나~ 방문을 환영해! 지금 어떤 기분인지 기념 사진을 남겨보자! 준비 됐지?";
                         if(speechType=='robot' || speechType=='both') {
-                            sendControl(userId, 'text', startMsg, "", 0, requestId);
+                            if (silientMode==false) {
+                                sendControl(userId, 'text', startMsg, "", 0, requestId);
+                            }
                         }
 
                         if(speechType=='local' || speechType=='both') { // local
@@ -785,7 +790,9 @@ function voiceConnect(voiceEndpoint, type) {
                         
                         let startMsg = "잘가! 즐거운 하루 보내!";
                         if(speechType=='robot' || speechType=='both') {
-                            sendControl(userId, 'text', startMsg, "", 0, requestId);
+                            if (silientMode==false) {
+                                sendControl(userId, 'text', startMsg, "", 0, requestId);
+                            }
                         }
 
                         if(speechType=='local' || speechType=='both') { // local
@@ -799,7 +806,9 @@ function voiceConnect(voiceEndpoint, type) {
                         
                         let startMsg = "사진 찍으러 왔구나~ 방문을 환영해! 지금 어떤 기분인지 기념 사진을 남겨보자! 준비 됐지?";
                         if(speechType=='robot' || speechType=='both') {
-                            sendControl(userId, 'text', startMsg, "", 0, requestId);
+                            if (silientMode==false) {
+                                sendControl(userId, 'text', startMsg, "", 0, requestId);
+                            }
                         }
 
                         if(speechType=='local' || speechType=='both') { // local
@@ -816,7 +825,9 @@ function voiceConnect(voiceEndpoint, type) {
                     console.log('broadcastMsg: ', broadcastMsg);
                         
                     if(speechType=='robot' || speechType=='both') {
-                        sendControl(userId, 'text', broadcastMsg, "", 0, requestId);
+                        if (silientMode==false) {
+                            sendControl(userId, 'text', broadcastMsg, "", 0, requestId);
+                        }
                     }
 
                     if(speechType=='local' || speechType=='both') { // local
