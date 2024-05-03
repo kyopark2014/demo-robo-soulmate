@@ -1816,14 +1816,14 @@ function getHistory(userId, state) {
                 }                 
             }
             
-            if(history.length>=1 && state=='initiate') {
+         /*   if(history.length>=1 && state=='initiate') {
                 if(langstate=='korean') {
                     addNotifyMessage("대화를 다시 시작하였습니다.");
                 }
                 else {
                     addNotifyMessage("Welcome back to the conversation");                               
                 }                
-            }
+            } */
 
             chatPanel.scrollTop = chatPanel.scrollHeight;  // scroll needs to move bottom
         }
