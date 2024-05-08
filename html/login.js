@@ -71,6 +71,9 @@ function onSubmit(e) {
     localStorage.setItem('userName',nameInput.value);
     console.log('Save Profile> userName:', nameInput.value)
 
+    localStorage.setItem('robotSpeech',robotSpeechInput.value);
+    console.log('Save Profile> robotSpeech:', robotSpeechInput.value)
+
     window.location.href = "chat.html";
 }
 
