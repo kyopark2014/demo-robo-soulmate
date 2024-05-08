@@ -338,6 +338,9 @@ function actionforReservedCommend(requestId, message) {
             }
             sendControl(userId, "commend", "", silent_command, 0, requestId)
         }
+        else {
+            sendControl(userId, "commend", "", command, 0, requestId)
+        }
 
         addReceivedMessage(requestId, JSON.parse(command)["say"])
 
@@ -361,6 +364,9 @@ function actionforReservedCommend(requestId, message) {
                 }
                 sendControl(userId, "commend", "", silent_command, 0, requestId)
             }
+            else {
+                sendControl(userId, "commend", "", command, 0, requestId)
+            }
             addReceivedMessage(requestId, JSON.parse(command)["say"])
 
             counter.put(commendId, 1);
@@ -382,6 +388,12 @@ function actionforReservedCommend(requestId, message) {
                 }
                 sendControl(userId, "commend", "", silent_command, 0, requestId)
             }
+            else {
+                let command = getCommand(reservedCommend, message);
+                console.log('command: ', command);
+                sendControl(userId, "commend", "", command, 0, requestId)
+            }
+
             addReceivedMessage(requestId, message)
 
             speech = message;  
