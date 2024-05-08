@@ -34,11 +34,11 @@ console.log('userName: ', userName);
 let silientMode = true; // true: no voice of robot
 let robotSpeech = localStorage.getItem('robotSpeech'); // set userID if exists 
 if(robotSpeech=="" || robotSpeech==null) {
-    robotSpeech = 'silent';    
+    robotSpeech = 'Silent';    
 }
 console.log('robotSpeech: ', robotSpeech);
 
-if(robotSpeech=='silent') {
+if(robotSpeech=='Silent') {
     silientMode = true;
 }
 else {

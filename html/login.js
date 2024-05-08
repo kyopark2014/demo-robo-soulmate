@@ -33,7 +33,7 @@ console.log('userName: ', userName);
 
 let robotSpeech = localStorage.getItem('robotSpeech'); // set userID if exists 
 if(robotSpeech=="") {
-    robotSpeech = 'silent';
+    robotSpeech = 'Silent';
 }
 else {
     robotSpeechInput.value = robotSpeech
@@ -52,6 +52,8 @@ else {
 
 console.log(userInput.value);
 console.log(convtypeInput.value);
+console.log(nameInput.value);
+console.log(robotSpeechInput.value);
 
 // provisioning
 getProvisioningInfo(userId);
