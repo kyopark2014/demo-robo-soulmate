@@ -328,6 +328,32 @@ function actionforReservedCommend(requestId, message) {
         let command = getCommand(reservedCommend, message)
         sendControl(userId, "commend", "", command, 0, requestId)
         addReceivedMessage(requestId, JSON.parse(command)["say"])
+
+        // speek
+        if(enableTTS) {                    
+            if (silientMode==false) {
+                sendControl(userId, 'text', JSON.parse(command)["say"], "", 0, requestId);
+            }
+
+            // console.log('Is already played? ', isPlayedTTS[response.request_id]);
+            if(isPlayedTTS[requestId] == undefined) {
+                playList.push({
+                    'played': false,
+                    'requestId': requestId,
+                    'text': JSON.parse(command)["say"]
+                });
+                lineText = "";      
+            
+                loadAudio(requestId, JSON.parse(command)["say"]);
+                    
+                next = true;
+                playAudioList();
+            }    
+            
+            // retryCounter = 10;
+            // checkingDelayedPlayList();
+            // playList = [];
+        }      
     }
     else {  // limited commend
         let cnt = counter.get(commendId);
