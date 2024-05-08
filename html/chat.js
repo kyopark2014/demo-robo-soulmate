@@ -352,7 +352,7 @@ function actionforReservedCommend(requestId, message) {
             }    
             
             // retryCounter = 10;
-            // checkingDelayedPlayList();
+            checkingDelayedPlayList();
             // playList = [];
         }      
     }
