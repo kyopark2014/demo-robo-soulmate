@@ -25,6 +25,12 @@ if(userId=="" || userId==null) {
 }
 console.log('userId: ', userId);
 
+let userName = localStorage.getItem('userName'); // set userID if exists 
+if(userName=="" || userName==null) {
+    userName = 'Maltese';
+}
+console.log('userName: ', userName);
+
 let silientMode = true; // true: no voice of robot
 let robotSpeech = localStorage.getItem('robotSpeech'); // set userID if exists 
 if(robotSpeech=="" || robotSpeech==null) {
