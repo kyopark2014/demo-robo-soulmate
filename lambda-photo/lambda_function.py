@@ -277,7 +277,9 @@ def lambda_handler(event, context):
         id = jsonBody["id"]
     else:
         # id = uuid.uuid1()
-        id = key.split('/')[-1]
+        finename = key.split('/')[-1]
+        print('finename: ', finename)
+        id = finename.split('.')[0]
     print('id: ', id)
     
     # mask
