@@ -323,43 +323,20 @@ function actionforReservedCommend(requestId, message) {
     let commendId = getCommand(limitedCommendId, message)
     console.log('commendId: ', commendId);
     
+    let speech = "";
     if(commendId == undefined) {  // reserved commend but not a limited commend
         console.log('commend: ', message);
         let command = getCommand(reservedCommend, message)
         sendControl(userId, "commend", "", command, 0, requestId)
         addReceivedMessage(requestId, JSON.parse(command)["say"])
 
-        // speek
-        if(enableTTS) {                    
-            if (silientMode==false) {
-                sendControl(userId, 'text', JSON.parse(command)["say"], "", 0, requestId);
-            }
-
-            console.log('Is already played? ', isPlayedTTS[requestId]);
-            speech = JSON.parse(command)["say"]
-            console.log('speech: ', speech);
-            if(isPlayedTTS[requestId] == undefined) {
-                playList.push({
-                    'played': false,
-                    'requestId': requestId,
-                    'text': speech
-                });
-            
-                loadAudio(requestId, speech);
-                    
-                next = true;
-                playAudioList();                
-            }    
-            
-            retryCounter = 10;
-            checkingDelayedPlayList();
-            // playList = [];
-        }      
+        speech = JSON.parse(command)["say"];  
     }
     else {  // limited commend
         let cnt = counter.get(commendId);
         // console.log('commend counter: ', cnt);
 
+        speech = "";
         if(cnt == undefined || cnt == 0) {
             console.log('commend: ', message);
             let command = getCommand(reservedCommend, message)
@@ -367,6 +344,7 @@ function actionforReservedCommend(requestId, message) {
             addReceivedMessage(requestId, JSON.parse(command)["say"])
 
             counter.put(commendId, 1);
+            speech = JSON.parse(command)["say"];  
         }
         else if (cnt>=1) {
             console.log(message+' is only allowed for a time.');
@@ -375,11 +353,40 @@ function actionforReservedCommend(requestId, message) {
             console.log('new commend: ', message);
             sendControl(userId, "commend", "", getCommand(reservedCommend, message),0, requestId)
             addReceivedMessage(requestId, message)
+
+            speech = message;  
         }
         else {
             console.log('not deifned: '+message+' (cnt='+cnt);
         }
     }
+
+    // speek
+    if(enableTTS && speech) {                   
+        console.log('speech: ', speech);
+        
+        if (silientMode==false) {
+            sendControl(userId, 'text', speech, "", 0, requestId);
+        }
+
+        console.log('Is already played? ', isPlayedTTS[requestId]);            
+        if(isPlayedTTS[requestId] == undefined) {
+            playList.push({
+                'played': false,
+                'requestId': requestId,
+                'text': speech
+            });
+        
+            loadAudio(requestId, speech);
+                
+            next = true;
+            playAudioList();                
+        }    
+        
+        retryCounter = 10;
+        checkingDelayedPlayList();
+        // playList = [];
+    } 
 }
 
 function connect(endpoint, type) {
@@ -1032,11 +1039,11 @@ function loadAudio(requestId, text) {
 } 
 
 function playAudioList() {
-    console.log('next = '+next+', playList: '+playList.length);
+    // console.log('next = '+next+', playList: '+playList.length);
     
     for(let i=0; i<playList.length;i++) {
-        console.log('audio data--> ', audioData[requestId+playList[i].text])
-        console.log('playList: ', playList);
+        // console.log('audio data--> ', audioData[requestId+playList[i].text])
+        // console.log('playList: ', playList);
 
         if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
             // console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
