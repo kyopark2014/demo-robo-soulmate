@@ -9,6 +9,7 @@ function uuidv4() {
 const myForm = document.querySelector('#my-form');
 const userInput = document.querySelector('#userId');
 const nameInput = document.querySelector('#userName');
+const robotSpeechInput = document.querySelector('#robotSpeech');
 const convtypeInput = document.querySelector('#convtype');
 
 // Common
@@ -29,6 +30,15 @@ else {
     nameInput.value = userName
 }
 console.log('userName: ', userName);
+
+let robotSpeech = localStorage.getItem('robotSpeech'); // set userID if exists 
+if(robotSpeech=="") {
+    robotSpeech = 'silent';
+}
+else {
+    robotSpeechInput.value = robotSpeech
+}
+console.log('robotSpeech: ', robotSpeech);
 
 myForm.addEventListener('submit', onSubmit);
 

@@ -3,7 +3,6 @@ const langstate = 'korean'; // korean or english
 const enableTTS = true;
 const enableDelayedMessage = false; // in order to manipulate the voice messages
 const speechType = 'both';  // local or robot or both
-const silientMode = true; // true: no voice of robot
 
 if(enableTTS && (speechType=='local' || speechType=='both')) {
     var AudioContext;
@@ -26,11 +25,20 @@ if(userId=="" || userId==null) {
 }
 console.log('userId: ', userId);
 
-let userName = localStorage.getItem('userName'); // set userID if exists 
-if(userName=="" || userName==null) {
-    userName = 'Maltese';    
+let silientMode = true; // true: no voice of robot
+let robotSpeech = localStorage.getItem('robotSpeech'); // set userID if exists 
+if(robotSpeech=="" || robotSpeech==null) {
+    robotSpeech = 'silent';    
 }
-console.log('userName: ', userName);
+console.log('robotSpeech: ', robotSpeech);
+
+if(robotSpeech=='silent') {
+    silientMode = true;
+}
+else {
+    silientMode = false;
+}
+console.log('silientMode: ', silientMode);
 
 // chat session
 let endpoint = localStorage.getItem('wss_url');  
