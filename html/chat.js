@@ -1215,7 +1215,7 @@ function onSend(e) {
                     "characterName": sender
                 })
                 console.log('characterType: ', userName);
-                console.log('characterName' , characterName);
+                console.log('characterName' , sender);
             }
             else {  // reservice commend
                 actionforReservedCommend(requestId, message.value);
