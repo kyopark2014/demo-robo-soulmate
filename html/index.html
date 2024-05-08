@@ -16,13 +16,13 @@
                 <div class="input">
                     <label for="userId">User Id:</label>
                     <input type="text" id="userId">
-                    <text>Conversation Type: </text>
+                    <text>로봇 성격: </text>
                     <select name="conversationType" id="convtype">
-                        <option value="ISTP">*1. ISTP (간결, 직설, 객관적, 귀차니즘) - 준비중</option>
-                        <option value="ESFP">*2. ESFP (외향적, 감각적, 감정적)</option>
-                        <option value="INFJ">*3. INFJ (친절, 책임, 내성, 신중, 성찰) - 준비중</option>
-                        <option value="ESTJ">*4. ESTJ (전투적, 직접적, 명확, 고집) - 준비중</option>
-                        <option value="ISFJ">5. ISFJ - 준비중</option>
+                        <option value="ISTP">1. ISTP (간결, 직설, 객관적, 귀차니즘)</option>
+                        <option value="ESFP">2. ESFP (외향적, 감각적, 감정적)</option>
+                        <option value="INFJ">3. INFJ (친절, 책임, 내성, 신중, 성찰)</option>
+                        <option value="ESTJ">4. ESTJ (전투적, 직접적, 명확, 고집)</option>                        
+                    <!---    <option value="ISFJ">5. ISFJ - 준비중</option>
                         <option value="INFP">6. INFP (창의, 이상주의, 배려심, 충실) - 준비중</option>
                         <option value="ESTP">7. ESTP (행동 지향적, 신속하게 해결) - 준비중</option>
                         <option value="ENFP">8. ENFP (열정, 창의적, 활기차고, 상상력 풍부) - 준비중</option>
@@ -33,11 +33,12 @@
                         <option value="INTP">13. INTP - 준비중</option>
                         <option value="ENTP">14. ENTP - 준비중</option>
                         <option value="INTJ">15. INTJ - 준비중</option>
-                        <option value="ENFJ">16. ENFJ - 준비중</option>
+                        <option value="ENFJ">16. ENFJ - 준비중</option> --->
                         <option type="text" value="normal" selected>0. General Conversation (Korean)</option>
                         <option type="text" value="english" selected>0. General Conversation (English)</option>
                         <option value="translation">10. 번역</option>
                     </select>
+                    <text>로봇 이름: </text>
                     <select name="userName" id="userName">
                         <option value="Maltese">1. 베드락 (말티즈)</option>
                         <option value="WelshCorgi">2. 람다 (웰시코기)</option>
@@ -47,6 +48,11 @@
                         <option value="Schnauzer">6. 다이나모 (슈나우저)</option>
                         <option value="Pug">7. 아이엠 (퍼그)</option>
                         <option value="Shepherd">8. 세이지메이커 (세퍼드)</option>
+                    </select>
+                    <text>로봇 말하기: </text>
+                    <select name="robotSpeech" id="robotSpeech">
+                        <option value="silent">False</option>
+                        <option value="speek">True</option>
                     </select>
                 </div>
                 <input class="btn" type="submit" value="Submit">                
