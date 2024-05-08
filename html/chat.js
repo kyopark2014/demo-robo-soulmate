@@ -335,7 +335,8 @@ function actionforReservedCommend(requestId, message) {
                 sendControl(userId, 'text', JSON.parse(command)["say"], "", 0, requestId);
             }
 
-            // console.log('Is already played? ', isPlayedTTS[response.request_id]);
+            console.log('Is already played? ', isPlayedTTS[requestId]);
+            console.log('speech: ', JSON.parse(command)["say"]);
             if(isPlayedTTS[requestId] == undefined) {
                 playList.push({
                     'played': false,
