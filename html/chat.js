@@ -336,22 +336,23 @@ function actionforReservedCommend(requestId, message) {
             }
 
             console.log('Is already played? ', isPlayedTTS[requestId]);
-            console.log('speech: ', JSON.parse(command)["say"]);
+            speech = JSON.parse(command)["say"]
+            console.log('speech: ', )speech;
             if(isPlayedTTS[requestId] == undefined) {
                 playList.push({
                     'played': false,
                     'requestId': requestId,
-                    'text': JSON.parse(command)["say"]
+                    'text': speech
                 });
             
-                loadAudio(requestId, JSON.parse(command)["say"]);
+                loadAudio(requestId, speech);
                     
                 next = true;
                 playAudioList();                
             }    
             
-            // retryCounter = 10;
-            // checkingDelayedPlayList();
+            retryCounter = 10;
+            checkingDelayedPlayList();
             // playList = [];
         }      
     }
