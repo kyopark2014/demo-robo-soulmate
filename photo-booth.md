@@ -41,14 +41,41 @@ xmlHttp.open("PUT", uploadURL, true);
 const blob = new Blob([input.files[0]], { type: contentType });
 ```
 
-3) 이미지 생성을 요청합니다. 이때의 요청하는 URL은 CloudFront의 도메인과 '/photo' API를 이용합니다. 
+3) 이미지 생성을 요청합니다. 이때의 요청하는 URL은 CloudFront의 도메인과 '/photo' API를 이용합니다.
+
+#### Bucket에 업로드되는 파일의 이름으로 이미지들을 생성하는 경우
+
+"id"를 추가하지 않으면 파일명을 기준으로 새로운 이미지들을 생성합니다. 
+
+```text
+POST  https://dxt1m1ae24b28.cloudfront.net/photo
+{
+    "requestId": "a123456abc",
+    "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
+    "key": "photo/face_image.jpg"
+}
+```
+
+이때의 결과는 아래와 같습니다.
+
+```java
+{
+    "url_original": "https://dxt1m1ae24b28.cloudfront.net/photo/face_image.jpg",
+    "url_generated": "[\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_face_image_1.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_face_image_2.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_face_image_3.jpeg\"]",
+    "time_taken": "23.401713371276855"
+}
+```
+
+#### 포토앱에서 이름을 미리 지정하는 경우
+
+아래와 같이 요청시 "id"를 추가하면 "id"를 기준으로 새로운 이미지들을 생성합니다. 
    
 ```text   
 POST  https://dxt1m1ae24b28.cloudfront.net/photo
 {
 	"requestId": "a123456abc",
   "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
-  "key": "photo/face_hand.jpg",
+  "key": "photo/face_image.jpg",
   "id": "507ff273-f8df-11ee-8f9b-69f7819ad4a8"
 }
 ```
@@ -57,11 +84,14 @@ POST  https://dxt1m1ae24b28.cloudfront.net/photo
 
 ```java
 {
-    "url_original": "https://dxt1m1ae24b28.cloudfront.net/photo/face_hand.jpg",
+    "url_original": "https://dxt1m1ae24b28.cloudfront.net/photo/face_image.jpg",
     "url_generated": "[\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_1.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_2.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_3.jpeg\"]",
     "time_taken": "20.885403871536255"
 }
 ```
+
+
+
 
 생성된 이미지의 예는 아래와 같습니다.
 
