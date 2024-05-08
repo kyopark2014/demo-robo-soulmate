@@ -1212,7 +1212,7 @@ function onSend(e) {
                     "body": message.value,
                     "convType": conversationType,
                     "characterType": userName,
-                    "characterName": calleeName.textContent
+                    "characterName": sender
                 })
                 console.log('characterType: ', userName);
                 console.log('characterName' , characterName);
