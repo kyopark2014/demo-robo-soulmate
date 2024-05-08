@@ -551,7 +551,9 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
                 "request_time": requestTime,        
                 "type": "text",
                 "body": query,
-                "convType": conversationType
+                "convType": conversationType,
+                "characterType": userName,
+                "characterName": sender
             });
         }
         else {  // reservice commend
@@ -596,7 +598,9 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
                     "request_time": requestTime,        
                     "type": "text",
                     "body": query,
-                    "convType": conversationType
+                    "convType": conversationType,
+                    "characterType": userName,
+                    "characterName": sender
                 });
             }
             else {  // reservice commend
@@ -718,7 +722,9 @@ function voiceConnect(voiceEndpoint, type) {
                             "request_time": requestTime,        
                             "type": "text",
                             "body": 'clearMemory',
-                            "convType": conversationType
+                            "convType": conversationType,
+                            "characterType": userName,
+                            "characterName": sender
                         })
                         console.log('clearMemory');
                         
@@ -756,7 +762,9 @@ function voiceConnect(voiceEndpoint, type) {
                             "request_time": requestTime,        
                             "type": "text",
                             "body": 'clearMemory',
-                            "convType": conversationType
+                            "convType": conversationType,
+                            "characterType": userName,
+                            "characterName": sender
                         })
                         console.log('clearMemory');
                         
@@ -1634,7 +1642,9 @@ attachFile.addEventListener('click', function(){
                                 "type": "document",
                                 "body": filename,
                                 "commend": commend,
-                                "convType": conversationType
+                                "convType": conversationType,
+                                "characterType": userName,
+                                "characterName": sender
                             })                                                        
                         }
                         else if(xmlHttp.readyState == XMLHttpRequest.DONE && xmlHttp.status != 200) {
