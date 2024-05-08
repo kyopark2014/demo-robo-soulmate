@@ -348,11 +348,11 @@ function actionforReservedCommend(requestId, message) {
                 loadAudio(requestId, JSON.parse(command)["say"]);
                     
                 next = true;
-                playAudioList();
+                playAudioList();                
             }    
             
             // retryCounter = 10;
-            checkingDelayedPlayList();
+            // checkingDelayedPlayList();
             // playList = [];
         }      
     }
