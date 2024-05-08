@@ -1037,7 +1037,12 @@ def getResponse(jsonBody):
     convType = jsonBody['convType']
     print('convType: ', convType)
             
-    global map_chain, memory_chain, selected_LLM
+    global map_chain, memory_chain, selected_LLM, characterType, characterName
+    
+    characterType = jsonBody['characterType']
+    print('characterType: ', characterType)
+    characterName = jsonBody['characterName']
+    print('characterName: ', characterName)
     
     # Multi-LLM
     profile = profile_of_LLMs[selected_LLM]

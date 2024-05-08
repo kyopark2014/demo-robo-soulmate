@@ -1210,8 +1210,12 @@ function onSend(e) {
                     "request_time": requestTime,        
                     "type": "text",
                     "body": message.value,
-                    "convType": conversationType
+                    "convType": conversationType,
+                    "characterType": userName,
+                    "characterName": calleeName.textContent
                 })
+                console.log('characterType: ', userName);
+                console.log('characterName' , characterName);
             }
             else {  // reservice commend
                 actionforReservedCommend(requestId, message.value);
