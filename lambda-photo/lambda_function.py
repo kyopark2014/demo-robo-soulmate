@@ -276,7 +276,8 @@ def lambda_handler(event, context):
     if "id" in jsonBody:
         id = jsonBody["id"]
     else:
-        id = uuid.uuid1()
+        # id = uuid.uuid1()
+        id = key.split('/')[-1]
     print('id: ', id)
     
     # mask
@@ -313,7 +314,7 @@ def lambda_handler(event, context):
         img_b64 = generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
                                 
         # upload
-        object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
+        object_key = f'{s3_photo_prefix}/{object_name}'  
         print('object_key: ', object_key)
         
         response = s3_client.put_object(
