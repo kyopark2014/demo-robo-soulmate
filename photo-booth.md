@@ -41,24 +41,25 @@ xmlHttp.open("PUT", uploadURL, true);
 const blob = new Blob([input.files[0]], { type: contentType });
 ```
 
-3) 이미지 생성을 요청합니다. 이때의 요청하는 URL은 CloudFront의 도메인과 '/photo' API를 이용합니다.
+3) 이미지 생성을 요청합니다. 이때의 요청하는 URL은 CloudFront의 도메인과 '/photo' API를 이용합니다. 
    
 ```text   
 POST  https://dxt1m1ae24b28.cloudfront.net/photo
 {
-    "requestId": "b123456abc",
-    "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
-    "key": "photo/andy_portrait_2.jpg"
+	"requestId": "a123456abc",
+  "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
+  "key": "photo/face_hand.jpg",
+  "id": "507ff273-f8df-11ee-8f9b-69f7819ad4a8"
 }
 ```
 
-이때의 결과는 아래와 같습니다. 업로드한 파일의 이름에 prefix인 "photo_"를 추가하여 새로운 이름이 생성되었습니다. 생성되는 파일이 여러개일 경우에 "_1", "_2", "_3"와 같이 추가됩니다. 
+이때의 결과는 아래와 같습니다. 업로드한 파일의 이름에 prefix인 "photo_"를 추가하여 새로운 이름이 생성되었습니다. 이때 요청하는 파라메터에 "id"가 있다면, 해당 "id"에 "_1", "_2", "_3"을 붙이고 없다면, uuid로 이름을 붙여 이미지를 생성합니다. 
 
 ```java
 {
-    "url_original": "https://dxt1m1ae24b28.cloudfront.net/photo/andy_portrait_2.jpg",
+    "url_original": "https://dxt1m1ae24b28.cloudfront.net/photo/face_hand.jpg",
     "url_generated": "[\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_1.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_2.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_3.jpeg\"]",
-    "time_taken": "26.989280939102173"
+    "time_taken": "20.885403871536255"
 }
 ```
 
