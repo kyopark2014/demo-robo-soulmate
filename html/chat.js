@@ -325,8 +325,11 @@ function actionforReservedCommend(requestId, message) {
     
     let speech = "";
     if(commendId == undefined) {  // reserved commend but not a limited commend
-        console.log('commend: ', message);
+        console.log('message: ', message);
+        
         let command = getCommand(reservedCommend, message)
+        console.log('command: ', command);
+
         sendControl(userId, "commend", "", command, 0, requestId)
         addReceivedMessage(requestId, JSON.parse(command)["say"])
 
@@ -362,7 +365,7 @@ function actionforReservedCommend(requestId, message) {
     }
 
     // speek
-    if(enableTTS && speech) {                   
+    if(enableTTS && speech) {
         console.log('speech: ', speech);
         
         if (silientMode==false) {
