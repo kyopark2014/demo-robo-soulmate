@@ -343,7 +343,6 @@ function actionforReservedCommend(requestId, message) {
                     'requestId': requestId,
                     'text': JSON.parse(command)["say"]
                 });
-                lineText = "";      
             
                 loadAudio(requestId, JSON.parse(command)["say"]);
                     
@@ -1032,11 +1031,11 @@ function loadAudio(requestId, text) {
 } 
 
 function playAudioList() {
-    // console.log('next = '+next+', playList: '+playList.length);
+    console.log('next = '+next+', playList: '+playList.length);
     
     for(let i=0; i<playList.length;i++) {
-        // console.log('audio data--> ', audioData[requestId+playList[i].text])
-        // console.log('playList: ', playList);
+        console.log('audio data--> ', audioData[requestId+playList[i].text])
+        console.log('playList: ', playList);
 
         if(next == true && playList[i].played == false && requestId == playList[i].requestId && audioData[requestId+playList[i].text]) {
             // console.log('[play] '+i+': '+requestId+', text: '+playList[i].text);
