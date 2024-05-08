@@ -330,7 +330,15 @@ function actionforReservedCommend(requestId, message) {
         let command = getCommand(reservedCommend, message)
         console.log('command: ', command);
 
-        sendControl(userId, "commend", "", command, 0, requestId)
+        if (silientMode==true) {
+            let silent_command = {
+                "show": JSON.parse(command)["show"],
+                "move": JSON.parse(command)["move"],
+                "seq": JSON.parse(command)["seq"]
+            }
+            sendControl(userId, "commend", "", silent_command, 0, requestId)
+        }
+
         addReceivedMessage(requestId, JSON.parse(command)["say"])
 
         speech = JSON.parse(command)["say"];  
@@ -341,9 +349,18 @@ function actionforReservedCommend(requestId, message) {
 
         speech = "";
         if(cnt == undefined || cnt == 0) {
-            console.log('commend: ', message);
-            let command = getCommand(reservedCommend, message)
-            sendControl(userId, "commend", "", command, 0, requestId)
+            console.log('message: ', message);
+            let command = getCommand(reservedCommend, message);
+            console.log('command: ', command);
+
+            if (silientMode==true) {
+                let silent_command = {
+                    "show": JSON.parse(command)["show"],
+                    "move": JSON.parse(command)["move"],
+                    "seq": JSON.parse(command)["seq"]
+                }
+                sendControl(userId, "commend", "", silent_command, 0, requestId)
+            }
             addReceivedMessage(requestId, JSON.parse(command)["say"])
 
             counter.put(commendId, 1);
@@ -353,8 +370,18 @@ function actionforReservedCommend(requestId, message) {
             console.log(message+' is only allowed for a time.');
 
             message = '안돼. 그러지마.';
-            console.log('new commend: ', message);
-            sendControl(userId, "commend", "", getCommand(reservedCommend, message),0, requestId)
+            console.log('message: ', message);
+
+            if (silientMode==true) {
+                let command = getCommand(reservedCommend, message);
+                console.log('command: ', command);
+                let silent_command = {
+                    "show": JSON.parse(command)["show"],
+                    "move": JSON.parse(command)["move"],
+                    "seq": JSON.parse(command)["seq"]
+                }
+                sendControl(userId, "commend", "", silent_command, 0, requestId)
+            }
             addReceivedMessage(requestId, message)
 
             speech = message;  
