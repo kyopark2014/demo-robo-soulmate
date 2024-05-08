@@ -273,6 +273,12 @@ def lambda_handler(event, context):
     url_original = path+parse.quote(key)
     print('url_original: ', url_original)
     
+    if "id" in jsonBody:
+        id = jsonBody["id"]
+    else:
+        id = uuid.uuid1()
+    print('id: ', id)
+    
     # mask
     ext = key.split('.')[-1]
     if ext == 'jpg':
@@ -296,7 +302,6 @@ def lambda_handler(event, context):
 
     object_img = img_resize(object_image)
     mask_img = img_resize(mask_image)
-    id = uuid.uuid1()
     
     if enableParallel==False: # single 
         object_name = f'photo_{id}.{ext}'
