@@ -336,6 +336,7 @@ function actionforReservedCommend(requestId, message) {
                 "move": JSON.parse(command)["move"],
                 "seq": JSON.parse(command)["seq"]
             }
+            console.log('silent_command: ', silent_command);
             sendControl(userId, "commend", "", silent_command, 0, requestId)
         }
         else {
@@ -362,6 +363,7 @@ function actionforReservedCommend(requestId, message) {
                     "move": JSON.parse(command)["move"],
                     "seq": JSON.parse(command)["seq"]
                 }
+                console.log('silent_command: ', silent_command);
                 sendControl(userId, "commend", "", silent_command, 0, requestId)
             }
             else {
@@ -386,6 +388,7 @@ function actionforReservedCommend(requestId, message) {
                     "move": JSON.parse(command)["move"],
                     "seq": JSON.parse(command)["seq"]
                 }
+                console.log('silent_command: ', silent_command);
                 sendControl(userId, "commend", "", silent_command, 0, requestId)
             }
             else {
