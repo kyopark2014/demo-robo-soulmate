@@ -565,7 +565,7 @@ function connect(endpoint, type) {
                 if(enableTTS && (speechType=='local' || speechType=='both')) {
                     lineText += response.msg;
                     lineText = lineText.replace('\n','');
-                    if(lineText.length>3 && (response.msg == '.' || response.msg == '?' || response.msg == '!'|| response.msg == ':')) {     
+                    if(lineText.length>3 && (response.msg == '.' || response.msg == '?' || response.msg == '!')) {     
                         console.log('lineText: ', lineText);
                         text = lineText
                         playList.push({
