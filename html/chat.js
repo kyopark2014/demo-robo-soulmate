@@ -339,7 +339,7 @@ function actionforReservedCommend(requestId, message) {
             }
             console.log('show: ', json_command["show"]);
             console.log('move: ', json_command["move"]);
-            console.log('seq: ', json_command["seq"]);
+            console.log('seq: ', String(json_command["seq"]));
             console.log('silent_command: ', silent_command);
             sendControl(userId, "commend", "", silent_command, 0, requestId)
         }
