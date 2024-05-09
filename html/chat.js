@@ -363,11 +363,12 @@ function actionforReservedCommend(requestId, message) {
             console.log('command: ', command);
 
             if (silientMode==true) {
-                let silent_command = {
-                    "show": JSON.parse(command)["show"],
-                    "move": JSON.parse(command)["move"],
-                    "seq": JSON.parse(command)["seq"]
-                }
+                json_command = JSON.parse(command);
+                let silent_command = `{
+                    "show": "${json_command["show"]}",
+                    "move": "${json_command["move"]}",
+                    "seq": ${JSON.stringify(json_command["seq"])}
+                }`
                 console.log('silent_command: ', silent_command);
                 sendControl(userId, "commend", "", silent_command, 0, requestId)
             }
@@ -387,12 +388,13 @@ function actionforReservedCommend(requestId, message) {
 
             if (silientMode==true) {
                 let command = getCommand(reservedCommend, message);
+                json_command = JSON.parse(command);
                 console.log('command: ', command);
-                let silent_command = {
-                    "show": JSON.parse(command)["show"],
-                    "move": JSON.parse(command)["move"],
-                    "seq": JSON.parse(command)["seq"]
-                }
+                let silent_command = `{
+                    "show": "${json_command["show"]}",
+                    "move": "${json_command["move"]}",
+                    "seq": ${JSON.stringify(json_command["seq"])}
+                }`
                 console.log('silent_command: ', silent_command);
                 sendControl(userId, "commend", "", silent_command, 0, requestId)
             }
