@@ -319,7 +319,7 @@ function isReservedCommend(message){
 
 
 
-function actionforReservedCommend(requestId, message) {
+function actionforReservedCommand(requestId, message) {
     let commendId = getCommand(limitedCommendId, message)
     console.log('commendId: ', commendId);
     
@@ -657,7 +657,7 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
             });
         }
         else {  // reservice commend
-            actionforReservedCommend(requestId, query);
+            actionforReservedCommand(requestId, query);
         }
         messageMemory.put(requestId, query);      
         messageTransfered.put(requestId, true);
@@ -690,7 +690,7 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
                 getScore(userId, requestId, query); 
                 scoreValue.put(requestId, true);
             }
-            
+
             if(isReservedCommend(query)==false) {                
                 sendMessage({
                     "user_id": userId,
@@ -704,7 +704,7 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
                 });
             }
             else {  // reservice commend
-                actionforReservedCommend(requestId, query);
+                actionforReservedCommand(requestId, query);
             }
 
             messageMemory.put(requestId, query);      
@@ -1306,12 +1306,12 @@ function onSend(e) {
         addSentMessage(requestId, timestr, message.value);
 
         if(protocol == 'WEBSOCKET') {
-            if(isReservedCommend(message.value)==false) {                   
-                if(isGame) {
-                    console.log('request to estimate the score');
-                    getScore(userId, requestId, message.value);     
-                }
+            if(isGame) {
+                console.log('request to estimate the score');
+                getScore(userId, requestId, message.value);     
+            }
 
+            if(isReservedCommend(message.value)==false) {                   
                 sendMessage({
                     "user_id": userId,
                     "request_id": requestId,
@@ -1326,7 +1326,7 @@ function onSend(e) {
                 console.log('characterName' , sender);
             }
             else {  // reservice commend
-                actionforReservedCommend(requestId, message.value);
+                actionforReservedCommand(requestId, message.value);
             }
         }
         else {
