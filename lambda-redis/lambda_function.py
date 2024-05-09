@@ -111,9 +111,6 @@ def lambda_handler(event, context):
         broadcast_message(userId, state, event['message'])
         
     else: # user input
-        if state == 'completed':
-            requestId = str(uuid.uuid4())  
-            
         if 'query' in event: 
             query = event['query']    
         else: 
@@ -125,8 +122,8 @@ def lambda_handler(event, context):
             "requestId": requestId,
             "query": query,
             "state": state
-        }            
-        
+        }   
+                
         channel = f"{userId}"   
         try: 
             redis_client.publish(channel=channel, message=json.dumps(msg))
@@ -136,6 +133,9 @@ def lambda_handler(event, context):
             err_msg = traceback.format_exc()
             print('error message: ', err_msg)                    
             raise Exception ("Not able to request")
+            
+        if state == 'completed':
+            requestId = str(uuid.uuid4())           
             
         msg = "success"
         
