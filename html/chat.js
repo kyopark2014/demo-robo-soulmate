@@ -335,7 +335,7 @@ function actionforReservedCommend(requestId, message) {
             let silent_command = `{
                 "show": "${json_command["show"]}",
                 "move": "${json_command["move"]}",
-                "seq": ${json_command["seq"]}
+                "seq": [${json_command["seq"]}]
             }`
             
             console.log('show: ', json_command["show"]);
