@@ -638,13 +638,13 @@ function requestReDirectMessage(requestId, query, userId, requestTime, conversat
 
         next = true;  // initiate valriable 'next' for audio play
 
-        if(isReservedCommend(query)==false) {  // message            
-            if(scoreValue.get(requestId)==undefined && isGame) { // check duplication
-                console.log('get score for ', query);
-                getScore(userId, requestId, query); 
-                scoreValue.put(requestId, true);
-            }
+        if(scoreValue.get(requestId)==undefined && isGame) { // check duplication
+            console.log('get score for ', query);
+            getScore(userId, requestId, query); 
+            scoreValue.put(requestId, true);
+        }
 
+        if(isReservedCommend(query)==false) {  // message            
             sendMessage({
                 "user_id": userId,
                 "request_id": requestId,
@@ -685,13 +685,13 @@ function delayedRequestForRedirectionMessage(requestId, query, userId, requestTi
 
             next = true;  // initiate valriable 'next' for audio play        
 
+            if(scoreValue.get(requestId)==undefined && isGame) { // check duplication
+                console.log('get score for ', query);
+                getScore(userId, requestId, query); 
+                scoreValue.put(requestId, true);
+            }
+            
             if(isReservedCommend(query)==false) {                
-                if(scoreValue.get(requestId)==undefined && isGame) { // check duplication
-                    console.log('get score for ', query);
-                    getScore(userId, requestId, query); 
-                    scoreValue.put(requestId, true);
-                }
-
                 sendMessage({
                     "user_id": userId,
                     "request_id": requestId,
