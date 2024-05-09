@@ -335,12 +335,12 @@ function actionforReservedCommend(requestId, message) {
             let silent_command = `{
                 "show": "${json_command["show"]}",
                 "move": "${json_command["move"]}",
-                "seq": ${String(json_command["seq"])}
+                "seq": ${JSON.stringify(json_command["seq"])}
             }`
             
             console.log('show: ', json_command["show"]);
             console.log('move: ', json_command["move"]);
-            console.log('seq: ', String(json_command["seq"]));
+            console.log('seq: ', JSON.stringify(json_command["seq"]));
             console.log('silent_command: ', silent_command);
             sendControl(userId, "commend", "", silent_command, 0, requestId)
         }
