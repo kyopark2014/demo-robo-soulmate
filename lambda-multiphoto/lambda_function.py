@@ -212,8 +212,6 @@ def base64_encode_image(image, formats="PNG"):
     return img_str
 
 def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt):
-    print('current access_key_id: ', access_key_id[selected_credential])
-    
     body = json.dumps({
         "taskType": "OUTPAINTING",
         "outPaintingParams": {
@@ -234,14 +232,21 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
         }
     })
             
-    response = boto3_bedrock.invoke_model(
-        body=body,
-        modelId=modelId,
-        accept="application/json", 
-        contentType="application/json"
-    )
-    # print('response: ', response)
-            
+    try: 
+        response = boto3_bedrock.invoke_model(
+            body=body,
+            modelId=modelId,
+            accept="application/json", 
+            contentType="application/json"
+        )
+        # print('response: ', response)
+    except Exception:
+        print('current access_key_id: ', access_key_id[selected_credential])
+        
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)                    
+        raise Exception ("Not able to request for bedrock")
+                
     # Output processing
     response_body = json.loads(response.get("body").read())
     img_b64 = response_body["images"][0]
