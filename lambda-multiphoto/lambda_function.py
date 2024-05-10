@@ -58,6 +58,8 @@ access_key_id, secret_access_key = get_secret()
 selected_credential = 0
   
 def get_client(profile_of_Image_LLMs, selected_LLM):
+    global selected_credential
+    
     profile = profile_of_Image_LLMs[selected_LLM]
     bedrock_region =  profile['bedrock_region']
     modelId = profile['model_id']
