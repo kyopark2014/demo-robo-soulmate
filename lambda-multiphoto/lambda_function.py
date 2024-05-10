@@ -247,7 +247,9 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
     
     return img_b64
 
-def parallel_process(conn, boto3_bedrock, modelId, object_img, mask_img, text_prompt, object_name, object_key):  
+def parallel_process(conn, object_img, mask_img, text_prompt, object_name, object_key):  
+    boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM)
+    
     print('current access_key_id: ', access_key_id[selected_credential])
       
     img_b64 =  generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
@@ -360,15 +362,14 @@ def lambda_handler(event, context):
         for i in range(k):
             parent_conn, child_conn = Pipe()
             parent_connections.append(parent_conn)
-                
-            boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM)
+                            
             text_prompt =  f'a human with a {outpaint_prompt[i]} background'
                 
             object_name = f'photo_{id}_{index}.{ext}'
             object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
             print('generated object_key: ', object_key)
             
-            process = Process(target=parallel_process, args=(child_conn, boto3_bedrock, modelId, object_img, mask_img, text_prompt, object_name, object_key))
+            process = Process(target=parallel_process, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key))
             processes.append(process)
                 
             selected_LLM = selected_LLM + 1
