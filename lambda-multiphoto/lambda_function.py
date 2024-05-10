@@ -285,10 +285,12 @@ def lambda_handler(event, context):
         k = 2
     elif nfaces >= 4:
         k = 1        
+    print('# of output images: ', k)
 
     imgWidth, imgHeight = img.size       
     
     outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
+    index = 0
     for faceDetail in response['FaceDetails']:
         print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
               + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
@@ -326,7 +328,7 @@ def lambda_handler(event, context):
             boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM)
             text_prompt =  f'a human with a {outpaint_prompt[i]} background'
                 
-            object_name = f'photo_{id}_{i+1}.{ext}'
+            object_name = f'photo_{id}_{index+i+1}.{ext}'
             object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
             print('object_key: ', object_key)
             
@@ -336,6 +338,7 @@ def lambda_handler(event, context):
             selected_LLM = selected_LLM + 1
             if selected_LLM == len(profile_of_Image_LLMs):
                 selected_LLM = 0
+            index = index + 1
                             
     for process in processes:
         process.start()
