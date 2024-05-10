@@ -223,7 +223,7 @@ def parallel_process(conn, boto3_bedrock, modelId, object_img, mask_img, text_pr
         ContentType='image/jpeg',
         Body=base64.b64decode(img_b64)
     )
-    print('response: ', response)
+    # print('response: ', response)
             
     url = path+s3_photo_prefix+'/'+parse.quote(object_name)
     print('url: ', url)
@@ -278,11 +278,13 @@ def lambda_handler(event, context):
     
     nfaces = len(response['FaceDetails'])
     if nfaces == 1:
-        k = 4
-    if nfaces == 2:
+        k = 6
+    elif nfaces == 2:
+        k = 3
+    elif nfaces == 3:
         k = 2
-    if nfaces >= 3:
-        k = 1
+    elif nfaces >= 4:
+        k = 1        
 
     imgWidth, imgHeight = img.size       
     
