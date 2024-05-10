@@ -247,7 +247,9 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
     
     return img_b64
 
-def parallel_process(conn, boto3_bedrock, modelId, object_img, mask_img, text_prompt, object_name, object_key):    
+def parallel_process(conn, boto3_bedrock, modelId, object_img, mask_img, text_prompt, object_name, object_key):  
+    print('current access_key_id: ', access_key_id[selected_credential])
+      
     img_b64 =  generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
             
     # upload
