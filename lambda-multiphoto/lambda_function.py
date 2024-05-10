@@ -55,7 +55,7 @@ def get_secret():
     return access_key_id, secret_access_key
 
 access_key_id, secret_access_key = get_secret()
-selected_credential = 0
+selected_credential = 4
   
 def get_client(profile_of_Image_LLMs, selected_LLM):
     global selected_credential
