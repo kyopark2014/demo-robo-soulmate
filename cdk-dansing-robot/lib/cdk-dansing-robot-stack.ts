@@ -841,7 +841,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     const lambdaMultiPhoto = new lambda.DockerImageFunction(this, `lambda-multi-photo-for-${projectName}`, {
       description: 'lambda for Multi Photo Generation',
       functionName: `lambda-multi-photo-for-${projectName}`,
-      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-multi0photo')),
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-multiphoto')),
       timeout: cdk.Duration.seconds(300),
       role: roleLambda,
       environment: {
