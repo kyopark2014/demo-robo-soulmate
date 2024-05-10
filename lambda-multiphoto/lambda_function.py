@@ -241,11 +241,16 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
         )
         # print('response: ', response)
     except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)                    
+        
         print('current access_key_id: ', access_key_id[selected_credential])
         print('modelId: ', modelId)
         
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
+        profile = profile_of_Image_LLMs[selected_LLM]
+        bedrock_region =  profile['bedrock_region']
+        print('bedrock_region: ', bedrock_region)
+        
         raise Exception ("Not able to request for bedrock")
                 
     # Output processing
