@@ -329,11 +329,11 @@ def lambda_handler(event, context):
     if nfaces == 1:
         k = 6
     elif nfaces == 2:
-        k = 2
+        k = 3
     elif nfaces == 3:
-        k = 1
+        k = 2
     elif nfaces >= 4:
-        k = 1        
+        k = 2        
     print('# of output images: ', k)
 
     imgWidth, imgHeight = img.size           
@@ -371,9 +371,6 @@ def lambda_handler(event, context):
         mask_img = img_resize(mask_image)
                     
         for i in range(k):
-            if index > 5:
-                break
-            
             parent_conn, child_conn = Pipe()
             parent_connections.append(parent_conn)
                             
