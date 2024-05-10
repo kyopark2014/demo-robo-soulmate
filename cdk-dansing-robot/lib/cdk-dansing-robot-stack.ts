@@ -837,7 +837,9 @@ export class CdkDansingRobotStack extends cdk.Stack {
       }),
     );
 
+    
     // Lambda - multiple photo generation
+    secrets.grantRead(roleLambda)
     const lambdaMultiPhoto = new lambda.DockerImageFunction(this, `lambda-multi-photo-for-${projectName}`, {
       description: 'lambda for Multi Photo Generation',
       functionName: `lambda-multi-photo-for-${projectName}`,

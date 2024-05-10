@@ -31,23 +31,60 @@ cfgScale = 7.5
 smr_client = boto3.client("sagemaker-runtime")
 s3_client = boto3.client('s3')   
 rekognition_client = boto3.client('rekognition')
+
+secretsmanager = boto3.client('secretsmanager')
+def get_secret():
+    try:
+        get_secret_value_response = secretsmanager.get_secret_value(
+            SecretId='bedrock_access_key'
+        )
+        # print('get_secret_value_response: ', get_secret_value_response)
+        secret = json.loads(get_secret_value_response['SecretString'])
+        # print('secret: ', secret)
+        secret_access_key = json.loads(secret['secret_access_key'])
+        access_key_id = json.loads(secret['access_key_id'])
+        
+        print('length: ', len(access_key_id))
+        #for id in access_key_id:
+        #    print('id: ', id)
+        # print('access_key_id: ', access_key_id)    
+
+    except Exception as e:
+        raise e
+    
+    return access_key_id, secret_access_key
+
+access_key_id, secret_access_key = get_secret()
+selected_credential = 0
   
 def get_client(profile_of_Image_LLMs, selected_LLM):
     profile = profile_of_Image_LLMs[selected_LLM]
     bedrock_region =  profile['bedrock_region']
     modelId = profile['model_id']
     print(f'LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
+    
+    print('access_key_id: ', access_key_id[selected_credential])
+    print('selected_credential: ', selected_credential)
                           
     # bedrock   
     boto3_bedrock = boto3.client(
         service_name='bedrock-runtime',
         region_name=bedrock_region,
+        aws_access_key_id=access_key_id[selected_credential],
+        aws_secret_access_key=secret_access_key[selected_credential],
         config=Config(
             retries = {
                 'max_attempts': 30
             }            
         )
     )
+    
+    print('len(access_key): ', len(access_key_id))
+    if selected_credential >= len(access_key_id)-1:
+        selected_credential = 0
+    else:
+        selected_credential = selected_credential + 1
+        
     return boto3_bedrock, modelId
 
 def img_resize(image):
@@ -78,11 +115,6 @@ def load_image(bucket, key):
     img = img_resize(img)
     
     return img
-
-def detect_faces(img):                          
-
-
-    return int(left), int(top), int(width), int(height)
 
 def show_labels(img_path, target_label=None):
     if target_label is None:
