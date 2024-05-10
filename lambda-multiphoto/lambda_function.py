@@ -242,6 +242,7 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
         # print('response: ', response)
     except Exception:
         print('current access_key_id: ', access_key_id[selected_credential])
+        print('modelId: ', modelId)
         
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)                    
