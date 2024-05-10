@@ -532,10 +532,7 @@ function connect(endpoint, type) {
             if(response.status == 'completed') {     
                 console.log('transaction status: completed');
                 // console.log('next: ', next); 
-                feedback.style.display = 'none';       
-
-                // Modify input typo text
-                response.msg = modifyInputTypoText(response.msg)
+                feedback.style.display = 'none';
 
                 addReceivedMessage(response.request_id, response.msg);  
                 // console.log('response.msg: ', response.msg);
@@ -831,9 +828,8 @@ function voiceConnect(voiceEndpoint, type) {
                             remainingRedirectedMessage['message'] = remainingRedirectedMessage['message']+'\n'+query; // add new message
                             query = remainingRedirectedMessage['message'];
                         }
-
                         if(messageMemory.get(requestId)==undefined) { 
-
+                            query = modifyInputTypoText(query)
                             addSentMessage(requestId, timestr, query);
 
                             if(enableDelayedMessage == false) {
@@ -1351,6 +1347,10 @@ function onSend(e) {
         let requestTime = datastr+' '+timestr
 
         let requestId = uuidv4();
+
+        // Modify input typo text
+        message.msg = modifyInputTypoText(message.value)
+
         addSentMessage(requestId, timestr, message.value);
 
         if(protocol == 'WEBSOCKET') {
