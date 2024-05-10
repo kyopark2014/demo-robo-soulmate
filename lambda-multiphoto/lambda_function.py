@@ -36,7 +36,7 @@ secretsmanager = boto3.client('secretsmanager')
 def get_secret():
     try:
         get_secret_value_response = secretsmanager.get_secret_value(
-            SecretId='bedrock_access_key'
+            SecretId='bedrock_image_access_key'
         )
         # print('get_secret_value_response: ', get_secret_value_response)
         secret = json.loads(get_secret_value_response['SecretString'])
