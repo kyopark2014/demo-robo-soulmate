@@ -266,11 +266,9 @@ def lambda_handler(event, context):
     if ext == 'jpg':
         ext = 'jpeg'
     
-    encode_object_image = base64_encode_image(object_image,formats=ext.upper()).decode("utf-8")
-    
-        
     img = load_image(bucket, key) # load image from bucket    
     object_image = copy.deepcopy(img)
+    encode_object_image = base64_encode_image(object_image,formats=ext.upper()).decode("utf-8")
 
     # detect faces
     buffer = BytesIO()
