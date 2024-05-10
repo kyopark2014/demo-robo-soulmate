@@ -837,6 +837,58 @@ export class CdkDansingRobotStack extends cdk.Stack {
       }),
     );
 
+    // Lambda - multiple photo generation
+    const lambdaMultiPhoto = new lambda.DockerImageFunction(this, `lambda-multi-photo-for-${projectName}`, {
+      description: 'lambda for Multi Photo Generation',
+      functionName: `lambda-multi-photo-for-${projectName}`,
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-multi0photo')),
+      timeout: cdk.Duration.seconds(300),
+      role: roleLambda,
+      environment: {
+        s3_bucket: bucketName,
+        profile_of_Image_LLMs:JSON.stringify(profile_of_Image_LLMs),
+        s3_photo_prefix: s3_photo_prefix,
+        path: 'https://'+domainName+'/',   
+      }
+    });     
+  
+    // POST method - photo
+    const multi_photo = api.root.addResource("multiphoto");
+    multi_photo.addMethod('POST', new apiGateway.LambdaIntegration(lambdaMultiPhoto, {
+        passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+        credentialsRole: role,
+        integrationResponses: [{
+            statusCode: '200',
+        }],
+        proxy: true,
+    }), {
+        methodResponses: [
+            {
+                statusCode: '200',
+                responseModels: {
+                    'application/json': apiGateway.Model.EMPTY_MODEL,
+                },
+            }
+        ]
+    });
+    
+    distribution.addBehavior("/multiphoto", new origins.RestApiOrigin(api), {
+        cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+        allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
+    s3Bucket.grantReadWrite(lambdaMultiPhoto);
+    lambdaPhoto.role?.attachInlinePolicy( // add sagemaker policy
+      new iam.Policy(this, 'sagemaker-policy-for-photo', {
+        statements: [SageMakerPolicy],
+      }),
+    );
+    lambdaMultiPhoto.role?.attachInlinePolicy( // add rekognition policy
+      new iam.Policy(this, 'rekognition-policy-for-multi-photo', {
+        statements: [RekognitionPolicy],
+      }),
+    );
+
     // Lambda - score
     const lambdaScore = new lambda.DockerImageFunction(this, `lambda-score-for-${projectName}`, {
       description: 'lambda for score',
