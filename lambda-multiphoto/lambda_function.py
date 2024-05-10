@@ -371,6 +371,9 @@ def lambda_handler(event, context):
         mask_img = img_resize(mask_image)
                     
         for i in range(k):
+            if index > 5:
+                break
+            
             parent_conn, child_conn = Pipe()
             parent_connections.append(parent_conn)
                             
