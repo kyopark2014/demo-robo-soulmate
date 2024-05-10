@@ -223,9 +223,9 @@ function initializeCommend() {
       reservedCommend.put(cBark[i], JSON.stringify({"show": "ANGRY", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
     }
 
-    cDown = ['앉아', '앉아봐', '앉아줘', '안자', '안자봐', '안자줘', '앉아볼래', '앉아있어', '앉아있어봐', '앉아있어줘', '안자있어', '안자있어봐', '안자있어줘','누워있어', '누워있어봐', '누워있어줘', 앉아있기', '안자있기', '누워있기']
-    for (let i = 0; i < cDown.length; i++) {
-      reservedCommend.put(cDown[i], JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
+    cSit = ['앉아', '앉아봐', '앉아줘', '안자', '안자봐', '안자줘', '앉아볼래', '앉아있어', '앉아있어봐', '앉아있어줘', '안자있어', '안자있어봐', '안자있어줘','누워있어', '누워있어봐', '누워있어줘', 앉아있기', '안자있기', '누워있기']
+    for (let i = 0; i < cSit.length; i++) {
+      reservedCommend.put(cSit[i], JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
     }
     
     cDown = ['업드려', '업드려봐', '업드려줘','엎드려있어', '엎드려있어봐', '엎드려있어줘', '엎드려있기']
@@ -261,17 +261,17 @@ function initializeCommend() {
     }
 
     cSide = ['옆으로가', '옆으로움직여']
-    for (let i = 0; i < cTurn.length; i++) {
+    for (let i = 0; i < cSide.length; i++) {
       reservedCommend.put(cSide[i], JSON.stringify({"show": "HAPPY", "move": "seq", "seq":[ "MOVE_LEFT","MOVE_LEFT","MOVE_LEFT","MOVE_RIGHT","MOVE_RIGHT","MOVE_RIGHT"], "say": "옆으로 요리 조리!"}));
     }
 
     cLeft = ['왼쪽으로가', '왼쪽으로가볼래', '왼쪽으로움직여', '왼쪽으로이동해', '좌로가']
-    for (let i = 0; i < cTurn.length; i++) {
+    for (let i = 0; i < cLeft.length; i++) {
       reservedCommend.put(cLeft[i], JSON.stringify({"show": "HAPPY", "move": "seq", "seq":[ "MOVE_LEFT","MOVE_LEFT","MOVE_LEFT","MOVE_LEFT","MOVE_LEFT","MOVE_RIGHT"], "say": "왼쪽으로 갈게!"}));
     }
 
     cRight = ['오른쪽으로가', '오른쪽으로가볼래', '오른쪽으로움직여', '오른쪽으로이동해', '우로가']
-    for (let i = 0; i < cTurn.length; i++) {
+    for (let i = 0; i < cRight.length; i++) {
       reservedCommend.put(cRight[i], JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_RIGHT","MOVE_RIGHT","MOVE_RIGHT","MOVE_RIGHT","MOVE_RIGHT","MOVE_LEFT"], "say": "오른쪽으로 갈게!"}));
     }
 }
