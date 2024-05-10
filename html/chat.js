@@ -1349,7 +1349,7 @@ function onSend(e) {
         let requestId = uuidv4();
 
         // Modify input typo text
-        message.msg = modifyInputTypoText(message.value)
+        message.value = modifyInputTypoText(message.value)
 
         addSentMessage(requestId, timestr, message.value);
 
