@@ -252,20 +252,12 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
     
     return img_b64
 
-def parallel_process(conn, object_img, mask_img, text_prompt, object_name, object_key):  
-    global selected_credential
-    
-    boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
-    
-    print('len(access_key): ', len(access_key_id))
+def parallel_process(conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential):  
     print('selected_credential: ', selected_credential)
     print('current access_key_id: ', access_key_id[selected_credential])
     
-    if selected_credential >= len(access_key_id)-1:
-        selected_credential = 0
-    else:
-        selected_credential = selected_credential + 1
-    
+    boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
+
     img_b64 =  generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
             
     # upload
@@ -341,6 +333,7 @@ def lambda_handler(event, context):
     print('# of output images: ', k)
     """
     k = 3
+    global selected_credential
 
     imgWidth, imgHeight = img.size           
     outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
@@ -386,12 +379,19 @@ def lambda_handler(event, context):
             object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
             print('generated object_key: ', object_key)
             
-            process = Process(target=parallel_process, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key))
+            process = Process(target=parallel_process, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential))
             processes.append(process)
                 
             selected_LLM = selected_LLM + 1
             if selected_LLM == len(profile_of_Image_LLMs):
                 selected_LLM = 0
+            
+            if selected_credential >= len(access_key_id)-1:
+                selected_credential = 0
+            else:
+                selected_credential = selected_credential + 1
+                print('selected_credential: ', selected_credential) 
+                
             index = index + 1
                             
     for process in processes:
