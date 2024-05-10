@@ -212,6 +212,8 @@ def base64_encode_image(image, formats="PNG"):
     return img_str
 
 def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt):
+    print('current access_key_id: ', access_key_id[selected_credential])
+    
     body = json.dumps({
         "taskType": "OUTPAINTING",
         "outPaintingParams": {
@@ -250,8 +252,6 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
 def parallel_process(conn, object_img, mask_img, text_prompt, object_name, object_key):  
     boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM)
     
-    print('current access_key_id: ', access_key_id[selected_credential])
-      
     img_b64 =  generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
             
     # upload
