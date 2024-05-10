@@ -57,9 +57,7 @@ def get_secret():
 access_key_id, secret_access_key = get_secret()
 selected_credential = 4
   
-def get_client(profile_of_Image_LLMs, selected_LLM):
-    global selected_credential
-    
+def get_client(profile_of_Image_LLMs, selected_LLM, selected_credential):
     profile = profile_of_Image_LLMs[selected_LLM]
     bedrock_region =  profile['bedrock_region']
     modelId = profile['model_id']
@@ -80,12 +78,6 @@ def get_client(profile_of_Image_LLMs, selected_LLM):
             }            
         )
     )
-    
-    print('len(access_key): ', len(access_key_id))
-    if selected_credential >= len(access_key_id)-1:
-        selected_credential = 0
-    else:
-        selected_credential = selected_credential + 1
         
     return boto3_bedrock, modelId
 
@@ -261,7 +253,15 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
     return img_b64
 
 def parallel_process(conn, object_img, mask_img, text_prompt, object_name, object_key):  
-    boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM)
+    global selected_credential
+    
+    boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
+    
+    print('len(access_key): ', len(access_key_id))
+    if selected_credential >= len(access_key_id)-1:
+        selected_credential = 0
+    else:
+        selected_credential = selected_credential + 1
     
     img_b64 =  generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
             
