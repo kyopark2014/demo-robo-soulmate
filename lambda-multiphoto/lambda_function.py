@@ -28,8 +28,6 @@ cfgScale = 7.5
 # height = 1152
 # width = 768
 
-enableParallel = True
-
 smr_client = boto3.client("sagemaker-runtime")
 s3_client = boto3.client('s3')   
 rekognition_client = boto3.client('rekognition')
@@ -288,6 +286,7 @@ def lambda_handler(event, context):
 
     imgWidth, imgHeight = img.size       
     
+    outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
     for faceDetail in response['FaceDetails']:
         print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
               + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
@@ -314,90 +313,49 @@ def lambda_handler(event, context):
         object_img = img_resize(object_image)
         mask_img = img_resize(mask_image)
         
-        if enableParallel==False: # single 
-            object_name = f'photo_{id}.{ext}'
-            outpaint_prompt = 'forrest'
-            text_prompt = f'a human with a {outpaint_prompt[0]} background'
+        generated_urls = []    
+        processes = []
+        parent_connections = []
             
+        for i in range(k):
+            parent_conn, child_conn = Pipe()
+            parent_connections.append(parent_conn)
+                
             boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM)
-            
-            img_b64 = generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
-                                    
-            # upload
-            object_key = f'{s3_photo_prefix}/{object_name}'  
+            text_prompt =  f'a human with a {outpaint_prompt[i]} background'
+                
+            object_name = f'photo_{id}_{i+1}.{ext}'
+            object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
             print('object_key: ', object_key)
             
-            response = s3_client.put_object(
-                Bucket=s3_bucket,
-                Key=object_key,
-                ContentType='image/jpeg',
-                Body=base64.b64decode(img_b64)
-            )
-            print('response: ', response)
+            process = Process(target=parallel_process, args=(child_conn, boto3_bedrock, modelId, object_img, mask_img, text_prompt, object_name, object_key))
+            processes.append(process)
                 
-            end_time_for_generation = time.time()
-            time_for_photo_generation = end_time_for_generation - start_time_for_generation
-            
-            url_generated = path+s3_photo_prefix+'/'+parse.quote(object_name)
-            print('url_generated: ', url_generated)
-            
             selected_LLM = selected_LLM + 1
             if selected_LLM == len(profile_of_Image_LLMs):
                 selected_LLM = 0
-            
-            result = {            
-                    "url_original": url_original,
-                    "url_generated": url_generated,
-                    "time_taken": str(time_for_photo_generation)
-            }
-            print('result: ', result)
-            
-        else: # multiple (k)
-            generated_urls = []    
-            processes = []
-            parent_connections = []
-            
-            outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
-            
-            for i in range(k):
-                parent_conn, child_conn = Pipe()
-                parent_connections.append(parent_conn)
-                
-                boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM)
-                text_prompt =  f'a human with a {outpaint_prompt[i]} background'
-                
-                object_name = f'photo_{id}_{i+1}.{ext}'
-                object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
-                print('object_key: ', object_key)
-            
-                process = Process(target=parallel_process, args=(child_conn, boto3_bedrock, modelId, object_img, mask_img, text_prompt, object_name, object_key))
-                processes.append(process)
-                
-                selected_LLM = selected_LLM + 1
-                if selected_LLM == len(profile_of_Image_LLMs):
-                    selected_LLM = 0
                             
-            for process in processes:
-                process.start()
+    for process in processes:
+        process.start()
                     
-            for parent_conn in parent_connections:
-                url = parent_conn.recv()
-                generated_urls.append(url)
+    for parent_conn in parent_connections:
+        url = parent_conn.recv()
+        generated_urls.append(url)
 
-            for process in processes:
-                process.join()
+    for process in processes:
+        process.join()
                     
-            end_time_for_generation = time.time()
-            time_for_photo_generation = end_time_for_generation - start_time_for_generation
+    end_time_for_generation = time.time()
+    time_for_photo_generation = end_time_for_generation - start_time_for_generation
             
-            print('generated_urls: ', json.dumps(generated_urls))
+    print('generated_urls: ', json.dumps(generated_urls))
         
-        result = {            
-                "url_original": url_original,
-                "url_generated": json.dumps(generated_urls),
-                "time_taken": str(time_for_photo_generation)
-        }
-        print('result: ', result)
+    result = {            
+        "url_original": url_original,
+        "url_generated": json.dumps(generated_urls),
+        "time_taken": str(time_for_photo_generation)
+    }
+    print('result: ', result)
         
     return {
         "isBase64Encoded": False,
