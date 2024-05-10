@@ -325,6 +325,7 @@ def lambda_handler(event, context):
     print('rekognition response: ', response)
     print('number of faces: ', len(response['FaceDetails']))
     
+    """
     nfaces = len(response['FaceDetails'])
     if nfaces == 1:
         k = 6
@@ -335,6 +336,8 @@ def lambda_handler(event, context):
     elif nfaces >= 4:
         k = 2        
     print('# of output images: ', k)
+    """
+    k = 3
 
     imgWidth, imgHeight = img.size           
     outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
