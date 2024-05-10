@@ -258,6 +258,9 @@ def parallel_process(conn, object_img, mask_img, text_prompt, object_name, objec
     boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
     
     print('len(access_key): ', len(access_key_id))
+    print('selected_credential: ', selected_credential)
+    print('current access_key_id: ', access_key_id[selected_credential])
+    
     if selected_credential >= len(access_key_id)-1:
         selected_credential = 0
     else:
