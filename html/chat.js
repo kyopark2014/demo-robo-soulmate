@@ -233,7 +233,7 @@ function initializeCommend() {
       reservedCommend.put(cDown[i], JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "엎드렸어."}));
     }
     
-    cCome = ['이리와', '이리와봐', '이리와줘', '여기로와', '이쪽으로와', '내곁으로와', '이리로오렴', '이쪽으로오렴', '가까이다가와', '내곁으로오렴', '이리로와줘', '이리로접근해', '여기로접근해', '이쪽으로접근해', '내곁으로접근해', '이리로다가와', '여기로다가와', '이쪽으로다가와', '내곁으로다가와', '이리로모여', '여기로모여', '이쪽으로모여', '내곁으로모여', '앞으로와', '앞으로다가와']
+    cCome = ['일로와', '일루와', '이리와', '이리와봐', '이리와줘', '여기로와', '이쪽으로와', '내곁으로와', '이리로오렴', '이쪽으로오렴', '가까이다가와', '내곁으로오렴', '이리로와줘', '이리로접근해', '여기로접근해', '이쪽으로접근해', '내곁으로접근해', '이리로다가와', '여기로다가와', '이쪽으로다가와', '내곁으로다가와', '이리로모여', '여기로모여', '이쪽으로모여', '내곁으로모여', '앞으로와', '앞으로다가와']
     for (let i = 0; i < cCome.length; i++) {
       reservedCommend.put(cCome[i], JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
       limitedCommendId.put(cCome[i], 1)
@@ -289,7 +289,8 @@ function initCommendCounter() {
 }
 
 function removeSpecialChars(str) {
-    return str.replace(/[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣 ]/g, '').trim();
+    str =  str.replace(/[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣 ]/g, '').trim();
+    return str.replaceAll(' ', '');
 }
 
 function calculateSimilarity(str1, str2) {
@@ -461,6 +462,30 @@ function actionforReservedCommand(requestId, message) {
     } 
 }
 
+function modifyInputTypoText(text) {
+    textKey = removeSpecialChars(text)
+    typoMap = {
+        '지져': '짖어',
+        '찢어': '짖어',
+        '지저': '짖어',
+        '지저봐': '짖어 봐',
+        '지저바': '짖어 봐',
+        '지저라': '짖어라',
+        '지저보세요': '짖어보세요',
+        '돌이네봐' : '돌아 봐바',
+        '우리내봐': '돌아 봐바',
+        '눌러서': '물러서',
+        '불러서': '물러서',
+        '보라' : '돌아',
+        '보라바' : '돌아 봐',
+        '보라바바' : '돌아 봐바'
+    }
+    if (textKey in typoMap) {
+        return typoMap[textKey]
+    }
+    return text
+}
+
 function connect(endpoint, type) {
     const ws = new WebSocket(endpoint);
 
@@ -508,7 +533,10 @@ function connect(endpoint, type) {
                 console.log('transaction status: completed');
                 // console.log('next: ', next); 
                 feedback.style.display = 'none';       
-                   
+
+                // Modify input typo text
+                response.msg = modifyInputTypoText(response.msg)
+
                 addReceivedMessage(response.request_id, response.msg);  
                 // console.log('response.msg: ', response.msg);
 
