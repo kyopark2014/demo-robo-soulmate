@@ -204,7 +204,7 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
         accept="application/json", 
         contentType="application/json"
     )
-    print('response: ', response)
+    # print('response: ', response)
             
     # Output processing
     response_body = json.loads(response.get("body").read())
@@ -287,10 +287,14 @@ def lambda_handler(event, context):
         k = 1        
     print('# of output images: ', k)
 
-    imgWidth, imgHeight = img.size       
-    
+    imgWidth, imgHeight = img.size           
     outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
-    index = 0
+    
+    index = 1    
+    generated_urls = []    
+    processes = []
+    parent_connections = []
+        
     for faceDetail in response['FaceDetails']:
         print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
               + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
@@ -316,11 +320,7 @@ def lambda_handler(event, context):
 
         object_img = img_resize(object_image)
         mask_img = img_resize(mask_image)
-        
-        generated_urls = []    
-        processes = []
-        parent_connections = []
-            
+                    
         for i in range(k):
             parent_conn, child_conn = Pipe()
             parent_connections.append(parent_conn)
@@ -328,9 +328,9 @@ def lambda_handler(event, context):
             boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM)
             text_prompt =  f'a human with a {outpaint_prompt[i]} background'
                 
-            object_name = f'photo_{id}_{index+i+1}.{ext}'
+            object_name = f'photo_{id}_{index}.{ext}'
             object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
-            print('object_key: ', object_key)
+            print('generated object_key: ', object_key)
             
             process = Process(target=parallel_process, args=(child_conn, boto3_bedrock, modelId, object_img, mask_img, text_prompt, object_name, object_key))
             processes.append(process)
