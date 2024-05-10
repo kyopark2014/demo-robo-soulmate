@@ -252,20 +252,8 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
     
     return img_b64
 
-def parallel_process(conn, object_img, mask_img, text_prompt, object_name, object_key):  
-    global selected_credential
-    
+def parallel_process(conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential):  
     boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
-    
-    print('len(access_key): ', len(access_key_id))
-    print('current access_key_id: ', access_key_id[selected_credential])
-    print('selected_credential: ', selected_credential)
-    
-    print('selected_credential: ', selected_credential)
-    if selected_credential >= len(access_key_id)-1:
-        selected_credential = 0
-    else:
-        selected_credential = selected_credential + 1
     
     img_b64 =  generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
             
@@ -286,6 +274,7 @@ def parallel_process(conn, object_img, mask_img, text_prompt, object_name, objec
                     
 def lambda_handler(event, context):
     global selected_LLM
+    global selected_credential
         
     print(event)
     
@@ -387,7 +376,7 @@ def lambda_handler(event, context):
             object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
             print('generated object_key: ', object_key)
             
-            process = Process(target=parallel_process, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key))
+            process = Process(target=parallel_process, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential))
             processes.append(process)
                 
             selected_LLM = selected_LLM + 1
@@ -409,6 +398,16 @@ def lambda_handler(event, context):
     time_for_photo_generation = end_time_for_generation - start_time_for_generation
             
     print('generated_urls: ', json.dumps(generated_urls))
+    
+    print('len(access_key): ', len(access_key_id))
+    print('current access_key_id: ', access_key_id[selected_credential])
+    print('selected_credential: ', selected_credential)
+    
+    print('selected_credential: ', selected_credential)
+    if selected_credential >= len(access_key_id)-1:
+        selected_credential = 0
+    else:
+        selected_credential = selected_credential + 1
         
     result = {            
         "url_original": url_original,
