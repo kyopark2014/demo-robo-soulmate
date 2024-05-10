@@ -82,35 +82,10 @@ def load_image(bucket, key):
     
     return img
 
-def show_faces(img):                          
-    buffer = BytesIO()
-    img.save(buffer, format='jpeg', quality=100)
-    val = buffer.getvalue()
+def detect_faces(img):                          
 
-    response = rekognition_client.detect_faces(Image={'Bytes': val},Attributes=['ALL'])
-    print('rekognition response: ', response)
-    print('number of faces: ', len(response['FaceDetails']))
 
-    imgWidth, imgHeight = img.size       
-    ori_image = copy.deepcopy(img)
-
-    for faceDetail in response['FaceDetails']:
-        print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
-              + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
-
-        box = faceDetail['BoundingBox']
-        left = imgWidth * box['Left']
-        top = imgHeight * box['Top']
-        width = imgWidth * box['Width']
-        height = imgHeight * box['Height']
-
-        print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
-        print('Left: ' + '{0:.0f}'.format(left))
-        print('Top: ' + '{0:.0f}'.format(top))
-        print('Face Width: ' + "{0:.0f}".format(width))
-        print('Face Height: ' + "{0:.0f}".format(height))
-
-    return ori_image, imgWidth, imgHeight, int(left), int(top), int(width), int(height), response
+    return int(left), int(top), int(width), int(height)
 
 def show_labels(img_path, target_label=None):
     if target_label is None:
@@ -138,7 +113,6 @@ def show_labels(img_path, target_label=None):
     )
 
     imgWidth, imgHeight = image.size       
-    ori_image = copy.deepcopy(image)
     color = 'white'
 
     for item in response['Labels']:
@@ -163,7 +137,7 @@ def show_labels(img_path, target_label=None):
         print('Top: ' + '{0:.0f}'.format(top))
         print('Object Width: ' + "{0:.0f}".format(width))
         print('Object Height: ' + "{0:.0f}".format(height))
-        return ori_image, imgWidth, imgHeight, int(left), int(top), int(width), int(height), color, response
+        return imgWidth, imgHeight, int(left), int(top), int(width), int(height), color, response
     except:
         print("There is no target label in the image.")
         return _, _, _, _, _, _, _, _, _
@@ -292,21 +266,43 @@ def lambda_handler(event, context):
     if ext == 'jpg':
         ext = 'jpeg'
     
-        
-    img = load_image(bucket, key) # load image from bucket
-    
-    target_label = None      
-    if target_label == None:
-        object_image, width, height, f_left, f_top, f_width, f_height, human_res = show_faces(img) ## detect_faces        
-    #else:
-    #    object_image, width, height, f_left, f_top, f_width, f_height, color, human_res = show_labels(img, target_label=target_label)
-    
     encode_object_image = base64_encode_image(object_image,formats=ext.upper()).decode("utf-8")
+    
+        
+    img = load_image(bucket, key) # load image from bucket    
+    object_image = copy.deepcopy(img)
+
+    # detect faces
+    buffer = BytesIO()
+    img.save(buffer, format='jpeg', quality=100)
+    val = buffer.getvalue()
+
+    response = rekognition_client.detect_faces(Image={'Bytes': val},Attributes=['ALL'])
+    print('rekognition response: ', response)
+    print('number of faces: ', len(response['FaceDetails']))
+
+    imgWidth, imgHeight = img.size       
+    
+    for faceDetail in response['FaceDetails']:
+        print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
+              + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
+
+        box = faceDetail['BoundingBox']
+        left = imgWidth * box['Left']
+        top = imgHeight * box['Top']
+        print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
+        print('Left: ' + '{0:.0f}'.format(left))
+        print('Top: ' + '{0:.0f}'.format(top))
+        
+        width = imgWidth * box['Width']
+        height = imgHeight * box['Height']
+        print('Face Width: ' + "{0:.0f}".format(width))
+        print('Face Height: ' + "{0:.0f}".format(height))
+    
     inputs = dict(
         encode_image = encode_object_image,
-        input_box = [f_left, f_top, f_left+f_width, f_top+f_height]
+        input_box = [left, top, left+width, top+height]
     )
-
     predictions = invoke_endpoint(endpoint_name, inputs)
     mask_image = decode_image(json.loads(predictions)['mask_image'])
 
