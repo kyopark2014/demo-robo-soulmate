@@ -879,7 +879,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     });
     s3Bucket.grantReadWrite(lambdaMultiPhoto);
     lambdaPhoto.role?.attachInlinePolicy( // add sagemaker policy
-      new iam.Policy(this, 'sagemaker-policy-for-photo', {
+      new iam.Policy(this, 'sagemaker-policy-for-multiphoto', {
         statements: [SageMakerPolicy],
       }),
     );
