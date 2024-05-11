@@ -172,9 +172,9 @@ for i, row in enumerate(mask):
 
 ![생성된 이미지](./photo-booth/multiful-faces/photo_5faces_2024_0508_21hr_1.jpeg)
 
-## Glaces 추가
+## Glasses에 대한 처리 방안
 
-SAM으로 얼굴인식시에 안경에 대한 Glass 처리가 되지 않습니다.
+SAM으로 얼굴인식시에 안경에 대한 glasses 처리가 되지 않습니다.
 
 ![Mask](./photo-booth/glasses/mask_ee9510a5-8049-4ae0-8ec2-6ae043df040d.png)
 
