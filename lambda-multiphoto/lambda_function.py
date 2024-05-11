@@ -55,7 +55,7 @@ def get_secret():
     return access_key_id, secret_access_key
 
 access_key_id, secret_access_key = get_secret()
-selected_credential = 1
+selected_credential = 0
   
 def get_client(profile_of_Image_LLMs, selected_LLM, selected_credential):
     profile = profile_of_Image_LLMs[selected_LLM]
@@ -330,7 +330,7 @@ def lambda_handler(event, context):
         k = 2        
     print('# of output images: ', k)
     """
-    k = 3
+    k = 1
 
     imgWidth, imgHeight = img.size           
     outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
