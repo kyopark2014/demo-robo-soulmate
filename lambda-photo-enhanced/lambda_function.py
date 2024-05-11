@@ -406,12 +406,15 @@ def lambda_handler(event, context):
     
     #merged_mask = mask_image.convert('RGB')
     
+    # bucket의 key에서 이름을 추출 
+    fname = 'mask'+key.split('/')[-1]
+    
     # upload
     response = s3_client.put_object(
         Bucket=s3_bucket,
-        Key="mask-image-enhanced.jpg",
+        Key='photo/'+fname,
         ContentType='image/jpeg',
-        Body=base64.b64decode(mask_img)
+        Body=base64.b64decode(mask_image)
     )
     #print('response: ', response)
 
