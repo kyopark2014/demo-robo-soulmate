@@ -22,8 +22,8 @@ s3_photo_prefix = os.environ.get('s3_photo_prefix')
 path = os.environ.get('path')
 
 list_of_endpoints = {
-    'sam-endpoint-2024-04-10-01-35-30',
-    'sam-endpoint-2024-04-30-06-08-55'
+    "sam-endpoint-2024-04-10-01-35-30",
+    "sam-endpoint-2024-04-30-06-08-55"
 }
 
 profile_of_Image_LLMs = json.loads(os.environ.get('profile_of_Image_LLMs'))
