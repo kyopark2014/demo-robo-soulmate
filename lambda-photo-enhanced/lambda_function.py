@@ -385,6 +385,8 @@ def lambda_handler(event, context):
         parent_conn, child_conn = Pipe()
         parent_connections.append(parent_conn)
         
+        print('list_of_enpoints: ', list_of_endpoints)
+        
         endpoint_name = list_of_endpoints[selected_endpoint] 
         print('endpoint_name: ', endpoint_name)
         print ('selected_LLM: ', selected_endpoint)
