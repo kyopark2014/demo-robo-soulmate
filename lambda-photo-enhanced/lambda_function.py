@@ -418,13 +418,13 @@ def lambda_handler(event, context):
             isFirst = True
         else: 
             np_image = np.array(mask_image)            
-            mask_new = np.all(np_image == (0, 0, 0), axis=3)
+            mask_new = np.all(np_image == (0, 0, 0), axis=2)
             
             mask = np.logical_or(mask, mask_new)
     
     print('mask: ', mask)
             
-    np_image = np.where(mask == True, (0,0,0), (255,255,255))
+    np_image = np.where(mask == True, (0,0,0), (255,255,255), axis=2)
     print('np_image: ', np_image)
             
     for i, row in enumerate(mask):
