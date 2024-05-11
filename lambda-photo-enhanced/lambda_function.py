@@ -413,17 +413,16 @@ def lambda_handler(event, context):
         if isFirst==False:       
             np_image = np.array(mask_image)
             #print('np_image: ', np_image)
-            m = np.all(np_mask == (0, 0, 0), axis=2)
+            mask = np.all(np_image == (0, 0, 0), axis=2)
             
             isFirst = True
         else: 
-            np_mask = np.array(mask_image)
+            np_image = np.array(mask_image)            
+            mask_new = np.all(np_image == (0, 0, 0), axis=2)
             
-            m1 = np.all(np_mask == (0, 0, 0), axis=2)
-            m2 = np.all(np_image == (0, 0, 0), axis=2)
-            
-            m = np.logical_or(m1, m2)
-    print('m: ', m)
+            mask = np.logical_or(mask, mask_new)
+    
+    print('mask: ', mask)
             
     #np_image = np.where(m1 == True, (0,0,0), (255,255,255))
     #print('np_image: ', np_image)
