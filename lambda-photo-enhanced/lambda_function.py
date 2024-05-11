@@ -417,7 +417,14 @@ def lambda_handler(event, context):
         else: 
             np_mask = np.array(mask_image)
             
-            print(np.all(np_mask == (255, 255, 255), axis=2))
+            print()
+            
+            m1 = np.all(np_mask == (0, 0, 0), axis=2)
+            #m2 = np.all(np_image == (0, 0, 0), axis=2)
+            
+            np_image = np.where(m1 == True, (0,0,0), (255,255,255))
+            print('np_image: ', np_image)
+            
             
             #comp = mask_image == np_mask
             #print('comp: ', comp)
@@ -430,11 +437,13 @@ def lambda_handler(event, context):
             #comp = mask_image == np_mask
             #print('comp: ', comp)
             
-            for i, row in enumerate(np_mask):
-                for j, c in enumerate(row):
-                    if np.array_equal(c, np.array([0, 0, 0])):
-                        # print(f'({i}, {j}): {c}, {np_image[i, j]}')
-                        np_image[i, j] = np.array([0, 0, 0])
+            
+            
+            #for i, row in enumerate(np_mask):
+            #    for j, c in enumerate(row):
+            #        if np.array_equal(c, np.array([0, 0, 0])):
+            #            # print(f'({i}, {j}): {c}, {np_image[i, j]}')
+            #            np_image[i, j] = np.array([0, 0, 0])
 
     for process in processes:
         process.join()
