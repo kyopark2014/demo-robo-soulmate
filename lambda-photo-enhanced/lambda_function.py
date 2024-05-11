@@ -308,7 +308,7 @@ def parallel_process_for_SAM(conn, faceInfo, encode_object_image, imgWidth, imgH
     conn.close()    
                     
 def lambda_handler(event, context):
-    global selected_credential
+    global selected_credential, selected_LLM
         
     print(event)
     
