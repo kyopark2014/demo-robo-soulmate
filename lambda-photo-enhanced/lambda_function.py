@@ -427,7 +427,7 @@ def lambda_handler(event, context):
     #np_image = np.where(m1 == True, (0,0,0), (255,255,255))
     #print('np_image: ', np_image)
             
-    for i, row in enumerate(m):
+    for i, row in enumerate(mask):
         for j, value in enumerate(row):
             if value == True:
                 np_image[i, j] = (0, 0, 0)
