@@ -25,7 +25,6 @@ list_of_endpoints = {
     'sam-endpoint-2024-04-10-01-35-30',
     'sam-endpoint-2024-04-30-06-08-55'
 }
-selected_endpoint = 0
 
 profile_of_Image_LLMs = json.loads(os.environ.get('profile_of_Image_LLMs'))
 selected_LLM = 0
@@ -373,8 +372,10 @@ def lambda_handler(event, context):
     
     index = 1    
     
+    # Earn mask image for faces
     processes = []
     parent_connections = []
+    selected_endpoint = 0
     
     print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
     for faceDetail in response['FaceDetails']:
@@ -386,7 +387,7 @@ def lambda_handler(event, context):
         
         endpoint_name = list_of_endpoints[selected_endpoint] 
         print('endpoint_name: ', endpoint_name)
-        print ('selected_LLM: ', selected_LLM)
+        print ('selected_LLM: ', selected_endpoint)
         
         parallel_process_for_SAM(child_conn, faceDetail['BoundingBox'], encode_object_image, imgWidth, imgHeight, endpoint_name)
         
@@ -449,7 +450,7 @@ def lambda_handler(event, context):
                         np_image[i, j] = np.array([0, 0, 0])
         """
                     
-    # print('np_image: ', np_image)                         
+    print('np_image: ', np_image)                         
     merged_mask_image = Image.fromarray(np_image)
             
     # upload mask image for debugging
