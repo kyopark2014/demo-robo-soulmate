@@ -402,7 +402,7 @@ def lambda_handler(event, context):
             for i, row in enumerate(np_mask):
                 for j, c in enumerate(row):
                     if np.array_equal(c, np.array([0, 0, 0])):
-                        print(f'({i}, {j}): {np_image[i, j]}')
+                        print(f'({i}, {j}): {c}, {np_image[i, j]}')
                         np_image[i, j] = np.array([0, 0, 0])
                     
                     #if c != np.array([255, 255, 255]):
