@@ -346,8 +346,7 @@ def lambda_handler(event, context):
     processes = []
     parent_connections = []
         
-    mergedMask = Image.new('RGB', (imgWidth, imgHeight), (255, 255, 255))
-    mask = []
+    merged_mask = Image.new('RGB', (imgWidth, imgHeight), (255, 255, 255))
     
     for i, faceDetail in enumerate(response['FaceDetails']):
         print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
@@ -393,13 +392,28 @@ def lambda_handler(event, context):
                         
         #print(f'i = {i}, mask: {mask}')
         
-        npImage=np.array(mask_image)
-        print('npImage: ', npImage)
+        if i==0:
+            npImage = np.array(mask_image)
+            print('npImage: ', npImage)
+        else:
+            newMaskImage = np.array(mask_image)
+            
+            # show a color from npImage using for statement
+            for i, color in enumerate(npImage):
+                for j, c in enumerate(color):
+                    if c != newMaskImage[i,j]:
+                        npImage[i,j] = newMaskImage[i,j]
+                        print('i, j: ', i, j)
+                        print('npImage[i,j]: ', npImage[i,j])
+                        
+        #color = npImage[0,0]
+            
+                        
         
-        for i, color in enumerate(npImage):
-            print('color: ', color)
-            if i>10:
-                break
+    #    for i, color in enumerate(npImage):
+    #        print('color: ', color)
+    #        if i>10:
+    #            break
             
         #LUT=np.zeros(256,dtype=np.uint8)
         
