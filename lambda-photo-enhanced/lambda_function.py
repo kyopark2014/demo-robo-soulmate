@@ -363,28 +363,37 @@ def lambda_handler(event, context):
         predictions = invoke_endpoint(endpoint_name, inputs)
         print('predictions: ', predictions)
         
-        mask_image = decode_image(json.loads(predictions)['mask_image'])
+    mask_image = decode_image(json.loads(predictions)['mask_image'])
+    
+    # upload
+    response = s3_client.put_object(
+        Bucket=s3_bucket,
+        Key="image-enhanced.jpg",
+        ContentType='image/jpeg',
+        Body=base64.b64decode(mask_image)
+    )
+    print('response: ', response)
 
-        object_img = img_resize(object_image)
-        mask_img = img_resize(mask_image)
+    object_img = img_resize(object_image)
+    mask_img = img_resize(mask_image)
                     
-        for i in range(k):
-            parent_conn, child_conn = Pipe()
-            parent_connections.append(parent_conn)
+    for i in range(k):
+        parent_conn, child_conn = Pipe()
+        parent_connections.append(parent_conn)
                             
-            text_prompt =  f'a human with a {outpaint_prompt[i]} background'
+        text_prompt =  f'a human with a {outpaint_prompt[i]} background'
                 
-            object_name = f'photo_{id}_{index}.{ext}'
-            object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
-            print('generated object_key: ', object_key)
+        object_name = f'photo_{id}_{index}.{ext}'
+        object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
+        print('generated object_key: ', object_key)
             
-            process = Process(target=parallel_process, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential))
-            processes.append(process)
+        process = Process(target=parallel_process, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential))
+        processes.append(process)
                 
-            selected_LLM = selected_LLM + 1
-            if selected_LLM == len(profile_of_Image_LLMs):
-                selected_LLM = 0
-            index = index + 1
+        selected_LLM = selected_LLM + 1
+        if selected_LLM == len(profile_of_Image_LLMs):
+            selected_LLM = 0
+        index = index + 1
                             
     for process in processes:
         process.start()
