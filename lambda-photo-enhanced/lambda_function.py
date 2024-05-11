@@ -395,6 +395,11 @@ def lambda_handler(event, context):
         
         npImage=np.array(mask_image)
         print('npImage: ', npImage)
+        
+        for i, color in enumerate(npImage):
+            print('color: ', color)
+            if i>10:
+                break
             
         #LUT=np.zeros(256,dtype=np.uint8)
         
@@ -411,9 +416,8 @@ def lambda_handler(event, context):
     im = Image.fromarray(npImage)
     pixels = BytesIO()
     im.save(pixels, "png")
-
         
-    fname = key.split('/')[-1].split('.')[0]
+    fname = 'mask_'+key.split('/')[-1].split('.')[0]
     
     #buffer = BytesIO()
     #mask_image.save(buffer, format='jpeg', quality=100)
