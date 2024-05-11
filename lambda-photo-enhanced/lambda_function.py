@@ -372,7 +372,7 @@ def lambda_handler(event, context):
         Bucket=s3_bucket,
         Key="image-enhanced.jpg",
         ContentType='image/jpeg',
-        Body=base64.b64decode(mask_image)
+        Body=mask_image
     )
     print('response: ', response)
 
