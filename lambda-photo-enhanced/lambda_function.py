@@ -308,7 +308,6 @@ def parallel_process_for_SAM(conn, faceInfo, encode_object_image, imgWidth, imgH
     conn.close()    
                     
 def lambda_handler(event, context):
-    global selected_endpoint
     global selected_credential
         
     print(event)
@@ -394,6 +393,8 @@ def lambda_handler(event, context):
         
         if selected_endpoint >= len(list_of_endpoints):
             selected_endpoint = 0
+        else:
+            selected_endpoint = selected_endpoint + 1
 
     for process in processes:
         process.start()
