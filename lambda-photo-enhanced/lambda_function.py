@@ -376,9 +376,7 @@ def lambda_handler(event, context):
     processes = []
     parent_connections = []
     
-    print('np_image: ', np_image)
     print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
-    isFirst = False
     for faceDetail in response['FaceDetails']:
         print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
               + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
@@ -401,20 +399,16 @@ def lambda_handler(event, context):
     for parent_conn in parent_connections:
         mask_image = parent_conn.recv()
         
-        print('np_image: ', np_image)
-        
-        if isFirst==False:
-            np_image = np.array(mask_image)
-            isFirst = True
-        else:
+        if np_image:        
             np_mask = np.array(mask_image)
-            
-            # show a color from np_image using for statement
             for i, row in enumerate(np_mask):
                 for j, c in enumerate(row):
                     if np.array_equal(c, np.array([0, 0, 0])):
                         # print(f'({i}, {j}): {c}, {np_image[i, j]}')
                         np_image[i, j] = np.array([0, 0, 0])
+        else: 
+            np_image = np.array(mask_image)
+            print('np_image: ', np_image)
 
     for process in processes:
         process.join()
