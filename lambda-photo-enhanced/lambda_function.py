@@ -61,7 +61,7 @@ def get_secret():
     return access_key_id, secret_access_key
 
 access_key_id, secret_access_key = get_secret()
-selected_credential = 1
+selected_credential = 0
   
 def get_client(profile_of_Image_LLMs, selected_LLM, selected_credential):
     profile = profile_of_Image_LLMs[selected_LLM]
@@ -70,7 +70,7 @@ def get_client(profile_of_Image_LLMs, selected_LLM, selected_credential):
     print(f'LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
     
     print('access_key_id: ', access_key_id[selected_credential])
-    print('selected_credential: ', selected_credential)
+    # print('selected_credential: ', selected_credential)
                           
     # bedrock   
     boto3_bedrock = boto3.client(
@@ -370,6 +370,7 @@ def lambda_handler(event, context):
     outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
     
     index = 1    
+    start_time_for_SAM = time.time()
     
     # Earn mask image for faces
     processes = []
@@ -402,6 +403,7 @@ def lambda_handler(event, context):
     for parent_conn in parent_connections:
         mask_image = parent_conn.recv()
         
+        print('merge maske')      
         if isFirst==False:       
             np_image = np.array(mask_image)
             #print('np_image: ', np_image)
@@ -452,7 +454,8 @@ def lambda_handler(event, context):
                         # print(f'({i}, {j}): {c}, {np_image[i, j]}')
                         np_image[i, j] = np.array([0, 0, 0])
         """
-                    
+    
+              
     # print('np_image: ', np_image)                         
     merged_mask_image = Image.fromarray(np_image)
             
@@ -469,10 +472,15 @@ def lambda_handler(event, context):
         Body=pixels
     )
     #print('response: ', response)
-
+        
+    end_time_for_SAM = time.time()
+    time_for_SAM = end_time_for_SAM - start_time_for_SAM
+    print('time_for_SAM: ', time_for_SAM)
+    
     object_img = img_resize(object_image)
     mask_img = img_resize(merged_mask_image)
-    
+        
+    print('start outpainting')      
     generated_urls = []    
     processes = []       
     parent_connections = []         
@@ -503,17 +511,21 @@ def lambda_handler(event, context):
 
     for process in processes:
         process.join()
-                    
+        
     end_time_for_generation = time.time()
+    time_for_outpainting = end_time_for_generation - end_time_for_SAM
+    print('time_for_outpainting: ', time_for_outpainting)
+                    
+    
     time_for_photo_generation = end_time_for_generation - start_time_for_generation
+    print('time_for_photo_generation: ', time_for_photo_generation)
             
     print('generated_urls: ', json.dumps(generated_urls))
     
     print('len(access_key): ', len(access_key_id))
     print('current access_key_id: ', access_key_id[selected_credential])
-    print('selected_credential: ', selected_credential)
+    #print('selected_credential: ', selected_credential)
     
-    print('selected_credential: ', selected_credential)
     if selected_credential >= len(access_key_id)-1:
         selected_credential = 0
     else:
