@@ -386,10 +386,8 @@ def lambda_handler(event, context):
         parent_conn, child_conn = Pipe()
         parent_connections.append(parent_conn)
         
-        print('list_of_enpoints: ', list_of_endpoints)
-        print('list_of_enpoints[0]: ', list_of_endpoints[0])
-        
         endpoint_name = list_of_endpoints[selected_endpoint] 
+        print('endpoint_name: ', endpoint_name)
         
         process = Process(target=parallel_process_for_SAM, args=(child_conn, faceDetail['BoundingBox'], encode_object_image, imgWidth, imgHeight, endpoint_name))
         processes.append(process)
@@ -405,7 +403,7 @@ def lambda_handler(event, context):
         
         if isFirst==False:       
             np_image = np.array(mask_image)
-            print('np_image: ', np_image)
+            #print('np_image: ', np_image)
             isFirst = True
         else: 
             np_mask = np.array(mask_image)
