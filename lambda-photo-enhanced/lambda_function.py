@@ -367,7 +367,13 @@ def lambda_handler(event, context):
     k = 1
 
     imgWidth, imgHeight = img.size           
-    outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
+    # outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
+    outpaint_prompt =[
+            "A futuristic cityscape , focusing purely on the architecture and technology. The scene shows a skyline dominated by towering skyscrapers", 
+            "A medieval village with thatched-roof cottages, villagers in period clothing, and a bustling market square during a festival",   
+        #    "A panoramic view of a futuristic city by the sea, with a serene waterfront, advanced aquatic transport systems, and shimmering buildings reflecting the setting sun."
+            'A festive scene in a future city during a high-tech festival, with streets filled with people in colorful smart fabrics, interactive digital art installations, and joyous music.'
+            ] 
     
     index = 1    
     start_time_for_SAM = time.time()
@@ -488,7 +494,8 @@ def lambda_handler(event, context):
         parent_conn, child_conn = Pipe()
         parent_connections.append(parent_conn)
                             
-        text_prompt =  f'a human with a {outpaint_prompt[i]} background'
+        # text_prompt =  f'a human with a {outpaint_prompt[i]} background'
+        text_prompt = f'a neatly and well-dressed human with yellow cute robot dog in {outpaint_prompt[i]}'
                 
         object_name = f'photo_{id}_{index}.{ext}'
         object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
