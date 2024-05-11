@@ -373,14 +373,14 @@ def lambda_handler(event, context):
         mask_image = decode_image(json.loads(predictions)['mask_image'])    
         print('mask_image: ', mask_image.getdata())
     
-        imgData = mask_image.getdata()
-        for i, color in enumerate(imgData):        
-            if color != (255, 255, 255):
-                mask.append(0, 0, 0)
-            else:
-                mask.append(255, 255, 255)
+    imgData = mask_image.getdata()
+    for i, color in enumerate(imgData):        
+        if color != (255, 255, 255):
+            mask.append(0, 0, 0)
+        else:
+            mask.append(255, 255, 255)
                 
-        print('mask: ', mask)
+    print('mask: ', mask)
             
     #rr, gg, bb = mask_image.split()
     #print('bb: ', bb)
