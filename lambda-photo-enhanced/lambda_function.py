@@ -308,7 +308,7 @@ def parallel_process_for_SAM(conn, faceInfo, encode_object_image, imgWidth, imgH
     conn.close()    
                     
 def lambda_handler(event, context):
-    global selected_LLM
+    global selected_endpoint
     global selected_credential
         
     print(event)
@@ -452,7 +452,7 @@ def lambda_handler(event, context):
                         np_image[i, j] = np.array([0, 0, 0])
         """
                     
-    print('np_image: ', np_image)                         
+    # print('np_image: ', np_image)                         
     merged_mask_image = Image.fromarray(np_image)
             
     # upload mask image for debugging
