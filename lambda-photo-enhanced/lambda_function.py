@@ -393,26 +393,27 @@ def lambda_handler(event, context):
         #print(f'i = {i}, mask: {mask}')
         
         if i==0:
-            npImage = np.array(mask_image)
-            print('npImage: ', npImage)
+            np_image = np.array(mask_image)
+            print('np_image: ', np_image)
         else:
-            newMaskImage = np.array(mask_image)
+            np_mask = np.array(mask_image)
             
-            # show a color from npImage using for statement
-            for i, color in enumerate(npImage):
-                for j, c in enumerate(color):
+            # show a color from np_image using for statement
+            for i, row in enumerate(np_mask):
+                for j, c in enumerate(row):
                     print('c: ', c)
-                    print('newMaskImage[i, j]: ', newMaskImage[i, j])
-                    if c != newMaskImage[i,j]:
-                        npImage[i,j] = newMaskImage[i,j]
-                        print('i, j: ', i, j)
-                        print('npImage[i,j]: ', npImage[i,j])
+                    print('np_mask[i, j]: ', np_image[i, j])
+                    # c와 newMaskImage는 color로서 [255 255 255]와 같은 값을 가집니다. 두 값을 비교합니다.
+                    
+                    if c != np.array([255, 255, 255]):
+                        np_image[i,j] = np.array([0, 0, 0])
+                        print(f'({i}, {j}): {np_image[i, j]}')
                         
-        #color = npImage[0,0]
-            
+        #color = np_image[0,0]
+    print('np_image: ', np_image) 
                         
         
-    #    for i, color in enumerate(npImage):
+    #    for i, color in enumerate(np_image):
     #        print('color: ', color)
     #        if i>10:
     #            break
@@ -429,7 +430,7 @@ def lambda_handler(event, context):
     #merged_mask = mask_image.convert('RGB')
     
     
-    im = Image.fromarray(npImage)
+    im = Image.fromarray(np_image)
     pixels = BytesIO()
     im.save(pixels, "png")
         
