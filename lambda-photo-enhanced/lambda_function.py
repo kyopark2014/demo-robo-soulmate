@@ -8,6 +8,7 @@ import uuid
 import json
 import traceback
 import copy    
+import io
 
 from botocore.config import Config
 from PIL import Image
@@ -409,12 +410,20 @@ def lambda_handler(event, context):
     # bucket의 key에서 이름을 추출 
     fname = 'mask'+key.split('/')[-1]
     
+    buffer = BytesIO()
+    mask_image.save(buffer, format='jpeg', quality=100)
+    pixels = buffer.getvalue()
+    print('pixels: ', pixels)
+    pixels.seek(0)
+    
+    
+    
     # upload
     response = s3_client.put_object(
         Bucket=s3_bucket,
         Key='photo/'+fname,
         ContentType='image/jpeg',
-        Body=base64.b64decode(mask_image)
+        Body=pixels
     )
     #print('response: ', response)
 
