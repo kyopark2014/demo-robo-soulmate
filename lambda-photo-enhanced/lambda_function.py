@@ -382,6 +382,9 @@ def lambda_handler(event, context):
                     mask[j](255, 255, 255)
                         
         print(f'i = {i}, mask: {mask}')
+        
+    newimg = Image.new(mask_image.mode,mask_image.size)
+    newimg.putdata(mask)
             
     #rr, gg, bb = mask_image.split()
     #print('bb: ', bb)
@@ -389,12 +392,12 @@ def lambda_handler(event, context):
     #merged_mask = mask_image.convert('RGB')
     
     # upload
-    #response = s3_client.put_object(
-    #    Bucket=s3_bucket,
-    #    Key="image-enhanced.jpg",
-    #    ContentType='image/jpeg',
-    #    Body=mask_image
-    #)
+    response = s3_client.put_object(
+        Bucket=s3_bucket,
+        Key="mask-image-enhanced.jpg",
+        ContentType='image/jpeg',
+        Body=newimg
+    )
     #print('response: ', response)
 
     object_img = img_resize(object_image)
