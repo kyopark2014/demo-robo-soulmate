@@ -371,30 +371,10 @@ def lambda_handler(event, context):
         predictions = invoke_endpoint(endpoint_name, inputs)
         print('predictions: ', predictions)
         
-        mask_image = decode_image(json.loads(predictions)['mask_image']) 
-        #if i==0:               
-        #    mask = mask_image.getdata()
-        #    print('mask: ', mask)
-        #else:
-            #for i in range(mask_image.size[0]): # for every pixel:
-            #    for j in range(mask_image.size[1]):
-            #        if pixels[i,j] != (255, 0, 0):
-            #            # change to black if not red
-            #            pixels[i,j] = (0, 0 ,0)
-            
-            
-        #    imgData = mask_image.getdata()
-        #    for j, color in enumerate(imgData):        
-        #        if color != (255, 255, 255):
-        #            mask[j] = (0, 0, 0)
-        #        else:
-        #            mask[j] = color
-                        
-        #print(f'i = {i}, mask: {mask}')
-        
+        mask_image = decode_image(json.loads(predictions)['mask_image'])         
         if i==0:
             np_image = np.array(mask_image)
-            print('np_image: ', np_image)
+            # print('np_image: ', np_image)
         else:
             np_mask = np.array(mask_image)
             
@@ -405,50 +385,15 @@ def lambda_handler(event, context):
                         # print(f'({i}, {j}): {c}, {np_image[i, j]}')
                         np_image[i, j] = np.array([0, 0, 0])
                     
-                    #if c != np.array([255, 255, 255]):
-                    #    np_image[i,j] = np.array([0, 0, 0])
-                    #    print(f'({i}, {j}): {np_image[i, j]}')
-                        
-        #color = np_image[0,0]
-    print('np_image: ', np_image) 
-                        
-        
-    #    for i, color in enumerate(np_image):
-    #        print('color: ', color)
-    #        if i>10:
-    #            break
+    # print('np_image: ', np_image)                         
+    merged_mask_image = Image.fromarray(np_image)
             
-        #LUT=np.zeros(256,dtype=np.uint8)
-        
-        
-    #mask_img = Image.new(mask_image.mode,mask_image.size)
-    #mask_img.putdata(mask)
-            
-    #rr, gg, bb = mask_image.split()
-    #print('bb: ', bb)
-    
-    #merged_mask = mask_image.convert('RGB')
-    
-    
-    im = Image.fromarray(np_image)
+    # upload mask image for debugging
     pixels = BytesIO()
-    im.save(pixels, "png")
-        
-    fname = 'mask_'+key.split('/')[-1].split('.')[0]
+    merged_mask_image.save(pixels, "png")
     
-    #buffer = BytesIO()
-    #mask_image.save(buffer, format='jpeg', quality=100)
-    #pixels = buffer.getvalue()
-    #for i, color in enumerate(pixels):        
-    #    print('color: ', color)
-    #    if i>10: 
-    #        break
-        
-    # pixels.seek(0)
+    fname = 'mask_'+key.split('/')[-1].split('.')[0]    
     pixels.seek(0, 0)
-    
-    
-    # upload
     response = s3_client.put_object(
         Bucket=s3_bucket,
         Key='photo/'+fname+'.png',
@@ -458,7 +403,7 @@ def lambda_handler(event, context):
     #print('response: ', response)
 
     object_img = img_resize(object_image)
-    mask_img = img_resize(mask_image)
+    mask_img = img_resize(merged_mask_image)
                     
     for i in range(k):
         parent_conn, child_conn = Pipe()
