@@ -373,13 +373,14 @@ def lambda_handler(event, context):
         mask_image = decode_image(json.loads(predictions)['mask_image']) 
         if i==0:               
             mask = mask_image.getdata()
+            print('mask: ', mask)
         else:
             imgData = mask_image.getdata()
             for j, color in enumerate(imgData):        
                 if color != (255, 255, 255):
                     mask[j] = (0, 0, 0)
                 else:
-                    mask[j] = (255, 255, 255)
+                    mask[j] = color
                         
         print(f'i = {i}, mask: {mask}')
         
