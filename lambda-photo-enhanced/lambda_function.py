@@ -389,13 +389,12 @@ def lambda_handler(event, context):
         print('list_of_enpoints[0]: ', list_of_endpoints[0])
         
         endpoint_name = list_of_endpoints[selected_endpoint] 
-        print('endpoint_name: ', endpoint_name)
-        print ('selected_LLM: ', selected_endpoint)
         
-        parallel_process_for_SAM(child_conn, faceDetail['BoundingBox'], encode_object_image, imgWidth, imgHeight, endpoint_name)
+        process = Process(target=parallel_process_for_SAM, args=(child_conn, faceDetail['BoundingBox'], encode_object_image, imgWidth, imgHeight, endpoint_name))
+        processes.append(process)
         
         if selected_endpoint >= len(list_of_endpoints):
-            selected_endpoint = 0                
+            selected_endpoint = 0
 
     for process in processes:
         process.start()
