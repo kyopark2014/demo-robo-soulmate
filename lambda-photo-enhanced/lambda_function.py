@@ -413,8 +413,12 @@ def lambda_handler(event, context):
     buffer = BytesIO()
     mask_image.save(buffer, format='jpeg', quality=100)
     pixels = buffer.getvalue()
-    print('pixels: ', pixels)
-    pixels.seek(0)
+    for i, color in enumerate(pixels):        
+        print('color: ', color)
+        if i>10: 
+            break
+        
+    # pixels.seek(0)
     
     
     
@@ -423,7 +427,7 @@ def lambda_handler(event, context):
         Bucket=s3_bucket,
         Key='photo/'+fname,
         ContentType='image/jpeg',
-        Body=pixels
+        Body=mask_image
     )
     #print('response: ', response)
 
