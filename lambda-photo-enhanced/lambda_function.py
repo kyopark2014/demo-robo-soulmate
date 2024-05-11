@@ -398,7 +398,7 @@ def lambda_handler(event, context):
         process = Process(target=parallel_process_for_SAM, args=(child_conn, faceDetail['BoundingBox'], encode_object_image, imgWidth, imgHeight, endpoint_name))
         processes.append(process)
         
-        if selected_endpoint >= len(list_of_endpoints):
+        if selected_endpoint > len(list_of_endpoints):
             selected_endpoint = 0
         else:
             selected_endpoint = selected_endpoint + 1
