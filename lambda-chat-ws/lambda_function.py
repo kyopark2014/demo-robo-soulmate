@@ -683,6 +683,14 @@ def INFJ(chat, query):
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
+        
+        profile = profile_of_LLMs[selected_LLM]
+        bedrock_region =  profile['bedrock_region']
+        modelId = profile['model_id']
+        print(f'LLM: {selected_LLM}, bedrock_region: {bedrock_region}, modelId: {modelId}')
+    
+        print('access_key_id: ', access_key_id[selected_credential])
+        print('selected_credential: ', selected_credential)
             
         sendErrorMessage(err_msg)    
         raise Exception ("Not able to request to LLM")
