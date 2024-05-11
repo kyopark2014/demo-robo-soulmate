@@ -400,7 +400,7 @@ def lambda_handler(event, context):
         processes.append(process)
         
         selected_endpoint = selected_endpoint + 1
-        if selected_endpoint > len(list_of_endpoints):
+        if selected_endpoint >= len(list_of_endpoints):
             selected_endpoint = 0
             
     for process in processes:
