@@ -363,7 +363,7 @@ def lambda_handler(event, context):
         predictions = invoke_endpoint(endpoint_name, inputs)
         print('predictions: ', predictions)
         
-    mask_image = decode_image(json.loads(predictions)['mask_image']).convert('RGB')
+    mask_image = decode_image(json.loads(predictions)['mask_image'])
     
     merged_mask = mask_image.convert('RGB')
     
@@ -372,7 +372,7 @@ def lambda_handler(event, context):
         Bucket=s3_bucket,
         Key="image-enhanced.jpg",
         ContentType='image/jpeg',
-        Body=base64.b64decode(merged_mask)
+        Body=base64.b64decode(mask_image)
     )
     print('response: ', response)
 
