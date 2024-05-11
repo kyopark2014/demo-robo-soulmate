@@ -383,8 +383,8 @@ def lambda_handler(event, context):
                         
         print(f'i = {i}, mask: {mask}')
         
-    newimg = Image.new(mask_image.mode,mask_image.size)
-    newimg.putdata(mask)
+    mask_img = Image.new(mask_image.mode,mask_image.size)
+    mask_img.putdata(mask)
             
     #rr, gg, bb = mask_image.split()
     #print('bb: ', bb)
@@ -396,7 +396,7 @@ def lambda_handler(event, context):
         Bucket=s3_bucket,
         Key="mask-image-enhanced.jpg",
         ContentType='image/jpeg',
-        Body=newimg
+        Body=base64.b64decode(mask_img)
     )
     #print('response: ', response)
 
