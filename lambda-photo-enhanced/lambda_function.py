@@ -401,6 +401,8 @@ def lambda_handler(event, context):
             # show a color from npImage using for statement
             for i, color in enumerate(npImage):
                 for j, c in enumerate(color):
+                    print('c: ', c)
+                    print('newMaskImage[i, j]: ', newMaskImage[i, j])
                     if c != newMaskImage[i,j]:
                         npImage[i,j] = newMaskImage[i,j]
                         print('i, j: ', i, j)
