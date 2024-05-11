@@ -401,11 +401,7 @@ def lambda_handler(event, context):
             # show a color from np_image using for statement
             for i, row in enumerate(np_mask):
                 for j, c in enumerate(row):
-                    print('c: ', c)
-                    print('np_mask[i, j]: ', np_image[i, j])
-                    # c와 newMaskImage는 color로서 [255 255 255]와 같은 값을 가집니다. 두 값을 비교합니다.
-                    
-                    if np.array_equal(c, np.array([255, 255, 255]))==False:
+                    if np.array_equal(c, np.array([0, 0, 0])):
                         print(f'({i}, {j}): {np_image[i, j]}')
                         np_image[i, j] = np.array([0, 0, 0])
                     
