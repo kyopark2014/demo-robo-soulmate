@@ -407,27 +407,34 @@ def lambda_handler(event, context):
     
     #merged_mask = mask_image.convert('RGB')
     
+    
+    im = Image.fromarray(npImage)
+    pixels = BytesIO()
+    im.save(pixels, "png")
+
+    
+    
     # bucket의 key에서 이름을 추출 
     fname = 'mask'+key.split('/')[-1]
     
-    buffer = BytesIO()
-    mask_image.save(buffer, format='jpeg', quality=100)
-    pixels = buffer.getvalue()
-    for i, color in enumerate(pixels):        
-        print('color: ', color)
-        if i>10: 
-            break
+    #buffer = BytesIO()
+    #mask_image.save(buffer, format='jpeg', quality=100)
+    #pixels = buffer.getvalue()
+    #for i, color in enumerate(pixels):        
+    #    print('color: ', color)
+    #    if i>10: 
+    #        break
         
     # pixels.seek(0)
-    
+    pixels.seek(0, 0)
     
     
     # upload
     response = s3_client.put_object(
         Bucket=s3_bucket,
         Key='photo/'+fname,
-        ContentType='image/jpeg',
-        Body=mask_image
+        ContentType='image/png',
+        Body=pixels
     )
     #print('response: ', response)
 
