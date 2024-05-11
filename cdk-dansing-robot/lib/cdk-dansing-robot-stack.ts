@@ -852,7 +852,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
       }
     });     
   
-    const photoEnhanced = api.root.addResource("photo");
+    const photoEnhanced = api.root.addResource("photo-enhanced");
     photoEnhanced.addMethod('POST', new apiGateway.LambdaIntegration(lambdaPhotoEnhanced, {
         passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
         credentialsRole: role,
@@ -871,7 +871,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
         ]
     });
     
-    distribution.addBehavior("/photo", new origins.RestApiOrigin(api), {
+    distribution.addBehavior("/photo-enhanced", new origins.RestApiOrigin(api), {
         cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
         allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,
         viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
