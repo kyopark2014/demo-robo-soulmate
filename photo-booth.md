@@ -111,3 +111,9 @@ POST  https://dxt1m1ae24b28.cloudfront.net/photo
 ![photo_86db851a-f8dd-11ee-872f-c90482ae9123_3](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/770a9d66-b054-49a7-8ff7-aaaea6d1155b)
 
 ![photo_86db851a-f8dd-11ee-872f-c90482ae9123_4](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/a0c6e6b3-08d8-493d-a4cc-1e019ffa030a)
+
+
+## Multiple Faces
+
+그림에 있는 여러 이미지의 마스크를 통합하여 하나의 마스크로 처리합니다.
+
