@@ -424,10 +424,14 @@ def lambda_handler(event, context):
     
     print('mask: ', mask)
     
-    W = (0, 0, 0)
-    B = (255, 255, 255)
-    np_image = np.where(mask == True, W, B)
-    print('np_image: ', np_image)
+    # maks의 값이 True이면, np_image의 값은 하얀색이임
+    
+    
+    
+    #W = (0, 0, 0)
+    #B = (255, 255, 255)
+    #np_image = np.where(mask == True, W, B)
+    #print('np_image: ', np_image)
             
     for i, row in enumerate(mask):
         for j, value in enumerate(row):
