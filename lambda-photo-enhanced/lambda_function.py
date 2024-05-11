@@ -347,7 +347,7 @@ def lambda_handler(event, context):
     mergedMask = Image.new('RGB', (imgWidth, imgHeight), (255, 255, 255))
     mask = []
     
-    for faceDetail in response['FaceDetails']:
+    for i, faceDetail in enumerate(response['FaceDetails']):
         print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
               + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
 
@@ -370,17 +370,18 @@ def lambda_handler(event, context):
         predictions = invoke_endpoint(endpoint_name, inputs)
         print('predictions: ', predictions)
         
-        mask_image = decode_image(json.loads(predictions)['mask_image'])    
-        print('mask_image: ', mask_image.getdata())
-    
-    imgData = mask_image.getdata()
-    for i, color in enumerate(imgData):        
-        if color != (255, 255, 255):
-            mask.append(0, 0, 0)
+        mask_image = decode_image(json.loads(predictions)['mask_image']) 
+        if i==0:               
+            mask = mask_image.getdata()
         else:
-            mask.append(255, 255, 255)
-                
-    print('mask: ', mask)
+            imgData = mask_image.getdata()
+            for j, color in enumerate(imgData):        
+                if color != (255, 255, 255):
+                    mask[j](0, 0, 0)
+                else:
+                    mask[j](255, 255, 255)
+                        
+        print(f'i = {i}, mask: {mask}')
             
     #rr, gg, bb = mask_image.split()
     #print('bb: ', bb)
