@@ -838,6 +838,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     );
 
     // Lambda - photo generation (enhanced)
+    secrets.grantRead(roleLambda)
     const lambdaPhotoEnhanced = new lambda.DockerImageFunction(this, `lambda-photo-enhanced-for-${projectName}`, {
       description: 'lambda for Enhanced Photo Generation',
       functionName: `lambda-photo-enhanced-for-${projectName}`,
@@ -888,8 +889,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
       }),
     );
     
-    // Lambda - multiple photo generation
-    secrets.grantRead(roleLambda)
+    // Lambda - multiple photo generation    
     const lambdaMultiPhoto = new lambda.DockerImageFunction(this, `lambda-multi-photo-for-${projectName}`, {
       description: 'lambda for Multi Photo Generation',
       functionName: `lambda-multi-photo-for-${projectName}`,
