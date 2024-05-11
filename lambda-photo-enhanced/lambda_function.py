@@ -330,7 +330,7 @@ def lambda_handler(event, context):
         k = 2        
     print('# of output images: ', k)
     """
-    k = 3
+    k = 1
 
     imgWidth, imgHeight = img.size           
     outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
