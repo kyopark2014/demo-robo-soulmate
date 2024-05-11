@@ -405,7 +405,7 @@ def lambda_handler(event, context):
                     print('np_mask[i, j]: ', np_image[i, j])
                     # c와 newMaskImage는 color로서 [255 255 255]와 같은 값을 가집니다. 두 값을 비교합니다.
                     
-                    if np.compare_chararrays(c, np_image[i, j]) == 0:
+                    if np.array_equal(c, np.array([255, 255, 255])==False:
                         print(f'({i}, {j}): {np_image[i, j]}')
                         np_image[i, j] = np.array([0, 0, 0])
                     
