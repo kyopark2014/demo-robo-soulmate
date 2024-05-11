@@ -420,11 +420,17 @@ def lambda_handler(event, context):
             print()
             
             m1 = np.all(np_mask == (0, 0, 0), axis=2)
-            #m2 = np.all(np_image == (0, 0, 0), axis=2)
+            m2 = np.all(np_image == (0, 0, 0), axis=2)
             
-            np_image = np.where(m1 == True, (0,0,0), (255,255,255))
-            print('np_image: ', np_image)
+            #np_image = np.where(m1 == True, (0,0,0), (255,255,255))
+            #print('np_image: ', np_image)
             
+            for i, row in enumerate(m1):
+                for j, value in enumerate(row):
+                    if value == True:
+                        np_image[i, j] = (0, 0, 0)
+                    else:
+                        np_image[i, j] = (255, 255, 255)
             
             #comp = mask_image == np_mask
             #print('comp: ', comp)
