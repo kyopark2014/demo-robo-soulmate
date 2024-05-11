@@ -369,8 +369,12 @@ def lambda_handler(event, context):
         
     mask_image = decode_image(json.loads(predictions)['mask_image'])
     
-    rr, gg, bb = mask_image.split()
-    print('bb: ', bb)
+    #for color in mask_image.getdata():
+    #    print(color)    
+    print('mask_image: ', mask_image.getdata())
+    
+    #rr, gg, bb = mask_image.split()
+    #print('bb: ', bb)
     
     #merged_mask = mask_image.convert('RGB')
     
