@@ -422,6 +422,9 @@ def lambda_handler(event, context):
             m1 = np.all(np_mask == (0, 0, 0), axis=2)
             m2 = np.all(np_image == (0, 0, 0), axis=2)
             
+            m = np.all(np.logical_or(m1, m2), axis=2)
+            print('m: ', m)
+            
             #np_image = np.where(m1 == True, (0,0,0), (255,255,255))
             #print('np_image: ', np_image)
             
