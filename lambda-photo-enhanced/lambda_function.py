@@ -424,8 +424,8 @@ def lambda_handler(event, context):
     
     print('mask: ', mask)
             
-    #np_image = np.where(m1 == True, (0,0,0), (255,255,255))
-    #print('np_image: ', np_image)
+    np_image = np.where(mask == True, (0,0,0), (255,255,255))
+    print('np_image: ', np_image)
             
     for i, row in enumerate(mask):
         for j, value in enumerate(row):
