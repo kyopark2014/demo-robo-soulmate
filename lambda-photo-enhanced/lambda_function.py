@@ -417,18 +417,16 @@ def lambda_handler(event, context):
         else: 
             np_mask = np.array(mask_image)
             
-            comp = mask_image == np_mask
-            print('comp: ', comp)
+            #comp = mask_image == np_mask
+            #print('comp: ', comp)
             
-            comp2 = np.where(comp == False, 0, 1)
-            print('comp2: ', comp2)
-            
+            #comp2 = np.where(comp == False, 0, 1)
+            #print('comp2: ', comp2)
             
             #np.where(np_mask == (255,255,255), '+', '-')
             
             #comp = mask_image == np_mask
             #print('comp: ', comp)
-            
             
             for i, row in enumerate(np_mask):
                 for j, c in enumerate(row):
