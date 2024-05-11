@@ -258,7 +258,7 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
     
     return img_b64
 
-def parallel_process(conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential):  
+def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential):  
     boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
     
     img_b64 =  generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
@@ -277,6 +277,31 @@ def parallel_process(conn, object_img, mask_img, text_prompt, object_name, objec
     
     conn.send(url)
     conn.close()
+
+def parallel_process_for_SAM(conn, faceInfo, encode_object_image, imgWidth, imgHeight):  
+    box = faceInfo
+    left = imgWidth * box['Left']
+    top = imgHeight * box['Top']
+    print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
+    print('Left: ' + '{0:.0f}'.format(left))
+    print('Top: ' + '{0:.0f}'.format(top))
+        
+    width = imgWidth * box['Width']
+    height = imgHeight * box['Height']
+    print('Face Width: ' + "{0:.0f}".format(width))
+    print('Face Height: ' + "{0:.0f}".format(height))
+    
+    inputs = dict(
+        encode_image = encode_object_image,
+        input_box = [left, top, left+width, top+height]
+    )
+    predictions = invoke_endpoint(endpoint_name, inputs)
+    print('predictions: ', predictions)
+        
+    mask_image = decode_image(json.loads(predictions)['mask_image'])
+    
+    conn.send(mask_image)
+    conn.close()    
                     
 def lambda_handler(event, context):
     global selected_LLM
@@ -342,16 +367,46 @@ def lambda_handler(event, context):
     outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
     
     index = 1    
-    generated_urls = []    
+    
     processes = []
     parent_connections = []
-        
-    merged_mask = Image.new('RGB', (imgWidth, imgHeight), (255, 255, 255))
     
-    for i, faceDetail in enumerate(response['FaceDetails']):
+    isFirst = False
+    for faceDetail in response['FaceDetails']:
         print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
               + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
 
+        parent_conn, child_conn = Pipe()
+        parent_connections.append(parent_conn)
+        
+        parallel_process_for_SAM(child_conn, faceDetail['BoundingBox'], encode_object_image, imgWidth, imgHeight)
+
+    for process in processes:
+        process.start()
+                    
+    for parent_conn in parent_connections:
+        mask_image = parent_conn.recv()
+        
+        print('np_image: ', np_image)
+        
+        if isFirst==False:
+            np_image = np.array(mask_image)
+            # print('np_image: ', np_image)
+            isFirst = True
+        else:
+            np_mask = np.array(mask_image)
+            
+            # show a color from np_image using for statement
+            for i, row in enumerate(np_mask):
+                for j, c in enumerate(row):
+                    if np.array_equal(c, np.array([0, 0, 0])):
+                        # print(f'({i}, {j}): {c}, {np_image[i, j]}')
+                        np_image[i, j] = np.array([0, 0, 0])
+
+    for process in processes:
+        process.join()
+        
+        """        
         box = faceDetail['BoundingBox']
         left = imgWidth * box['Left']
         top = imgHeight * box['Top']
@@ -371,7 +426,8 @@ def lambda_handler(event, context):
         predictions = invoke_endpoint(endpoint_name, inputs)
         print('predictions: ', predictions)
         
-        mask_image = decode_image(json.loads(predictions)['mask_image'])         
+        mask_image = decode_image(json.loads(predictions)['mask_image'])
+        
         if i==0:
             np_image = np.array(mask_image)
             # print('np_image: ', np_image)
@@ -384,6 +440,7 @@ def lambda_handler(event, context):
                     if np.array_equal(c, np.array([0, 0, 0])):
                         # print(f'({i}, {j}): {c}, {np_image[i, j]}')
                         np_image[i, j] = np.array([0, 0, 0])
+        """
                     
     # print('np_image: ', np_image)                         
     merged_mask_image = Image.fromarray(np_image)
@@ -404,7 +461,10 @@ def lambda_handler(event, context):
 
     object_img = img_resize(object_image)
     mask_img = img_resize(merged_mask_image)
-                    
+    
+    generated_urls = []    
+    processes = []       
+    parent_connections = []         
     for i in range(k):
         parent_conn, child_conn = Pipe()
         parent_connections.append(parent_conn)
@@ -415,7 +475,7 @@ def lambda_handler(event, context):
         object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
         print('generated object_key: ', object_key)
             
-        process = Process(target=parallel_process, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential))
+        process = Process(target=parallel_process_for_outpainting, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential))
         processes.append(process)
                 
         selected_LLM = selected_LLM + 1
