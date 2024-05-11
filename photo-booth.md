@@ -117,3 +117,14 @@ POST  https://dxt1m1ae24b28.cloudfront.net/photo
 
 그림에 있는 여러 이미지의 마스크를 통합하여 하나의 마스크로 처리합니다.
 
+원본 이미지는 아래와 같습니다. 
+
+![원본](./photo-booth/multiful-faces/5faces_2024_0508_21hr.jpg)
+
+통합된 마스크는 아래와 같습니다.
+
+![Mask](./photo-booth/multiful-faces/mask_5faces_2024_0508_21hr.png)
+
+이를 바탕으로 새로 생성한 아미지는 아래와 같습니다. 
+
+![생성된 이미지](./photo-booth/multiful-faces/photo_5faces_2024_0508_21hr_1.jpeg)
