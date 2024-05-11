@@ -11,7 +11,7 @@ RUN /var/lang/bin/python3.11 -m pip install --upgrade pip
 #RUN /var/lang/bin/python3 -m pip install langchain
 #RUN /var/lang/bin/python3 -m pip install langchain-community
 RUN /var/lang/bin/python3 -m pip install pillow
-
+RUN /var/lang/bin/python3 -m pip install numpy
 RUN /var/lang/bin/python3 -m pip install botocore --upgrade
 RUN /var/lang/bin/python3 -m pip install boto3 --upgrade
 

@@ -14,6 +14,7 @@ from PIL import Image
 from io import BytesIO
 from urllib import parse
 from multiprocessing import Process, Pipe
+import numpy as np
 
 s3_bucket = os.environ.get('s3_bucket') # bucket name
 s3_photo_prefix = os.environ.get('s3_photo_prefix')
@@ -47,7 +48,7 @@ def get_secret():
         print('length: ', len(access_key_id))
         #for id in access_key_id:
         #    print('id: ', id)
-        # print('access_key_id: ', access_key_id)    
+        # print('access_key_id: ', access_key_id)
 
     except Exception as e:
         raise e
@@ -371,21 +372,34 @@ def lambda_handler(event, context):
         print('predictions: ', predictions)
         
         mask_image = decode_image(json.loads(predictions)['mask_image']) 
-        if i==0:               
-            mask = mask_image.getdata()
-            print('mask: ', mask)
-        else:
-            imgData = mask_image.getdata()
-            for j, color in enumerate(imgData):        
-                if color != (255, 255, 255):
-                    mask[j] = (0, 0, 0)
-                else:
-                    mask[j] = color
+        #if i==0:               
+        #    mask = mask_image.getdata()
+        #    print('mask: ', mask)
+        #else:
+            #for i in range(mask_image.size[0]): # for every pixel:
+            #    for j in range(mask_image.size[1]):
+            #        if pixels[i,j] != (255, 0, 0):
+            #            # change to black if not red
+            #            pixels[i,j] = (0, 0 ,0)
+            
+            
+        #    imgData = mask_image.getdata()
+        #    for j, color in enumerate(imgData):        
+        #        if color != (255, 255, 255):
+        #            mask[j] = (0, 0, 0)
+        #        else:
+        #            mask[j] = color
                         
-        print(f'i = {i}, mask: {mask}')
+        #print(f'i = {i}, mask: {mask}')
         
-    mask_img = Image.new(mask_image.mode,mask_image.size)
-    mask_img.putdata(mask)
+        npImage=np.array(mask_image)
+        print('npImage: ', npImage)
+            
+        #LUT=np.zeros(256,dtype=np.uint8)
+        
+        
+    #mask_img = Image.new(mask_image.mode,mask_image.size)
+    #mask_img.putdata(mask)
             
     #rr, gg, bb = mask_image.split()
     #print('bb: ', bb)
