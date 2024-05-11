@@ -20,7 +20,12 @@ import numpy as np
 s3_bucket = os.environ.get('s3_bucket') # bucket name
 s3_photo_prefix = os.environ.get('s3_photo_prefix')
 path = os.environ.get('path')
-endpoint_name = 'sam-endpoint-2024-04-10-01-35-30'
+
+list_of_endpoints = {
+    'sam-endpoint-2024-04-10-01-35-30',
+    'sam-endpoint-2024-04-30-06-08-55'
+}
+selected_endpoint = 0
 
 profile_of_Image_LLMs = json.loads(os.environ.get('profile_of_Image_LLMs'))
 selected_LLM = 0
@@ -278,11 +283,11 @@ def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, ob
     conn.send(url)
     conn.close()
 
-def parallel_process_for_SAM(conn, faceInfo, encode_object_image, imgWidth, imgHeight):  
+def parallel_process_for_SAM(conn, faceInfo, encode_object_image, imgWidth, imgHeight, endpoint_name):  
     box = faceInfo
     left = imgWidth * box['Left']
     top = imgHeight * box['Top']
-    print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
+    
     print('Left: ' + '{0:.0f}'.format(left))
     print('Top: ' + '{0:.0f}'.format(top))
         
@@ -371,6 +376,8 @@ def lambda_handler(event, context):
     processes = []
     parent_connections = []
     
+    print('np_image: ', np_image)
+    print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
     isFirst = False
     for faceDetail in response['FaceDetails']:
         print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
@@ -379,7 +386,14 @@ def lambda_handler(event, context):
         parent_conn, child_conn = Pipe()
         parent_connections.append(parent_conn)
         
-        parallel_process_for_SAM(child_conn, faceDetail['BoundingBox'], encode_object_image, imgWidth, imgHeight)
+        endpoint_name = list_of_endpoints[selected_endpoint] 
+        print('endpoint_name: ', endpoint_name)
+        print ('selected_LLM: ', selected_LLM)
+        
+        parallel_process_for_SAM(child_conn, faceDetail['BoundingBox'], encode_object_image, imgWidth, imgHeight, endpoint_name)
+        
+        if selected_endpoint >= len(list_of_endpoints):
+            selected_endpoint = 0                
 
     for process in processes:
         process.start()
@@ -391,7 +405,6 @@ def lambda_handler(event, context):
         
         if isFirst==False:
             np_image = np.array(mask_image)
-            # print('np_image: ', np_image)
             isFirst = True
         else:
             np_mask = np.array(mask_image)
