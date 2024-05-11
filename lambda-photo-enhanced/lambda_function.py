@@ -375,7 +375,11 @@ def lambda_handler(event, context):
     
     imgData = mask_image.getdata()
     for i, color in enumerate(imgData):
-        print('color: ', color)
+        
+        if color != (255, 255, 255):
+            # imgData[i] = (255, 255, 255)
+            print('color: ', color)
+            
     #rr, gg, bb = mask_image.split()
     #print('bb: ', bb)
     
