@@ -183,7 +183,13 @@ def image_to_base64(img) -> str:
 
 def decode_image(img):
     img = img.encode("utf8") if type(img) == "bytes" else img
+    
+    print('encoded image: ', img)
+    
     buff = BytesIO(base64.b64decode(img))
+    
+    print('base64 image: ', base64.b64decode(img))
+    
     image = Image.open(buff)
     return image
 
@@ -365,7 +371,8 @@ def lambda_handler(event, context):
         
     mask_image = decode_image(json.loads(predictions)['mask_image'])
     
-    merged_mask = mask_image.convert('RGB')
+    
+    #merged_mask = mask_image.convert('RGB')
     
     # upload
     response = s3_client.put_object(
