@@ -386,6 +386,7 @@ def lambda_handler(event, context):
         parent_connections.append(parent_conn)
         
         print('list_of_enpoints: ', list_of_endpoints)
+        print('list_of_enpoints[0]: ', list_of_endpoints[0])
         
         endpoint_name = list_of_endpoints[selected_endpoint] 
         print('endpoint_name: ', endpoint_name)
