@@ -410,12 +410,10 @@ def lambda_handler(event, context):
     
     im = Image.fromarray(npImage)
     pixels = BytesIO()
-    im.save(pixels, "jpg")
+    im.save(pixels, "png")
 
-    
-    
-    # bucket의 key에서 이름을 추출 
-    fname = 'mask_'+key.split('/')[-1]
+        
+    fname = key.split('/')[-1].split('.')[0]
     
     #buffer = BytesIO()
     #mask_image.save(buffer, format='jpeg', quality=100)
@@ -432,8 +430,8 @@ def lambda_handler(event, context):
     # upload
     response = s3_client.put_object(
         Bucket=s3_bucket,
-        Key='photo/'+fname,
-        ContentType='image/jpg',
+        Key='photo/'+fname+'.png',
+        ContentType='image/png',
         Body=pixels
     )
     #print('response: ', response)
