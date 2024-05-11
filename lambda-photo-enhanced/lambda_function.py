@@ -361,6 +361,8 @@ def lambda_handler(event, context):
             input_box = [left, top, left+width, top+height]
         )
         predictions = invoke_endpoint(endpoint_name, inputs)
+        print('predictions: ', predictions)
+        
         mask_image = decode_image(json.loads(predictions)['mask_image'])
 
         object_img = img_resize(object_image)
