@@ -837,6 +837,56 @@ export class CdkDansingRobotStack extends cdk.Stack {
       }),
     );
 
+    // Lambda - photo generation (enhanced)
+    const lambdaPhotoEnhanced = new lambda.DockerImageFunction(this, `lambda-photo-enhanced-for-${projectName}`, {
+      description: 'lambda for Enhanced Photo Generation',
+      functionName: `lambda-photo-enhanced-for-${projectName}`,
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-photo-enhanced')),
+      timeout: cdk.Duration.seconds(300),
+      role: roleLambda,
+      environment: {
+        s3_bucket: bucketName,
+        profile_of_Image_LLMs:JSON.stringify(profile_of_Image_LLMs),
+        s3_photo_prefix: s3_photo_prefix,
+        path: 'https://'+domainName+'/',   
+      }
+    });     
+  
+    const photoEnhanced = api.root.addResource("photo");
+    photoEnhanced.addMethod('POST', new apiGateway.LambdaIntegration(lambdaPhotoEnhanced, {
+        passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+        credentialsRole: role,
+        integrationResponses: [{
+            statusCode: '200',
+        }],
+        proxy: true,
+    }), {
+        methodResponses: [
+            {
+                statusCode: '200',
+                responseModels: {
+                    'application/json': apiGateway.Model.EMPTY_MODEL,
+                },
+            }
+        ]
+    });
+    
+    distribution.addBehavior("/photo", new origins.RestApiOrigin(api), {
+        cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+        allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
+    s3Bucket.grantReadWrite(lambdaPhotoEnhanced);
+    lambdaPhotoEnhanced.role?.attachInlinePolicy( // add sagemaker policy
+      new iam.Policy(this, 'sagemaker-policy-for-photo-enhanced', {
+        statements: [SageMakerPolicy],
+      }),
+    );
+    lambdaPhotoEnhanced.role?.attachInlinePolicy( // add rekognition policy
+      new iam.Policy(this, 'rekognition-policy-for-photo-enhanced', {
+        statements: [RekognitionPolicy],
+      }),
+    );
     
     // Lambda - multiple photo generation
     secrets.grantRead(roleLambda)
@@ -851,7 +901,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
         s3_bucket: bucketName,
         profile_of_Image_LLMs:JSON.stringify(profile_of_Image_LLMs),
         s3_photo_prefix: s3_photo_prefix,
-        path: 'https://'+domainName+'/',   
+        path: 'https://'+domainName+'/',
       }
     });     
   
