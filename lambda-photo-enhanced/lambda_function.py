@@ -417,6 +417,8 @@ def lambda_handler(event, context):
         else: 
             np_mask = np.array(mask_image)
             
+            print(np.all(np_mask == (255, 255, 255), axis=2))
+            
             #comp = mask_image == np_mask
             #print('comp: ', comp)
             
