@@ -403,7 +403,7 @@ def lambda_handler(event, context):
     for parent_conn in parent_connections:
         mask_image = parent_conn.recv()
         
-        print('merge maske')      
+        print('merge current mask')      
         if isFirst==False:       
             np_image = np.array(mask_image)
             #print('np_image: ', np_image)
