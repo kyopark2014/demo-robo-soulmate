@@ -182,13 +182,11 @@ def image_to_base64(img) -> str:
         raise ValueError(f"Expected str (filename) or PIL Image. Got {type(img)}")
 
 def decode_image(img):
-    img = img.encode("utf8") if type(img) == "bytes" else img
+    img = img.encode("utf8") if type(img) == "bytes" else img    
+    # print('encoded image: ', img)
     
-    print('encoded image: ', img)
-    
-    buff = BytesIO(base64.b64decode(img))
-    
-    print('base64 image: ', base64.b64decode(img))
+    buff = BytesIO(base64.b64decode(img))    
+    # print('base64 image: ', base64.b64decode(img))
     
     image = Image.open(buff)
     return image
@@ -371,17 +369,19 @@ def lambda_handler(event, context):
         
     mask_image = decode_image(json.loads(predictions)['mask_image'])
     
+    rr, gg, bb = mask_image.split()
+    print('bb: ', bb)
     
     #merged_mask = mask_image.convert('RGB')
     
     # upload
-    response = s3_client.put_object(
-        Bucket=s3_bucket,
-        Key="image-enhanced.jpg",
-        ContentType='image/jpeg',
-        Body=mask_image
-    )
-    print('response: ', response)
+    #response = s3_client.put_object(
+    #    Bucket=s3_bucket,
+    #    Key="image-enhanced.jpg",
+    #    ContentType='image/jpeg',
+    #    Body=mask_image
+    #)
+    #print('response: ', response)
 
     object_img = img_resize(object_image)
     mask_img = img_resize(mask_image)
