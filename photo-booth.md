@@ -90,10 +90,29 @@ POST  https://dxt1m1ae24b28.cloudfront.net/photo
 }
 ```
 
+이미지에서 얼굴 형상만 추출하기 위하여 Rekognitin으로 face 위치에 대한 box의 위치를 얻은 후에, SAM을 이용하여 아래와 같이 Mask 이미지를 추출합니다. 
 
+```python
+def parallel_process_for_SAM(conn, faceInfo, encode_object_image, imgWidth, imgHeight, endpoint_name):  
+    box = faceInfo
+    left = imgWidth * box['Left']
+    top = imgHeight * box['Top']
+    
+    width = imgWidth * box['Width']
+    height = imgHeight * box['Height']
+    
+    inputs = dict(
+        encode_image = encode_object_image,
+        input_box = [left, top, left+width, top+height]
+    )
+    predictions = invoke_endpoint(endpoint_name, inputs)
+        
+    mask_image = decode_image(json.loads(predictions)['mask_image'])
+    
+    conn.send(mask_image)
+    conn.close()
+```
 
-
-생성된 이미지의 예는 아래와 같습니다.
 
 #### 원본이미지
 
@@ -115,11 +134,35 @@ POST  https://dxt1m1ae24b28.cloudfront.net/photo
 
 ## Multiple Faces
 
-그림에 있는 여러 이미지의 마스크를 통합하여 하나의 마스크로 처리합니다.
+아래와 같이 사진에 여러개의 이미지가 있을 수 있습니다. 그림에 있는 여러 이미지의 마스크를 통합하여 하나의 마스크로 처리합니다.
 
 원본 이미지는 아래와 같습니다. 
 
 ![원본](./photo-booth/multiful-faces/5faces_2024_0508_21hr.jpg)
+
+얼굴 이미지 첫번째는 mask로 그대로 활용합니다. 이때, 그림의 (0,0,0)만 True로 처리합니다. 이후 두번째 이미지 부터는 mask와 OR 조건으로 통합합니다. 
+
+```python
+isFirst = False
+if isFirst == False:
+    np_image = np.array(mask_image)
+    mask = np.all(np_image == (0, 0, 0), axis = 2)
+    isFirst = True
+else:
+    np_image = np.array(mask_image)
+    mask_new = np.all(np_image == (0, 0, 0), axis = 2)
+    mask = np.logical_or(mask, mask_new)
+```
+
+이후, mask의 값이 True이면 (0,0,0)과 False이면 (255,255,255)로 변환하여 이미지 Mask로 활용합니다. 
+```python
+for i, row in enumerate(mask):
+    for j, value in enumerate(row):
+        if value == True:
+            np_image[i, j] = (0, 0, 0)
+        else:
+            np_image[i, j] = (255, 255, 255)
+```
 
 통합된 마스크는 아래와 같습니다.
 
