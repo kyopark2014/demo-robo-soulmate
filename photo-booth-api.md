@@ -2,6 +2,29 @@
 
 여기서는 Photo Booth 운영에 필요한 API를 정의합니다.
 
+## 이미지 생성하기
+
+아래와 같이 "/photo-api"를 이용하여 이미지 생성을 요청합니다. 파일 이름 기준으로 "_1", "_2", "_3"와 같이 3개의 파일을 생성합니다.
+
+```python
+ POST https://dxt1m1ae24b28.cloudfront.net/photo-api
+{
+    "requestId": "a123456abc",
+    "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
+    "key": "photo/5faces_2024_0508_21hr.jpg"
+}
+```
+
+이때의 결과는 아래와 같습니다.
+
+```python
+{
+    "isBase64Encoded": false,
+    "statusCode": 200,
+    "body": "{\"url_original\": \"https://dxt1m1ae24b28.cloudfront.net/photo/5faces_2024_0508_21hr.jpg\", \"url_generated\": \"[\\\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_5faces_2024_0508_21hr_1.jpeg\\\", \\\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_5faces_2024_0508_21hr_2.jpeg\\\", \\\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_5faces_2024_0508_21hr_3.jpeg\\\"]\"}"
+}
+```
+
 ## Stand Alone으로 메시지 전송하기
 
 Contrl API를 이용한 메시지 전송하기는 아래와 같습니다.
