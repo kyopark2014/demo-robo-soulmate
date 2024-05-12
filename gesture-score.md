@@ -7,7 +7,7 @@
 [lambda-score-gesture](./lambda-score-gesture/lambda_function.py)로 '/socre_gesture' API로 gesture를 전달합니다.
 
 ```java
-POST https://dxt1m1ae24b28.cloudfront.net/score_gesture
+POST https://d1r17qhj4m3dnc.cloudfront.net/score_gesture
 {
   "userId": "AI-Dancing-Robot-001",
   "requestId": "588c8731-0acf-4127-bf54-841bdc170567",
