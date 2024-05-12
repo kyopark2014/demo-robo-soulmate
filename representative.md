@@ -4,9 +4,9 @@
 
 ## 저장 및 활용
 
-저장소의 '/dashboard' 폴더에 "representative_man.jpeg"와 "representative_weman"으로 이미지를 생성한 후에, Dashboard에서 활용합니다.
+저장소의 '/dashboard' 폴더에 "man.png"와 "weman.png"으로 이미지를 생성한 후에, Dashboard에서 활용합니다.
 
-이때 수집이 필요한 통계 정보는 아래와 같습니다.
+이때 사용되는 방문자 정보는 아래와 같습니다.
 
 1) 성별: 남/여
 2) 연령
