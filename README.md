@@ -42,7 +42,7 @@ Photo Booth 운영에 필요한 API는 [photo-booth-api.md](./photo-booth-api.md
 
 ### 대표 이미지 생성하기
 
-데모 방문자의 정보를 이용하여 대표 남/여 이미지를 생성합니다. 상세한 내용은 
+데모 방문자의 정보를 이용하여 대표 남/여 이미지를 생성합니다. 상세한 내용은 [representative.md](./representative.md)을 참조합니다.
 
 ## 데모 준비
 
