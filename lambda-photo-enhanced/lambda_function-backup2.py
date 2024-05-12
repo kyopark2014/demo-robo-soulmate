@@ -424,21 +424,6 @@ def lambda_handler(event, context):
     
     print('mask: ', mask)
     
-    
-    # Glasses detection
-    target_label = 'Glasses'
-    Settings = {"GeneralLabels": {"LabelInclusionFilters":[target_label]},"ImageProperties": {"MaxDominantColors":1}}
-    print(f"target_label : {target_label}")
-    
-    response = rekognition_client.detect_labels(Image={'Bytes': val},
-        MaxLabels=15,
-        MinConfidence=0.7,
-        # Uncomment to use image properties and filtration settings
-        Features=["GENERAL_LABELS", "IMAGE_PROPERTIES"],
-        Settings=Settings
-    )
-    print('rekognition response: ', response)
-    
     for i, row in enumerate(mask):
         for j, value in enumerate(row):
             if value == True:
