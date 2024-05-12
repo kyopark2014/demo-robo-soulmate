@@ -116,61 +116,6 @@ def load_image(bucket, key):
     
     return img
 
-def show_labels(img_path, target_label=None):
-    if target_label is None:
-        Settings = {"GeneralLabels": {"LabelInclusionFilters":[]},"ImageProperties": {"MaxDominantColors":1}}
-        print(f"target_label_None : {target_label}")
-    else:
-        Settings = {"GeneralLabels": {"LabelInclusionFilters":[target_label]},"ImageProperties": {"MaxDominantColors":1}}
-        print(f"target_label : {target_label}")
-    
-    box = None
-    
-    image = Image.open(img_path).convert('RGB')
-    image = img_resize(image)
-
-    buffer = BytesIO()
-    image.save(buffer, format='jpeg', quality=100)
-    val = buffer.getvalue()
-    
-    response = rekognition_client.detect_labels(Image={'Bytes': val},
-        MaxLabels=15,
-        MinConfidence=0.7,
-        # Uncomment to use image properties and filtration settings
-        Features=["GENERAL_LABELS", "IMAGE_PROPERTIES"],
-        Settings=Settings
-    )
-
-    imgWidth, imgHeight = image.size       
-    color = 'white'
-
-    for item in response['Labels']:
-        # print(item)
-        if len(item['Instances']) > 0:
-            print(item)
-            print(item['Name'], item['Confidence'])
-
-            for sub_item in item['Instances']:
-                color = sub_item['DominantColors'][0]['CSSColor']
-                box = sub_item['BoundingBox']
-                break
-        break
-    try:
-        left = imgWidth * box['Left']
-        top = imgHeight * box['Top']
-        width = imgWidth * box['Width']
-        height = imgHeight * box['Height']
-
-        print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
-        print('Left: ' + '{0:.0f}'.format(left))
-        print('Top: ' + '{0:.0f}'.format(top))
-        print('Object Width: ' + "{0:.0f}".format(width))
-        print('Object Height: ' + "{0:.0f}".format(height))
-        return imgWidth, imgHeight, int(left), int(top), int(width), int(height), color, response
-    except:
-        print("There is no target label in the image.")
-        return _, _, _, _, _, _, _, _, _
-
 def image_to_base64(img) -> str:
     """Converts a PIL Image or local image file path to a base64 string"""
     if isinstance(img, str):
@@ -306,6 +251,44 @@ def parallel_process_for_SAM(conn, faceInfo, encode_object_image, imgWidth, imgH
     
     conn.send(mask_image)
     conn.close()    
+
+def detect_object(target_label, val, imgWidth, imgHeight):
+    Settings = {"GeneralLabels": {"LabelInclusionFilters":[target_label]},"ImageProperties": {"MaxDominantColors":1}}
+    print(f"target_label : {target_label}")
+    
+    response = rekognition_client.detect_labels(Image={'Bytes': val},
+        MaxLabels=15,
+        MinConfidence=0.7,
+        # Uncomment to use image properties and filtration settings
+        Features=["GENERAL_LABELS", "IMAGE_PROPERTIES"],
+        Settings=Settings
+    )
+    print('rekognition response: ', response)
+    
+    box = None
+    for item in response['Labels']:
+        # print(item)
+        if len(item['Instances']) > 0:
+            print(item)
+            print(item['Name'], item['Confidence'])
+
+            for sub_item in item['Instances']:
+                box = sub_item['BoundingBox']
+                break
+        break
+    
+    left = imgWidth * box['Left']
+    top = imgHeight * box['Top']
+    width = imgWidth * box['Width']
+    height = imgHeight * box['Height']
+
+    print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
+    print('Left: ' + '{0:.0f}'.format(left))
+    print('Top: ' + '{0:.0f}'.format(top))
+    print('Object Width: ' + "{0:.0f}".format(width))
+    print('Object Height: ' + "{0:.0f}".format(height))
+    
+    return left, top, width, height
                     
 def lambda_handler(event, context):
     global selected_credential, selected_LLM
@@ -424,53 +407,20 @@ def lambda_handler(event, context):
     
     print('mask: ', mask)
     
-    
-    # Glasses detection
-    target_label = 'Glasses'
-    Settings = {"GeneralLabels": {"LabelInclusionFilters":[target_label]},"ImageProperties": {"MaxDominantColors":1}}
-    print(f"target_label : {target_label}")
-    
-    response = rekognition_client.detect_labels(Image={'Bytes': val},
-        MaxLabels=15,
-        MinConfidence=0.7,
-        # Uncomment to use image properties and filtration settings
-        Features=["GENERAL_LABELS", "IMAGE_PROPERTIES"],
-        Settings=Settings
-    )
-    print('rekognition response: ', response)
-    
-    box = None
-    for item in response['Labels']:
-        # print(item)
-        if len(item['Instances']) > 0:
-            print(item)
-            print(item['Name'], item['Confidence'])
-
-            for sub_item in item['Instances']:
-                color = sub_item['DominantColors'][0]['CSSColor']
-                box = sub_item['BoundingBox']
-                break
-        break
-    
-    left = imgWidth * box['Left']
-    top = imgHeight * box['Top']
-    width = imgWidth * box['Width']
-    height = imgHeight * box['Height']
-
-    print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
-    print('Left: ' + '{0:.0f}'.format(left))
-    print('Top: ' + '{0:.0f}'.format(top))
-    print('Object Width: ' + "{0:.0f}".format(width))
-    print('Object Height: ' + "{0:.0f}".format(height))
-    
-    
     for i, row in enumerate(mask):
         for j, value in enumerate(row):
             if value == True:
                 np_image[i, j] = (0, 0, 0)
             else:
                 np_image[i, j] = (255, 255, 255)
-            
+    
+    # Glasses detection
+    target_label = 'Glasses'
+    left, top, width, height = detect_object(target_label, val, imgWidth, imgHeight)
+    
+    for i in range(width):
+        for j in range(height):
+            np_image[top+j, left+i] = (0, 0, 0)
             
             #comp2 = np.where(comp == False, 0, 1)
             #print('comp2: ', comp2)            
