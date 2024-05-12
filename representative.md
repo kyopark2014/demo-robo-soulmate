@@ -50,3 +50,13 @@ The face of a Korean woman in her early 30s. A face that smiles 80 percent of th
 ```text
 POST https://d1r17qhj4m3dnc.cloudfront.net/representative
 ```
+
+이때의 결과는 아래와 같습니다. dashboard 이하에 "man.png", "weman.png" 파일을 생성합니다. 기존 파일이 있을 경우에 업데이트 합니다.
+
+```java
+{
+    "isBase64Encoded": false,
+    "statusCode": 200,
+    "body": "{\"request_id\": \"0e76a000-10b4-11ef-93ad-63a9feb2230b\", \"generated_urls\": [\"https://d1r17qhj4m3dnc.cloudfront.net/dashboard/man.png\", \"https://d1r17qhj4m3dnc.cloudfront.net/dashboard/weman.png\"]}"
+}
+```
