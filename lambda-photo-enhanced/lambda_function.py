@@ -426,17 +426,11 @@ def lambda_handler(event, context):
     # detect glasses
     target_label = 'Glasses'
     np_image= detect_object(target_label, val, imgWidth, imgHeight, np_image)
-        
     
-            
-    #target_label = 'Sunglasses'
-    #left, top, width, height = detect_object(target_label, val, imgWidth, imgHeight)
-        
-    #for i in range(width):
-    #    for j in range(height):
-    #        np_image[top+j, left+i] = (0, 0, 0)
-                          
-    # print('np_image: ', np_image)                         
+    target_label = 'Sunglasses'
+    np_image= detect_object(target_label, val, imgWidth, imgHeight, np_image)                
+    # print('np_image: ', np_image)
+    
     merged_mask_image = Image.fromarray(np_image)
             
     # upload mask image for debugging
