@@ -33,12 +33,16 @@ Photo Booth 운영에 필요한 API는 [photo-booth-api.md](./photo-booth-api.md
 
 ### Robot Commend의 수행
 
-미리 예약된 명령어에 대해서는 LLM에 대한 질의없이 바로 해당 명령어를 수행합니다. [robot-commend.md](https://github.com/kyopark2014/demo-ai-dansing-robot/blob/main/robot-commend.md)에서는 예약어 등록방법에 대해 설명하고 있습니다.
+미리 예약된 명령어에 대해서는 LLM에 대한 질의없이 바로 해당 명령어를 수행합니다. [robot-commend.md](./robot-commend.md)에서는 예약어 등록방법에 대해 설명하고 있습니다.
 
 
 ### Game 상태 전달
 
 [game-status.md](./game-status.md)와 같이 Game의 "start", "end"와 같은 이벤트를 모든 client에 전달할 수 있습니다.
+
+### 대표 이미지 생성하기
+
+데모 방문자의 정보를 이용하여 대표 남/여 이미지를 생성합니다. 상세한 내용은 
 
 ## 데모 준비
 
