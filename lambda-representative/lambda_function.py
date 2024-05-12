@@ -61,7 +61,7 @@ def lambda_handler(event, context):
         },
         "imageGenerationConfig": {
             "numberOfImages": 1,
-            "quality": "ultra", # standard, premium
+            "quality": "premium", # standard, premium
             "height": 512,
             "width": 512,
             "cfgScale": cfgScale,
