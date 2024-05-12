@@ -176,7 +176,8 @@ for i, row in enumerate(mask):
 
 SAM으로 얼굴인식시에 안경에 대한 glasses 처리가 되지 않습니다.
 
-![Mask](./photo-booth/glasses/mask_ee9510a5-8049-4ae0-8ec2-6ae043df040d.png)
+<img src="./photo-booth/glasses/mask_ee9510a5-8049-4ae0-8ec2-6ae043df040d.png" width="500">
+
 
 이를 Rekognition을 이용해 처리합니다.
 
@@ -215,19 +216,20 @@ def detect_object(target_label, val, imgWidth, imgHeight, np_image):
 
 새로운 Mask 적용 후에 결과는 아래와 같습니다.
 
-![Modified Mask](./photo-booth/glasses/fixed_mask_ee9510a5-8049-4ae0-8ec2-6ae043df040d.png)
+![Modified Mask]()
 
+<img src="./photo-booth/glasses/fixed_mask_ee9510a5-8049-4ae0-8ec2-6ae043df040d.png" width="500">
 
 실제 구현된 예는 아래와 같습니다.
 
 - 원본 이미지
-<img src="./photo-booth/glasses/faces2024_0502_2202.jpg" width="400">
+<img src="./photo-booth/glasses/faces2024_0502_2202.jpg" width="500">
 
 - 마스크 이미지
-<img src="./photo-booth/glasses/mask_faces2024_0502_2202.png" width="400">
+<img src="./photo-booth/glasses/mask_faces2024_0502_2202.png" width="500">
 
 - 최종 결과
-<img src="./photo-booth/glasses/photo_faces2024_0502_2202_1.jpeg" width="400">
+<img src="./photo-booth/glasses/photo_faces2024_0502_2202_1.jpeg" width="500">
 
   
 
