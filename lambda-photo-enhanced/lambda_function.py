@@ -69,6 +69,8 @@ selected_credential = 0
   
 def get_client(profile_of_Image_LLMs, selected_credential):
     global selected_LLM
+    print('selected_LLM: ', selected_LLM)
+    print('length of profile_of_Image_LLMs: ', len(profile_of_Image_LLMs))
     
     profile = profile_of_Image_LLMs[selected_LLM]
     bedrock_region =  profile['bedrock_region']
@@ -94,6 +96,8 @@ def get_client(profile_of_Image_LLMs, selected_credential):
     selected_LLM = selected_LLM + 1
     if selected_LLM > len(profile_of_Image_LLMs):
         selected_LLM = 0
+        
+    print('new selected_LLM: ', selected_LLM)
         
     return boto3_bedrock, modelId
 
