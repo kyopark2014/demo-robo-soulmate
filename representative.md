@@ -6,6 +6,15 @@
 
 저장소의 '/dashboard' 폴더에 "representative_man.jpeg"와 "representative_weman"으로 이미지를 생성한 후에, Dashboard에서 활용합니다.
 
+이때 수집이 필요한 통계 정보는 아래와 같습니다.
+
+1) 성별: 남/여
+2) 연령
+3) 표정: smile
+4) 안경 착용 여부
+5) 눈뜨고 있는지 여부
+6) 감정: emotion
+
 ## 이미지 생성 방법
 
 1) DynamoDB에서 아래와 같은 정보를 추출합니다. 
