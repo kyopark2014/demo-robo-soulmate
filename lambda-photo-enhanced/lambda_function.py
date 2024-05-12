@@ -405,16 +405,19 @@ def lambda_handler(event, context):
             
             mask = np.logical_or(mask, mask_new)
     
+    for process in processes:
+        process.join()
+
+    # update mask        
     print('mask: ', mask)
-    
     for i, row in enumerate(mask):
         for j, value in enumerate(row):
             if value == True:
                 np_image[i, j] = (0, 0, 0)
             else:
                 np_image[i, j] = (255, 255, 255)
-    
-    # Glasses detection
+        
+    # detect glasses
     target_label = 'Glasses'
     left, top, width, height = detect_object(target_label, val, imgWidth, imgHeight)
     
@@ -430,10 +433,7 @@ def lambda_handler(event, context):
             #    for j, c in enumerate(row):
             #        if np.array_equal(c, np.array([0, 0, 0])):
             #            # print(f'({i}, {j}): {c}, {np_image[i, j]}')
-            #            np_image[i, j] = np.array([0, 0, 0])
-
-    for process in processes:
-        process.join()
+            #            np_image[i, j] = np.array([0, 0, 0])    
         
         """        
         box = faceDetail['BoundingBox']
