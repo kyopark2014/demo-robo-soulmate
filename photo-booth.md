@@ -132,7 +132,7 @@ def parallel_process_for_SAM(conn, faceInfo, encode_object_image, imgWidth, imgH
 ![photo_86db851a-f8dd-11ee-872f-c90482ae9123_4](https://github.com/kyopark2014/demo-ai-dansing-robot/assets/52392004/a0c6e6b3-08d8-493d-a4cc-1e019ffa030a)
 
 
-## Multiple Faces
+## Multiple Faces에 대한 처리
 
 아래와 같이 사진에 여러개의 이미지가 있을 수 있습니다. 그림에 있는 여러 이미지의 마스크를 통합하여 하나의 마스크로 처리합니다.
 
@@ -172,7 +172,7 @@ for i, row in enumerate(mask):
 
 ![생성된 이미지](./photo-booth/multiful-faces/photo_5faces_2024_0508_21hr_1.jpeg)
 
-## Glasses에 대한 처리 방안
+## Glasses에 대한 처리
 
 SAM으로 얼굴인식시에 안경에 대한 glasses 처리가 되지 않습니다.
 
