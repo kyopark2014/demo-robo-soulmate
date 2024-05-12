@@ -3,11 +3,15 @@ import boto3
 import os
 from urllib import parse
 import uuid
+import traceback
 
 s3_photo_prefix = os.environ.get('s3_photo_prefix')
+bucketName = os.environ.get('bucketName')        
 path = os.environ.get('path')        
 sqsUrl = os.environ.get('sqsUrl')
 sqs_client = boto3.client('sqs')
+
+tableName = 'EmotionDetailInfo-3d2nq2n4sfcqnfelmjj3n3ycje-dev'
 
 def lambda_handler(event, context):
     print('event: ', event)
@@ -15,7 +19,21 @@ def lambda_handler(event, context):
     requestId = event["requestId"]
     print('requestId: ', requestId)
 
-    bucket = event["bucket"]   
+    dynamodb_client = boto3.client('dynamodb')
+    try:
+        resp = dynamodb_client.scan(
+            TableName=tableName
+        )
+        print('resp: ', resp)
+    except Exception as ex:
+        err_msg = traceback.format_exc()
+        print('err_msg: ', err_msg)
+        raise Exception ("Not able to write into dynamodb")        
+    print('resp, ', resp)
+    
+    
+    """
+    bucket = bucketName 
     key = event["key"]   
 
     # get filename
@@ -50,29 +68,14 @@ def lambda_handler(event, context):
     
     eventId = str(uuid.uuid1())
     print('eventId: ', eventId)
-    
-    # push to SQS
-    try:
-        print('sqsUrl: ', sqsUrl)            
-            
-        sqs_client.send_message(  # fifo
-            QueueUrl=sqsUrl, 
-            MessageAttributes={},
-            MessageDeduplicationId=eventId,
-            MessageGroupId="photoApi",
-            MessageBody=json.dumps(message)
-        )
-        print('Successfully push the queue message: ', json.dumps(message))
-            
-    except Exception as e:
-        print('Fail to push the queue message: ', e)
+    """
     
     result = {            
-        "url_original": url_original,
-        "url_generated": json.dumps(generated_urls)
+        "url_man": "",
+        "url_weman": ""
     }
     print('result: ', result)
-            
+    
     return {
         "isBase64Encoded": False,
         'statusCode': 200,
