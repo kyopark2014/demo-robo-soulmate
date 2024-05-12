@@ -285,10 +285,10 @@ def detect_object(target_label, val, imgWidth, imgHeight, np_image):
                 height = int(imgHeight * box['Height'])
 
                 print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
-                print(f"Left: ' + '{left}")
-                print(f"Top: ' + '{top}")          
-                print(f"Object Width: ' + {width}")
-                print(f"Object Height: ' + {height}")
+                print(f"Left: {left}")
+                print(f"Top: {top}")          
+                print(f"Object Width: {width}")
+                print(f"Object Height: {height}")
                 
                 for i in range(width):
                     for j in range(height):
