@@ -15,6 +15,61 @@
 5) 눈뜨고 있는지 여부
 6) 감정: emotion
 
+조회되는 데이터 형태는 아래와 같습니다.
+
+```java
+{
+   "mustache":{
+      "BOOL":false
+   },
+   "generation":{
+      "S":"young-adult"
+   },
+   "beard":{
+      "BOOL":false
+   },
+   "mouthOpen":{
+      "BOOL":false
+   },
+   "time":{
+      "S":"2024-05-10 21:15:44"
+   },
+   "bucket":{
+      "S":"storage-for-demo-dansing-robot-533267442321-ap-northeast-2"
+   },
+   "eyesOpen":{
+      "BOOL":true
+   },
+   "name":{
+      "S":"e73da0d5-a333-44f6-a69b-7e0ad5b1e925"
+   },
+   "gender":{
+      "S":"Female"
+   },
+   "emotions":{
+      "S":"CALM"
+   },
+   "sunglasses":{
+      "BOOL":false
+   },
+   "smile":{
+      "BOOL":false
+   },
+   "id":{
+      "S":"e73da0d5-a333-44f6-a69b-7e0ad5b1e925"
+   },
+   "key":{
+      "S":"profile/18ab0cb9-f7bb-44a8-b3ad-c6907c215e50.jpeg"
+   },
+   "eyeglasses":{
+      "BOOL":true
+   },
+   "age":{
+      "N":"23"
+   }
+}
+```
+
 ## 이미지 생성 방법
 
 1) DynamoDB에서 방문자 정보를 추출합니다. 
