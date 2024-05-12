@@ -5,7 +5,7 @@
 게임 시작을 전달하는 event는 아래와 같습니다.
 
 ```java
-POST  https://dxt1m1ae24b28.cloudfront.net/redis
+POST  https://d1r17qhj4m3dnc.cloudfront.net/redis
 {
 	"userId": "all",
 	"state": "start"
@@ -15,7 +15,7 @@ POST  https://dxt1m1ae24b28.cloudfront.net/redis
 게임 종료를 알리는 event는 아래와 같습니다.
 
 ```java
-POST  https://dxt1m1ae24b28.cloudfront.net/redis
+POST  https://d1r17qhj4m3dnc.cloudfront.net/redis
 {
 	"userId": "all",
   	"state": "end"
