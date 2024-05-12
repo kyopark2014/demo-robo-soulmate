@@ -7,7 +7,7 @@
 아래와 같이 "/photo-api"를 이용하여 이미지 생성을 요청합니다. 파일 이름 기준으로 "_1", "_2", "_3"와 같이 3개의 파일을 생성합니다.
 
 ```python
-POST https://dxt1m1ae24b28.cloudfront.net/photo-api
+POST https://d1r17qhj4m3dnc.cloudfront.net/photo-api
 {
     "requestId": "a123456abc",
     "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
@@ -21,7 +21,7 @@ POST https://dxt1m1ae24b28.cloudfront.net/photo-api
 {
     "isBase64Encoded": false,
     "statusCode": 200,
-    "body": "{\"url_original\": \"https://dxt1m1ae24b28.cloudfront.net/photo/5faces_2024_0508_21hr.jpg\", \"url_generated\": \"[\\\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_5faces_2024_0508_21hr_1.jpeg\\\", \\\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_5faces_2024_0508_21hr_2.jpeg\\\", \\\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_5faces_2024_0508_21hr_3.jpeg\\\"]\"}"
+    "body": "{\"url_original\": \"https://d1r17qhj4m3dnc.cloudfront.net/photo/5faces_2024_0508_21hr.jpg\", \"url_generated\": \"[\\\"https://d1r17qhj4m3dnc.cloudfront.net/photo/photo_5faces_2024_0508_21hr_1.jpeg\\\", \\\"https://d1r17qhj4m3dnc.cloudfront.net/photo/photo_5faces_2024_0508_21hr_2.jpeg\\\", \\\"https://d1r17qhj4m3dnc.cloudfront.net/photo/photo_5faces_2024_0508_21hr_3.jpeg\\\"]\"}"
 }
 ```
 
@@ -30,7 +30,7 @@ POST https://dxt1m1ae24b28.cloudfront.net/photo-api
 Contrl API를 이용한 메시지 전송하기는 아래와 같습니다.
 
 ```text
-POST https://dxt1m1ae24b28.cloudfront.net/control
+POST https://d1r17qhj4m3dnc.cloudfront.net/control
 {
   "type": "text",
   "user_id": "AI-Dancing-Robot-007",
@@ -52,7 +52,7 @@ POST https://dxt1m1ae24b28.cloudfront.net/control
 아래처럼 '/control'을 이용해서 json으로 된 commend를 전송합니다. 
 
 ```text
-POST  https://dxt1m1ae24b28.cloudfront.net/control
+POST  https://d1r17qhj4m3dnc.cloudfront.net/control
 {
   "type": "commend",
   "user_id": "AI-Dancing-Robot-007",
@@ -66,7 +66,7 @@ POST  https://dxt1m1ae24b28.cloudfront.net/control
 패드에 있는 포토앱에서 'Start' 버튼 선택하면 Welcome 메시지를 전송합니다. 로봇의 아이디가 "AI-Dancing-Robot-001"인 경우에 아래와 같이 "state"를 "start-photo"로 전송합니다.
 
 ```text
-POST https://dxt1m1ae24b28.cloudfront.net/redis
+POST https://d1r17qhj4m3dnc.cloudfront.net/redis
 {
 	"userId": "AI-Dancing-Robot-001",
 	"state": "start-photo"
@@ -82,7 +82,7 @@ POST https://dxt1m1ae24b28.cloudfront.net/redis
 패드에 있는 포토앱에서 'End' 버튼 선택하면 종료 메시지를 전송합니다. 이때에 채팅앱은 "잘가! 즐거운 하루 보내!"라고 텍스트와 음성으로 방문자에게 알려줍니다.
 
 ```text
-HTTP POST https://dxt1m1ae24b28.cloudfront.net/redis
+HTTP POST https://d1r17qhj4m3dnc.cloudfront.net/redis
 {
 	"userId": "AI-Dancing-Robot-001",
 	"state": "end-photo"
@@ -94,7 +94,7 @@ HTTP POST https://dxt1m1ae24b28.cloudfront.net/redis
 로봇에게 보내는 메시지를 위한 API를 정의합니다. state를 "broadcast"로 보내면 로봇에 해당 메시지를 출력합니다.
 
 ```text
-HTTP POST https://dxt1m1ae24b28.cloudfront.net/redis
+HTTP POST https://d1r17qhj4m3dnc.cloudfront.net/redis
 {
     "userId": "AI-Dancing-Robot-kyoungsu",
     "state": "broadcast", 
@@ -107,7 +107,7 @@ HTTP POST https://dxt1m1ae24b28.cloudfront.net/redis
 감정(emotion) 분석용 API는 아래와 같습니다. 
 
 ```text
-HTTP POST https://dxt1m1ae24b28.cloudfront.net/emotion
+HTTP POST https://d1r17qhj4m3dnc.cloudfront.net/emotion
 바이너리 이미지
 ```
 
