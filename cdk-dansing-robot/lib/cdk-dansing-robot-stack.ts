@@ -1286,7 +1286,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     s3Bucket.grantReadWrite(lambdaGesture);
 
     // DynamoDB Permission
-    
+
     // lambda for lambdaRepresentative
     const lambdaRepresentative = new lambda.Function(this, `lambda-representative-for-${projectName}`, {
       description: 'lambda for representative',
@@ -1297,7 +1297,8 @@ export class CdkDansingRobotStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(300),
       environment: {
         bucketName: s3Bucket.bucketName,
-        path: 'https://'+domainName+'/'
+        path: 'https://'+domainName+'/',
+        profile_of_Image_LLMs:JSON.stringify(profile_of_Image_LLMs),
       }
     });
 

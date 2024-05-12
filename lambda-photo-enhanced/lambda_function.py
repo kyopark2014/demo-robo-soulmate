@@ -177,7 +177,7 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
         },                                                 
         "imageGenerationConfig": {
             "numberOfImages": 1,
-            "quality": "premium",
+            "quality": "ultra",  # standard, premium, ultra
             # "quality": "standard",
             "cfgScale": cfgScale,
             # "height": height,
