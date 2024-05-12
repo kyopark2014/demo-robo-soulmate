@@ -111,17 +111,17 @@ def lambda_handler(event, context):
     k = 1
     modelId = profile['model_id']
     text_prompt = "The face of a Korean man in his early 30s. A face that smiles 80 percent of the time. No glasses, eyes open, 75 percent of the time. his emotion is mainly Calm. He loves puppy and IT Technology."
-    gender = 'man'
-    if gender == "man":
-        fname = "man"
-    else:
-        fname = "woman"
+    fname = "man"
     generatative_image(boto3_bedrock, modelId, k, text_prompt, fname)
             
+    text_prompt = "The face of a Korean woman in her early 30s. A face that smiles 80 percent of the time. No glasses, eyes open, 75 percent of the time. her emotion is mainly Calm. She loves puppy and IT Technology and K-beauty."
+    fname = "weman"
+    generatative_image(boto3_bedrock, modelId, k, text_prompt, fname)
+
     generated_urls = []    
     ext = 'png'
     for index in range(k):
-        object_name = f'photo_{fname}_{index+1}.{ext}'
+        object_name = f'{fname}_{index+1}.{ext}'
     
         url = path+'dashboard'+'/'+parse.quote(object_name)
         print('url: ', url)
