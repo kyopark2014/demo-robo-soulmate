@@ -67,7 +67,9 @@ def get_secret():
 access_key_id, secret_access_key = get_secret()
 selected_credential = 0
   
-def get_client(profile_of_Image_LLMs, selected_LLM, selected_credential):
+def get_client(profile_of_Image_LLMs, selected_credential):
+    global selected_LLM
+    
     profile = profile_of_Image_LLMs[selected_LLM]
     bedrock_region =  profile['bedrock_region']
     modelId = profile['model_id']
@@ -88,6 +90,10 @@ def get_client(profile_of_Image_LLMs, selected_LLM, selected_credential):
             }            
         )
     )
+    
+    selected_LLM = selected_LLM + 1
+    if selected_LLM > len(profile_of_Image_LLMs):
+        selected_LLM = 0
         
     return boto3_bedrock, modelId
 
@@ -212,10 +218,9 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
     return img_b64
 
 def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential):  
-    global selected_LLM
     start_time_for_outpainting = time.time()
     
-    boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
+    boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_credential)
     
     img_b64 = generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
             
@@ -240,10 +245,6 @@ def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, ob
     end_time_for_outpainting = time.time()
     time_for_outpainting = end_time_for_outpainting - start_time_for_outpainting
     print('time_for_outpainting: ', time_for_outpainting)
-    
-    selected_LLM = selected_LLM + 1
-    if selected_LLM > len(profile_of_Image_LLMs):
-        selected_LLM = 0
     
     conn.send(url)
     conn.close()
