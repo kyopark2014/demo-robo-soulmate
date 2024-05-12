@@ -28,7 +28,8 @@ list_of_endpoints = [
     "sam-endpoint-2024-04-10-01-35-30",
     "sam-endpoint-2024-04-30-06-08-55"
 ]
-
+k = 3  # number of generated images 
+        
 profile_of_Image_LLMs = json.loads(os.environ.get('profile_of_Image_LLMs'))
 selected_LLM = 0
 
@@ -211,21 +212,34 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
     return img_b64
 
 def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential):  
+    start_time_for_outpainting = time.time()
+    
     boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
     
-    img_b64 =  generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
+    img_b64 = generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
             
     # upload
-    response = s3_client.put_object(
-        Bucket=s3_bucket,
-        Key=object_key,
-        ContentType='image/jpeg',
-        Body=base64.b64decode(img_b64)
-    )
-    # print('response: ', response)
+    try:
+        response = s3_client.put_object(
+            Bucket=s3_bucket,
+            Key=object_key,
+            ContentType='image/jpeg',
+            Body=base64.b64decode(img_b64)
+        )
+        # print('response: ', response)
+    except Exception:
+            err_msg = traceback.format_exc()
+            print('error message: ', err_msg)                
+            raise Exception ("Not able to put an object")
             
+    
+    print('object_name: ', object_name)    
     url = path+s3_photo_prefix+'/'+parse.quote(object_name)
     print('url: ', url)
+        
+    end_time_for_outpainting = time.time()
+    time_for_outpainting = end_time_for_outpainting - start_time_for_outpainting
+    print('time_for_outpainting: ', time_for_outpainting)
     
     conn.send(url)
     conn.close()
@@ -328,7 +342,7 @@ def lambda_handler(event, context):
         print('bucket: ', bucket)
         print('key: ', key)        
             
-        start_time_for_generation = time.time()
+        start_time_for_photo_generation= time.time()
         
         requestId = jsonBody["requestId"]  # request id
         print('requestId: ', requestId)
@@ -366,7 +380,6 @@ def lambda_handler(event, context):
         print('rekognition response: ', response)
         print('number of faces: ', len(response['FaceDetails']))
         
-        k = 1  # number of generated images 
         imgWidth, imgHeight = img.size           
 
         start_time_for_detection = time.time()
@@ -460,7 +473,7 @@ def lambda_handler(event, context):
         object_img = img_resize(object_image)
         mask_img = img_resize(merged_mask_image)
             
-        print('start outpainting')      
+        print('start outpainting.....')      
         generated_urls = []    
         processes = []       
         parent_connections = []         
@@ -491,13 +504,10 @@ def lambda_handler(event, context):
 
         for process in processes:
             process.join()
-            
-        end_time_for_generation = time.time()
-        time_for_outpainting = end_time_for_generation - end_time_for_generation
-        print('time_for_outpainting: ', time_for_outpainting)
-                        
         
-        time_for_photo_generation = end_time_for_generation - start_time_for_generation
+        print('completed outpainting.....')      
+        end_time_for_photo_generation= time.time()
+        time_for_photo_generation = end_time_for_photo_generation - start_time_for_photo_generation
         print('time_for_photo_generation: ', time_for_photo_generation)
                 
         print('generated_urls: ', json.dumps(generated_urls))
