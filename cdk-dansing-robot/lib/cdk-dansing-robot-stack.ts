@@ -865,7 +865,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     });
     queue.grantSendMessages(lambdaPhotoAPI); // permision for SQS putItem
 
-    // POST method - provisioning
+    // POST method - photo api
     const photo_api = api.root.addResource("photo-api");
     photo_api.addMethod('POST', new apiGateway.LambdaIntegration(lambdaPhotoAPI, {
       passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
@@ -1284,6 +1284,49 @@ export class CdkDansingRobotStack extends cdk.Stack {
         viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });
     s3Bucket.grantReadWrite(lambdaGesture);
+
+    // DynamoDB Permission
+    
+    // lambda for lambdaRepresentative
+    const lambdaRepresentative = new lambda.Function(this, `lambda-representative-for-${projectName}`, {
+      description: 'lambda for representative',
+      functionName: `lambda-representative-${projectName}`,
+      handler: 'lambda_function.lambda_handler',
+      runtime: lambda.Runtime.PYTHON_3_11,
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambda-representative')),
+      timeout: cdk.Duration.seconds(300),
+      environment: {
+        bucketName: s3Bucket.bucketName,
+        path: 'https://'+domainName+'/'
+      }
+    });
+
+    // POST method - lambdaRepresentative
+    const lambdaRepresentative_api = api.root.addResource("representative");
+    lambdaRepresentative_api.addMethod('POST', new apiGateway.LambdaIntegration(lambdaRepresentative, {
+      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+      credentialsRole: role,
+      integrationResponses: [{
+        statusCode: '200',
+      }], 
+      proxy:false, 
+    }), {
+      methodResponses: [  
+        {
+          statusCode: '200',
+          responseModels: {
+            'application/json': apiGateway.Model.EMPTY_MODEL,
+          }, 
+        }
+      ]
+    }); 
+
+    // cloudfront setting for lambdaRepresentative
+    distribution.addBehavior("/representative", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
     
     const integrationUri = `arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${lambdaChatWebsocket.functionArn}/invocations`;    
     const cfnIntegration = new apigatewayv2.CfnIntegration(this, `api-integration-for-${projectName}`, {
