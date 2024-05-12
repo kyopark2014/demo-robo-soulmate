@@ -41,3 +41,12 @@ The face of a Korean woman in her early 30s. A face that smiles 80 percent of th
 <img src="./pictures/representative/man.png" width="400">
 
 <img src="./pictures/representative/weman.png" width="400">
+
+
+## 요청 API
+
+요청은 별도 파라미터없이 '/representative'를 이용합니다. 이 API는 EventBridge를 이용해 15분마다 호출됩니다.
+
+```text
+POST https://d1r17qhj4m3dnc.cloudfront.net/representative
+```
