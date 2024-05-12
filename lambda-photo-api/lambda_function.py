@@ -4,26 +4,23 @@ import os
 from urllib import parse
 import uuid
 
-sqsUrl = os.environ.get('sqsUrl')
 s3_photo_prefix = os.environ.get('s3_photo_prefix')
-path = os.environ.get('path')
-        
+path = os.environ.get('path')        
+sqsUrl = os.environ.get('sqsUrl')
 sqs_client = boto3.client('sqs')
 
 def lambda_handler(event, context):
     print('event: ', event)
     
-    jsonBody = json.loads(event['body'])
-    print('request body: ', json.dumps(jsonBody))
-    
-    requestId = jsonBody["requestId"]
+    requestId = event["requestId"]
     print('requestId: ', requestId)
-    bucket = jsonBody["bucket"]   
-    key = jsonBody["key"]   
+
+    bucket = event["bucket"]   
+    key = event["key"]   
 
     # get filename
-    if "id" in jsonBody:
-        id = jsonBody["id"]
+    if "id" in event:
+        id = event["id"]
     else:
         id = key.split('/')[-1].split('.')[0]
     
@@ -37,7 +34,7 @@ def lambda_handler(event, context):
         
     generated_urls = []    
     for index in range(3):
-        object_name = f'photo_{id}_{index}.{ext}'
+        object_name = f'photo_{id}_{index+1}.{ext}'
     
         url = path+s3_photo_prefix+'/'+parse.quote(object_name)
         print('url: ', url)

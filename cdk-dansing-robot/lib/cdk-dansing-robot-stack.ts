@@ -842,7 +842,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     // SQS for photo event
     let queue = new sqs.Queue(this, `queue-photo-evnet-for-${projectName}`, {
       visibilityTimeout: cdk.Duration.seconds(600),
-      queueName: `queue-s3-event-for-${projectName}-.fifo`,  
+      queueName: `queue-photo-event-for-${projectName}-.fifo`,  
       fifo: true,
       contentBasedDeduplication: false,
       deliveryDelay: cdk.Duration.millis(0),
@@ -858,7 +858,6 @@ export class CdkDansingRobotStack extends cdk.Stack {
       code: lambda.Code.fromAsset(path.join(__dirname, '../../lambda-photo-api')),
       timeout: cdk.Duration.seconds(30),
       environment: {
-        s3_bucket: bucketName,
         s3_photo_prefix: s3_photo_prefix,
         path: 'https://'+domainName+'/',
         sqsUrl: queue.queueUrl
