@@ -9,7 +9,7 @@ import json
 import traceback
 import copy    
 import io
-
+from urllib.parse import unquote_plus
 from botocore.config import Config
 from PIL import Image
 from io import BytesIO
@@ -19,7 +19,10 @@ import numpy as np
 
 s3_bucket = os.environ.get('s3_bucket') # bucket name
 s3_photo_prefix = os.environ.get('s3_photo_prefix')
+sqsUrl = os.environ.get('sqsUrl')
 path = os.environ.get('path')
+
+sqs_client = boto3.client('sqs')
 
 list_of_endpoints = [
     "sam-endpoint-2024-04-10-01-35-30",
@@ -301,211 +304,220 @@ def lambda_handler(event, context):
         
     print(event)
     
-    start_time_for_generation = time.time()
-    
-    jsonBody = json.loads(event['body'])
-    print('request body: ', json.dumps(jsonBody))
-    
-    requestId = jsonBody["requestId"]
-    print('requestId: ', requestId)
-    bucket = jsonBody["bucket"]   
-    key = jsonBody["key"]   
-    
-    url_original = path+parse.quote(key)
-    print('url_original: ', url_original)
-    
-    if "id" in jsonBody:
-        id = jsonBody["id"]
-    else:
-        # id = uuid.uuid1()
-        finename = key.split('/')[-1]
-        print('finename: ', finename)
-        id = finename.split('.')[0]
-    print('id: ', id)
-    
-    # mask
-    ext = key.split('.')[-1]
-    if ext == 'jpg':
-        ext = 'jpeg'
-    
-    img = load_image(bucket, key) # load image from bucket    
-    object_image = copy.deepcopy(img)
-    encode_object_image = base64_encode_image(object_image,formats=ext.upper()).decode("utf-8")
-
-    # detect faces
-    buffer = BytesIO()
-    img.save(buffer, format='jpeg', quality=100)
-    val = buffer.getvalue()
-
-    response = rekognition_client.detect_faces(Image={'Bytes': val},Attributes=['ALL'])
-    print('rekognition response: ', response)
-    print('number of faces: ', len(response['FaceDetails']))
-    
-    """
-    nfaces = len(response['FaceDetails'])
-    if nfaces == 1:
-        k = 6
-    elif nfaces == 2:
-        k = 3
-    elif nfaces == 3:
-        k = 2
-    elif nfaces >= 4:
-        k = 2        
-    print('# of output images: ', k)
-    """
-    k = 1
-
-    imgWidth, imgHeight = img.size           
     # outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
     outpaint_prompt =[
-            "A futuristic cityscape , focusing purely on the architecture and technology. The scene shows a skyline dominated by towering skyscrapers", 
-            "A medieval village with thatched-roof cottages, villagers in period clothing, and a bustling market square during a festival",   
-        #    "A panoramic view of a futuristic city by the sea, with a serene waterfront, advanced aquatic transport systems, and shimmering buildings reflecting the setting sun."
-            'A festive scene in a future city during a high-tech festival, with streets filled with people in colorful smart fabrics, interactive digital art installations, and joyous music.'
-            ] 
+        "A futuristic cityscape , focusing purely on the architecture and technology. The scene shows a skyline dominated by towering skyscrapers", 
+        "A medieval village with thatched-roof cottages, villagers in period clothing, and a bustling market square during a festival",   
+    #    "A panoramic view of a futuristic city by the sea, with a serene waterfront, advanced aquatic transport systems, and shimmering buildings reflecting the setting sun."
+        'A festive scene in a future city during a high-tech festival, with streets filled with people in colorful smart fabrics, interactive digital art installations, and joyous music.'
+    ] 
     
-    index = 1    
-    start_time_for_detection = time.time()
-    
-    # Earn mask image for faces
-    processes = []
-    parent_connections = []
-    selected_endpoint = 0
-    
-    print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
-    isFirst = False
-    for faceDetail in response['FaceDetails']:
-        print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
-              + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
+    for record in event['Records']:
+        receiptHandle = record['receiptHandle']
+        print("receiptHandle: ", receiptHandle)
+        
+        body = record['body']
+        print("body: ", body)
+        
+        jsonBody = json.loads(body)        
+        bucket = jsonBody['bucket']       # bucket
+        print('request body: ', json.dumps(jsonBody))
+         
+        # translate to utf8
+        key = unquote_plus(jsonBody['key']) # key
+        print('bucket: ', bucket)
+        print('key: ', key)        
+            
+        start_time_for_generation = time.time()
+        
+        requestId = jsonBody["requestId"]  # request id
+        print('requestId: ', requestId)
 
-        parent_conn, child_conn = Pipe()
-        parent_connections.append(parent_conn)
+        # url
+        url_original = path+parse.quote(key)
+        print('url_original: ', url_original)
         
-        print('selected_endpoint: ', selected_endpoint)
-        endpoint_name = list_of_endpoints[selected_endpoint] 
-        print('endpoint_name: ', endpoint_name)
+        # filenmae
+        if "id" in jsonBody:
+            id = jsonBody["id"]
+        else:
+            # id = uuid.uuid1()
+            finename = key.split('/')[-1]
+            print('finename: ', finename)
+            id = finename.split('.')[0]
+        print('id: ', id)
         
-        process = Process(target=parallel_process_for_SAM, args=(child_conn, faceDetail['BoundingBox'], encode_object_image, imgWidth, imgHeight, endpoint_name))
-        processes.append(process)
+        # ext
+        ext = key.split('.')[-1]
+        if ext == 'jpg':
+            ext = 'jpeg'
         
-        selected_endpoint = selected_endpoint + 1
-        if selected_endpoint >= len(list_of_endpoints):
-            selected_endpoint = 0
-            
-    for process in processes:
-        process.start()
-                    
-    for parent_conn in parent_connections:
-        mask_image = parent_conn.recv()
-        
-        print('merge current mask')      
-        if isFirst==False:       
-            np_image = np.array(mask_image)
-            #print('np_image: ', np_image)
-            mask = np.all(np_image == (0, 0, 0), axis=2)
-            
-            isFirst = True
-        else: 
-            np_image = np.array(mask_image)            
-            mask_new = np.all(np_image == (0, 0, 0), axis=2)
-            
-            mask = np.logical_or(mask, mask_new)
-    
-    for process in processes:
-        process.join()
+        # load image
+        img = load_image(bucket, key) # load image from bucket    
+        object_image = copy.deepcopy(img)
+        encode_object_image = base64_encode_image(object_image,formats=ext.upper()).decode("utf-8")
 
-    # update mask        
-    print('mask: ', mask)
-    for i, row in enumerate(mask):
-        for j, value in enumerate(row):
-            if value == True:
-                np_image[i, j] = (0, 0, 0)
-            else:
-                np_image[i, j] = (255, 255, 255)
+        # detect faces
+        buffer = BytesIO()
+        img.save(buffer, format='jpeg', quality=100)
+        val = buffer.getvalue()
+
+        response = rekognition_client.detect_faces(Image={'Bytes': val},Attributes=['ALL'])
+        print('rekognition response: ', response)
+        print('number of faces: ', len(response['FaceDetails']))
         
-    # detect glasses
-    target_label = 'Glasses'
-    np_image= detect_object(target_label, val, imgWidth, imgHeight, np_image)
-    
-    target_label = 'Sunglasses'
-    np_image= detect_object(target_label, val, imgWidth, imgHeight, np_image)                
-    # print('np_image: ', np_image)
-    
-    merged_mask_image = Image.fromarray(np_image)
+        k = 1  # number of generated images 
+        imgWidth, imgHeight = img.size           
+
+        start_time_for_detection = time.time()
+        
+        # Earn mask image for multiple faces
+        processes = []
+        parent_connections = []
+        selected_endpoint = 0
+        
+        print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
+        isFirst = False
+        for faceDetail in response['FaceDetails']:
+            print('The detected face is between ' + str(faceDetail['AgeRange']['Low']) 
+                + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
+
+            parent_conn, child_conn = Pipe()
+            parent_connections.append(parent_conn)
             
-    # upload mask image for debugging
-    pixels = BytesIO()
-    merged_mask_image.save(pixels, "png")
-    
-    fname = 'mask_'+key.split('/')[-1].split('.')[0]    
-    pixels.seek(0, 0)
-    response = s3_client.put_object(
-        Bucket=s3_bucket,
-        Key='photo/'+fname+'.png',
-        ContentType='image/png',
-        Body=pixels
-    )
-    #print('response: ', response)
-        
-    end_time_for_detection = time.time()
-    time_for_detection = end_time_for_detection - start_time_for_detection
-    print('time_for_detection: ', time_for_detection)
-    
-    object_img = img_resize(object_image)
-    mask_img = img_resize(merged_mask_image)
-        
-    print('start outpainting')      
-    generated_urls = []    
-    processes = []       
-    parent_connections = []         
-    for i in range(k):
-        parent_conn, child_conn = Pipe()
-        parent_connections.append(parent_conn)
-                            
-        # text_prompt =  f'a human with a {outpaint_prompt[i]} background'
-        text_prompt = f'a neatly and well-dressed human with yellow cute robot dog in {outpaint_prompt[i]}'
+            print('selected_endpoint: ', selected_endpoint)
+            endpoint_name = list_of_endpoints[selected_endpoint] 
+            print('endpoint_name: ', endpoint_name)
+            
+            process = Process(target=parallel_process_for_SAM, args=(child_conn, faceDetail['BoundingBox'], encode_object_image, imgWidth, imgHeight, endpoint_name))
+            processes.append(process)
+            
+            selected_endpoint = selected_endpoint + 1
+            if selected_endpoint >= len(list_of_endpoints):
+                selected_endpoint = 0
                 
-        object_name = f'photo_{id}_{index}.{ext}'
-        object_key = f'{s3_photo_prefix}/{object_name}'  # MP3 파일 경로
-        print('generated object_key: ', object_key)
+        for process in processes:
+            process.start()
+                        
+        for parent_conn in parent_connections:
+            mask_image = parent_conn.recv()
             
-        process = Process(target=parallel_process_for_outpainting, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential))
-        processes.append(process)
+            print('merge current mask')      
+            if isFirst==False:       
+                np_image = np.array(mask_image)
+                #print('np_image: ', np_image)
+                mask = np.all(np_image == (0, 0, 0), axis=2)
                 
-        selected_LLM = selected_LLM + 1
-        if selected_LLM == len(profile_of_Image_LLMs):
-            selected_LLM = 0
-        index = index + 1
-                            
-    for process in processes:
-        process.start()
-                    
-    for parent_conn in parent_connections:
-        url = parent_conn.recv()
-        generated_urls.append(url)
+                isFirst = True
+            else: 
+                np_image = np.array(mask_image)            
+                mask_new = np.all(np_image == (0, 0, 0), axis=2)
+                
+                mask = np.logical_or(mask, mask_new)
+        
+        for process in processes:
+            process.join()
 
-    for process in processes:
-        process.join()
-        
-    end_time_for_generation = time.time()
-    time_for_outpainting = end_time_for_generation - end_time_for_SAM
-    print('time_for_outpainting: ', time_for_outpainting)
-                    
-    
-    time_for_photo_generation = end_time_for_generation - start_time_for_generation
-    print('time_for_photo_generation: ', time_for_photo_generation)
+        # update mask        
+        print('mask: ', mask)
+        for i, row in enumerate(mask):
+            for j, value in enumerate(row):
+                if value == True:
+                    np_image[i, j] = (0, 0, 0)
+                else:
+                    np_image[i, j] = (255, 255, 255)
             
-    print('generated_urls: ', json.dumps(generated_urls))
-    
-    print('len(access_key): ', len(access_key_id))
-    print('current access_key_id: ', access_key_id[selected_credential])
-    #print('selected_credential: ', selected_credential)
-    
-    if selected_credential >= len(access_key_id)-1:
-        selected_credential = 0
-    else:
-        selected_credential = selected_credential + 1
+        # detect glasses and sunglasses
+        target_label = 'Glasses'
+        np_image= detect_object(target_label, val, imgWidth, imgHeight, np_image)
         
+        target_label = 'Sunglasses'
+        np_image= detect_object(target_label, val, imgWidth, imgHeight, np_image)                
+        # print('np_image: ', np_image)
+        
+        # generate mask image
+        merged_mask_image = Image.fromarray(np_image)
+                
+        # upload mask image for debugging
+        pixels = BytesIO()
+        merged_mask_image.save(pixels, "png")
+        
+        fname = 'mask_'+key.split('/')[-1].split('.')[0]    
+        pixels.seek(0, 0)
+        response = s3_client.put_object(
+            Bucket=s3_bucket,
+            Key='photo/'+fname+'.png',
+            ContentType='image/png',
+            Body=pixels
+        )
+        #print('response: ', response)
+            
+        end_time_for_detection = time.time()
+        time_for_detection = end_time_for_detection - start_time_for_detection
+        print('time_for_detection: ', time_for_detection)
+        
+        # generate outpainting image
+        object_img = img_resize(object_image)
+        mask_img = img_resize(merged_mask_image)
+            
+        print('start outpainting')      
+        generated_urls = []    
+        processes = []       
+        parent_connections = []         
+        for i in range(k):
+            parent_conn, child_conn = Pipe()
+            parent_connections.append(parent_conn)
+                                
+            # text_prompt =  f'a human with a {outpaint_prompt[i]} background'
+            text_prompt = f'a neatly and well-dressed human with yellow cute robot dog in {outpaint_prompt[i]}'
+                    
+            object_name = f'photo_{id}_{i+1}.{ext}'
+            object_key = f'{s3_photo_prefix}/{object_name}'  
+            print('generated object_key: ', object_key)
+                
+            process = Process(target=parallel_process_for_outpainting, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential))
+            processes.append(process)
+                    
+            selected_LLM = selected_LLM + 1
+            if selected_LLM == len(profile_of_Image_LLMs):
+                selected_LLM = 0
+                                
+        for process in processes:
+            process.start()
+                        
+        for parent_conn in parent_connections:
+            url = parent_conn.recv()
+            generated_urls.append(url)
+
+        for process in processes:
+            process.join()
+            
+        end_time_for_generation = time.time()
+        time_for_outpainting = end_time_for_generation - end_time_for_generation
+        print('time_for_outpainting: ', time_for_outpainting)
+                        
+        
+        time_for_photo_generation = end_time_for_generation - start_time_for_generation
+        print('time_for_photo_generation: ', time_for_photo_generation)
+                
+        print('generated_urls: ', json.dumps(generated_urls))
+        
+        # fre debugging
+        print('len(access_key): ', len(access_key_id))
+        print('current access_key_id: ', access_key_id[selected_credential])
+        #print('selected_credential: ', selected_credential)
+        
+        if selected_credential >= len(access_key_id)-1:
+            selected_credential = 0
+        else:
+            selected_credential = selected_credential + 1
+
+    # delete queue
+    try:
+        sqs_client.delete_message(QueueUrl=sqsUrl, ReceiptHandle=receiptHandle)
+    except Exception as e:        
+        print('Fail to delete the queue message: ', e)
+                
     result = {            
         "url_original": url_original,
         "url_generated": json.dumps(generated_urls),

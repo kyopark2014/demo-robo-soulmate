@@ -16,6 +16,7 @@ import { Role, ManagedPolicy, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import * as rekognition from 'aws-cdk-lib/aws-rekognition';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 const region = process.env.CDK_DEFAULT_REGION;    
 const accountId = process.env.CDK_DEFAULT_ACCOUNT
@@ -848,7 +849,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
       retentionPeriod: cdk.Duration.days(2),
     });
 
-    // lambda-photo-api
+    // lambda for photo api
     const lambdaPhotoAPI = new lambda.Function(this, `lambda-photo-api-for-${projectName}`, {
       description: 'lambda for photo api',
       functionName: `lambda-photo-api-${projectName}`,
@@ -857,7 +858,10 @@ export class CdkDansingRobotStack extends cdk.Stack {
       code: lambda.Code.fromAsset(path.join(__dirname, '../../lambda-photo-api')),
       timeout: cdk.Duration.seconds(30),
       environment: {
-        sqsUrl: queue.queueUrl,
+        s3_bucket: bucketName,
+        s3_photo_prefix: s3_photo_prefix,
+        path: 'https://'+domainName+'/',
+        sqsUrl: queue.queueUrl
       }
     });
     queue.grantSendMessages(lambdaPhotoAPI); // permision for SQS putItem
@@ -903,6 +907,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
         profile_of_Image_LLMs:JSON.stringify(profile_of_Image_LLMs),
         s3_photo_prefix: s3_photo_prefix,
         path: 'https://'+domainName+'/',
+        sqsUrl: queue.queueUrl
       }
     });     
   
@@ -917,6 +922,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
         statements: [RekognitionPolicy],
       }),
     );
+    lambdaPhotoEnhanced.addEventSource(new SqsEventSource(queue)); // permission for SQS
     
     // Lambda - multiple photo generation    
     const lambdaMultiPhoto = new lambda.DockerImageFunction(this, `lambda-multi-photo-for-${projectName}`, {
