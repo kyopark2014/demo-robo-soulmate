@@ -17,6 +17,61 @@ selected_LLM = 0
 
 tableName = 'EmotionDetailInfo-3d2nq2n4sfcqnfelmjj3n3ycje-dev'
 
+def generatative_image(boto3_bedrock, modelId, k, text_prompt, fname):    
+    cfgScale = 7.5  # default 8, min: 1.1, max: 10.0 (lower value to introduce more randomness)
+    seed = 43
+    body = json.dumps({
+        "taskType": "TEXT_IMAGE",
+        "textToImageParams": {
+            "text": text_prompt,      
+            # "negativeText": "string"
+        },
+        "imageGenerationConfig": {
+            "numberOfImages": k,
+            "quality": "premium", # standard, premium
+            "height": 512,
+            "width": 512,
+            "cfgScale": cfgScale,
+            "seed": seed
+        }
+    })
+    
+    try: 
+        response = boto3_bedrock.invoke_model(
+            body=body,
+            modelId=modelId,
+            accept="application/json", 
+            contentType="application/json"
+        )
+        print('image generation response: ', response)
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)                    
+        raise Exception ("Not able to request for bedrock")
+                
+    # Output processing
+    response_body = json.loads(response.get("body").read())
+    img_b64 = response_body["images"][0]
+    print(f"Output: {img_b64[0:80]}...")
+    
+    # upload
+    s3_client = boto3.client('s3')   
+
+    ext = "png"
+    key = f"dashboard/{fname}.{ext}"
+    try:
+        response = s3_client.put_object(
+            Bucket=bucketName,
+            Key=key,
+            ContentType='image/png',
+            Body=base64.b64decode(img_b64)
+        )
+        # print('response: ', response)
+    except Exception:
+            err_msg = traceback.format_exc()
+            print('error message: ', err_msg)                
+            raise Exception ("Not able to put an object")
+
 def lambda_handler(event, context):
     print('event: ', event)
     
@@ -55,64 +110,18 @@ def lambda_handler(event, context):
     
     k = 1
     modelId = profile['model_id']
-    cfgScale = 7.5  # default 8, min: 1.1, max: 10.0 (lower value to introduce more randomness)
-    seed = 43
     text_prompt = "The face of a Korean man in his early 30s. A face that smiles 80 percent of the time. No glasses, eyes open, 75 percent of the time. his emotion is mainly Calm. He loves puppy and IT Technology."
-    body = json.dumps({
-        "taskType": "TEXT_IMAGE",
-        "textToImageParams": {
-            "text": text_prompt,      
-            # "negativeText": "string"
-        },
-        "imageGenerationConfig": {
-            "numberOfImages": k,
-            "quality": "premium", # standard, premium
-            "height": 512,
-            "width": 512,
-            "cfgScale": cfgScale,
-            "seed": seed
-        }
-    })
-    
-    try: 
-        response = boto3_bedrock.invoke_model(
-            body=body,
-            modelId=modelId,
-            accept="application/json", 
-            contentType="application/json"
-        )
-        print('image generation response: ', response)
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)                    
-        raise Exception ("Not able to request for bedrock")
-                
-    # Output processing
-    response_body = json.loads(response.get("body").read())
-    img_b64 = response_body["images"][0]
-    print(f"Output: {img_b64[0:80]}...")
-    
-    # upload
-    s3_client = boto3.client('s3')   
-    id = "man"
-    ext = "png"
-    key = f"dashboard/{id}.{ext}"
-    try:
-        response = s3_client.put_object(
-            Bucket=bucketName,
-            Key=key,
-            ContentType='image/png',
-            Body=base64.b64decode(img_b64)
-        )
-        # print('response: ', response)
-    except Exception:
-            err_msg = traceback.format_exc()
-            print('error message: ', err_msg)                
-            raise Exception ("Not able to put an object")
+    gender = 'man'
+    if gender == "man":
+        fname = "man"
+    else:
+        fname = "woman"
+    generatative_image(boto3_bedrock, modelId, k, text_prompt, fname)
             
     generated_urls = []    
+    ext = 'png'
     for index in range(k):
-        object_name = f'photo_{id}_{index+1}.{ext}'
+        object_name = f'photo_{fname}_{index+1}.{ext}'
     
         url = path+'dashboard'+'/'+parse.quote(object_name)
         print('url: ', url)
