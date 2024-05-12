@@ -494,7 +494,7 @@ def lambda_handler(event, context):
             processes.append(process)
             
             selected_LLM = selected_LLM + 1
-            if selected_LLM > len(profile_of_Image_LLMs):
+            if selected_LLM >= len(profile_of_Image_LLMs):
                 selected_LLM = 0
         
         for process in processes:
