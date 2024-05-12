@@ -50,7 +50,7 @@ def lambda_handler(event, context):
     )
     
     modelId = profile['model_id']
-    cfgScale = 7.5
+    cfgScale = 7.5  # default 8, min: 1.1, max: 10.0 (lower value to introduce more randomness)
     seed = 43
     text_prompt = "The face of a Korean man in his early 30s. A face that smiles 80 percent of the time. No glasses, eyes open, 75 percent of the time. his emotion is mainly Calm. He loves puppy and IT Technology."
     body = json.dumps({
@@ -61,7 +61,7 @@ def lambda_handler(event, context):
         },
         "imageGenerationConfig": {
             "numberOfImages": 1,
-            "quality": "ultra", # standard, premium, ultra
+            "quality": "ultra", # standard, premium
             "height": 512,
             "width": 512,
             "cfgScale": cfgScale,
