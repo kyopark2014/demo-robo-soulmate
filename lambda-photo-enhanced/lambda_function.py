@@ -67,8 +67,7 @@ def get_secret():
 access_key_id, secret_access_key = get_secret()
 selected_credential = 0
   
-def get_client(profile_of_Image_LLMs, selected_credential):
-    global selected_LLM
+def get_client(profile_of_Image_LLMs, selected_LLM, selected_credential):
     print('selected_LLM: ', selected_LLM)
     print('length of profile_of_Image_LLMs: ', len(profile_of_Image_LLMs))
     
@@ -93,12 +92,6 @@ def get_client(profile_of_Image_LLMs, selected_credential):
         )
     )
     
-    selected_LLM = selected_LLM + 1
-    if selected_LLM > len(profile_of_Image_LLMs):
-        selected_LLM = 0
-        
-    print('new selected_LLM: ', selected_LLM)
-        
     return boto3_bedrock, modelId
 
 def img_resize(image):
@@ -221,10 +214,10 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
     
     return img_b64
 
-def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential):  
+def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, object_name, object_key, selected_LLM, selected_credential):  
     start_time_for_outpainting = time.time()
     
-    boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_credential)
+    boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
     
     img_b64 = generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
             
@@ -323,7 +316,7 @@ def detect_object(target_label, val, imgWidth, imgHeight, np_image):
     return np_image
                     
 def lambda_handler(event, context):
-    global selected_credential
+    global selected_credential, selected_LLM
         
     print(event)
     
@@ -497,9 +490,13 @@ def lambda_handler(event, context):
             object_key = f'{s3_photo_prefix}/{object_name}'  
             print('generated object_key: ', object_key)
                 
-            process = Process(target=parallel_process_for_outpainting, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential))
+            process = Process(target=parallel_process_for_outpainting, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_LLM, selected_credential))
             processes.append(process)
-                                
+            
+            selected_LLM = selected_LLM + 1
+            if selected_LLM > len(profile_of_Image_LLMs):
+                selected_LLM = 0
+        
         for process in processes:
             process.start()
                         
