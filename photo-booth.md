@@ -216,3 +216,19 @@ def detect_object(target_label, val, imgWidth, imgHeight, np_image):
 새로운 Mask 적용 후에 결과는 아래와 같습니다.
 
 ![Modified Mask](./photo-booth/glasses/fixed_mask_ee9510a5-8049-4ae0-8ec2-6ae043df040d.png)
+
+
+실제 구현된 예는 아래와 같습니다.
+
+- 원본 이미지
+<img src="./photo-booth/glasses/faces2024_0502_2202.jpg" width="400">
+
+- 마스크 이미지
+<img src="./photo-booth/glasses/mask_faces2024_0502_2202.png" width="400">
+
+- 최종 결과
+<img src="./photo-booth/glasses/photo_faces2024_0502_2202_1.jpeg" width="400">
+
+  
+
+  
