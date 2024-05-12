@@ -180,4 +180,39 @@ SAM으로 얼굴인식시에 안경에 대한 glasses 처리가 되지 않습니
 
 이를 Rekognition을 이용해 처리합니다.
 
+```python
+def detect_object(target_label, val, imgWidth, imgHeight, np_image):
+    Settings = {"GeneralLabels": {"LabelInclusionFilters":[target_label]},"ImageProperties": {"MaxDominantColors":1}}
+    
+    response = rekognition_client.detect_labels(Image={'Bytes': val},
+        MaxLabels=15,
+        MinConfidence=0.7,
+        # Uncomment to use image properties and filtration settings
+        Features=["GENERAL_LABELS", "IMAGE_PROPERTIES"],
+        Settings=Settings
+    )
+    
+    box = None
+    for item in response['Labels']:
+        if len(item['Instances']) > 0:
+            for sub_item in item['Instances']:
+                box = sub_item['BoundingBox']
+                confidence = sub_item['Confidence']
+                
+                if confidence < 0.7:
+                    continue
+                
+                left = int(imgWidth * box['Left'])
+                top = int(imgHeight * box['Top'])
+                width = int(imgWidth * box['Width'])
+                height = int(imgHeight * box['Height'])
 
+                for i in range(width):
+                    for j in range(height):
+                        np_image[top+j, left+i] = (0, 0, 0)
+    return np_image
+```
+
+새로운 Mask 적용 후에 결과는 아래와 같습니다.
+
+![Modified Mask](./photo-booth/glasses/fixed_mask_ee9510a5-8049-4ae0-8ec2-6ae043df040d.png)
