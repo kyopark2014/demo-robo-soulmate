@@ -288,7 +288,7 @@ def detect_object(target_label, val, imgWidth, imgHeight):
     print('Object Width: ' + "{0:.0f}".format(width))
     print('Object Height: ' + "{0:.0f}".format(height))
     
-    return left, top, width, height
+    return int(left), int(top), int(width), int(height)
                     
 def lambda_handler(event, context):
     global selected_credential, selected_LLM
