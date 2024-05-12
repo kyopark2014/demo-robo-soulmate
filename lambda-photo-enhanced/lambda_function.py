@@ -439,6 +439,31 @@ def lambda_handler(event, context):
     )
     print('rekognition response: ', response)
     
+    box = None
+    for item in response['Labels']:
+        # print(item)
+        if len(item['Instances']) > 0:
+            print(item)
+            print(item['Name'], item['Confidence'])
+
+            for sub_item in item['Instances']:
+                color = sub_item['DominantColors'][0]['CSSColor']
+                box = sub_item['BoundingBox']
+                break
+        break
+    
+    left = imgWidth * box['Left']
+    top = imgHeight * box['Top']
+    width = imgWidth * box['Width']
+    height = imgHeight * box['Height']
+
+    print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
+    print('Left: ' + '{0:.0f}'.format(left))
+    print('Top: ' + '{0:.0f}'.format(top))
+    print('Object Width: ' + "{0:.0f}".format(width))
+    print('Object Height: ' + "{0:.0f}".format(height))
+    
+    
     for i, row in enumerate(mask):
         for j, value in enumerate(row):
             if value == True:
