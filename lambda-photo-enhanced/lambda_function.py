@@ -359,7 +359,7 @@ def lambda_handler(event, context):
             ] 
     
     index = 1    
-    start_time_for_SAM = time.time()
+    start_time_for_detection = time.time()
     
     # Earn mask image for faces
     processes = []
@@ -420,58 +420,18 @@ def lambda_handler(event, context):
     # detect glasses
     target_label = 'Glasses'
     left, top, width, height = detect_object(target_label, val, imgWidth, imgHeight)
-    
+        
     for i in range(width):
         for j in range(height):
             np_image[top+j, left+i] = (0, 0, 0)
             
-            #comp2 = np.where(comp == False, 0, 1)
-            #print('comp2: ', comp2)            
-            #np.where(np_mask == (255,255,255), '+', '-')
-            
-            #for i, row in enumerate(np_mask):
-            #    for j, c in enumerate(row):
-            #        if np.array_equal(c, np.array([0, 0, 0])):
-            #            # print(f'({i}, {j}): {c}, {np_image[i, j]}')
-            #            np_image[i, j] = np.array([0, 0, 0])    
+    target_label = 'Sunglasses'
+    left, top, width, height = detect_object(target_label, val, imgWidth, imgHeight)
         
-        """        
-        box = faceDetail['BoundingBox']
-        left = imgWidth * box['Left']
-        top = imgHeight * box['Top']
-        print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
-        print('Left: ' + '{0:.0f}'.format(left))
-        print('Top: ' + '{0:.0f}'.format(top))
-        
-        width = imgWidth * box['Width']
-        height = imgHeight * box['Height']
-        print('Face Width: ' + "{0:.0f}".format(width))
-        print('Face Height: ' + "{0:.0f}".format(height))
-    
-        inputs = dict(
-            encode_image = encode_object_image,
-            input_box = [left, top, left+width, top+height]
-        )
-        predictions = invoke_endpoint(endpoint_name, inputs)
-        print('predictions: ', predictions)
-        
-        mask_image = decode_image(json.loads(predictions)['mask_image'])
-        
-        if i==0:
-            np_image = np.array(mask_image)
-            # print('np_image: ', np_image)
-        else:
-            np_mask = np.array(mask_image)
-            
-            # show a color from np_image using for statement
-            for i, row in enumerate(np_mask):
-                for j, c in enumerate(row):
-                    if np.array_equal(c, np.array([0, 0, 0])):
-                        # print(f'({i}, {j}): {c}, {np_image[i, j]}')
-                        np_image[i, j] = np.array([0, 0, 0])
-        """
-    
-              
+    for i in range(width):
+        for j in range(height):
+            np_image[top+j, left+i] = (0, 0, 0)
+                          
     # print('np_image: ', np_image)                         
     merged_mask_image = Image.fromarray(np_image)
             
@@ -489,9 +449,9 @@ def lambda_handler(event, context):
     )
     #print('response: ', response)
         
-    end_time_for_SAM = time.time()
-    time_for_SAM = end_time_for_SAM - start_time_for_SAM
-    print('time_for_SAM: ', time_for_SAM)
+    end_time_for_detection = time.time()
+    time_for_detection = end_time_for_detection - start_time_for_detection
+    print('time_for_detection: ', time_for_detection)
     
     object_img = img_resize(object_image)
     mask_img = img_resize(merged_mask_image)
