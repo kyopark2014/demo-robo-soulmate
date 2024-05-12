@@ -25,6 +25,8 @@ The face of a Korean woman in her early 30s. A face that smiles 80 percent of th
 
 3) 파일은 항상 동일한 이름으로 overwrite 합니다. 이것은 Dashboad에서 고정 url으로 Dashboard에 접근하기 위함입니다.
 
+## 생성된 이미지
+
 이때 생성된 이미지는 아래와 같습니다.
 
 <img src="./pictures/representative/man.png" width="400">
