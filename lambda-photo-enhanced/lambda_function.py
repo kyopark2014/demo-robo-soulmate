@@ -252,7 +252,7 @@ def parallel_process_for_SAM(conn, faceInfo, encode_object_image, imgWidth, imgH
     conn.send(mask_image)
     conn.close()    
 
-def detect_object(target_label, val, imgWidth, imgHeight):
+def detect_object(target_label, val, imgWidth, imgHeight, np_image):
     Settings = {"GeneralLabels": {"LabelInclusionFilters":[target_label]},"ImageProperties": {"MaxDominantColors":1}}
     print(f"target_label : {target_label}")
     
@@ -274,21 +274,27 @@ def detect_object(target_label, val, imgWidth, imgHeight):
 
             for sub_item in item['Instances']:
                 box = sub_item['BoundingBox']
-                break
-        break
-    
-    left = imgWidth * box['Left']
-    top = imgHeight * box['Top']
-    width = imgWidth * box['Width']
-    height = imgHeight * box['Height']
+                confidence = sub_item['Confidence']
+                
+                if confidence < 0.7:
+                    continue
+                
+                left = int(imgWidth * box['Left'])
+                top = int(imgHeight * box['Top'])
+                width = int(imgWidth * box['Width'])
+                height = int(imgHeight * box['Height'])
 
-    print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
-    print('Left: ' + '{0:.0f}'.format(left))
-    print('Top: ' + '{0:.0f}'.format(top))
-    print('Object Width: ' + "{0:.0f}".format(width))
-    print('Object Height: ' + "{0:.0f}".format(height))
-    
-    return int(left), int(top), int(width), int(height)
+                print(f"imgWidth : {imgWidth}, imgHeight : {imgHeight}")
+                print(f"Left: ' + '{left}")
+                print(f"Top: ' + '{top}")          
+                print(f"Object Width: ' + {width}")
+                print(f"Object Height: ' + {height}")
+                
+                for i in range(width):
+                    for j in range(height):
+                        np_image[top+j, left+i] = (0, 0, 0)
+
+    return np_image
                     
 def lambda_handler(event, context):
     global selected_credential, selected_LLM
@@ -419,18 +425,16 @@ def lambda_handler(event, context):
         
     # detect glasses
     target_label = 'Glasses'
-    left, top, width, height = detect_object(target_label, val, imgWidth, imgHeight)
+    np_image= detect_object(target_label, val, imgWidth, imgHeight, np_image)
         
-    for i in range(width):
-        for j in range(height):
-            np_image[top+j, left+i] = (0, 0, 0)
+    
             
-    target_label = 'Sunglasses'
-    left, top, width, height = detect_object(target_label, val, imgWidth, imgHeight)
+    #target_label = 'Sunglasses'
+    #left, top, width, height = detect_object(target_label, val, imgWidth, imgHeight)
         
-    for i in range(width):
-        for j in range(height):
-            np_image[top+j, left+i] = (0, 0, 0)
+    #for i in range(width):
+    #    for j in range(height):
+    #        np_image[top+j, left+i] = (0, 0, 0)
                           
     # print('np_image: ', np_image)                         
     merged_mask_image = Image.fromarray(np_image)
