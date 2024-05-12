@@ -15,6 +15,7 @@ import * as ec2 from "aws-cdk-lib/aws-ec2";
 import { Role, ManagedPolicy, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import * as rekognition from 'aws-cdk-lib/aws-rekognition';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 const region = process.env.CDK_DEFAULT_REGION;    
 const accountId = process.env.CDK_DEFAULT_ACCOUNT
@@ -837,6 +838,57 @@ export class CdkDansingRobotStack extends cdk.Stack {
       }),
     );
 
+    // SQS for photo event
+    let queue = new sqs.Queue(this, `queue-photo-evnet-for-${projectName}`, {
+      visibilityTimeout: cdk.Duration.seconds(600),
+      queueName: `queue-s3-event-for-${projectName}-.fifo`,  
+      fifo: true,
+      contentBasedDeduplication: false,
+      deliveryDelay: cdk.Duration.millis(0),
+      retentionPeriod: cdk.Duration.days(2),
+    });
+
+    // lambda-photo-api
+    const lambdaPhotoAPI = new lambda.Function(this, `lambda-photo-api-for-${projectName}`, {
+      description: 'lambda for photo api',
+      functionName: `lambda-photo-api-${projectName}`,
+      handler: 'lambda_function.lambda_handler',
+      runtime: lambda.Runtime.PYTHON_3_11,
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambda-photo-api')),
+      timeout: cdk.Duration.seconds(30),
+      environment: {
+        sqsUrl: queue.queueUrl,
+      }
+    });
+    queue.grantSendMessages(lambdaPhotoAPI); // permision for SQS putItem
+
+    // POST method - provisioning
+    const photo_api = api.root.addResource("photo-api");
+    photo_api.addMethod('POST', new apiGateway.LambdaIntegration(lambdaPhotoAPI, {
+      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+      credentialsRole: role,
+      integrationResponses: [{
+        statusCode: '200',
+      }], 
+      proxy:false, 
+    }), {
+      methodResponses: [  
+        {
+          statusCode: '200',
+          responseModels: {
+            'application/json': apiGateway.Model.EMPTY_MODEL,
+          }, 
+        }
+      ]
+    }); 
+
+    // cloudfront setting for photo api
+    distribution.addBehavior("/photo-api", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
+
     // Lambda - photo generation (enhanced)
     secrets.grantRead(roleLambda)
     const lambdaPhotoEnhanced = new lambda.DockerImageFunction(this, `lambda-photo-enhanced-for-${projectName}`, {
@@ -850,34 +902,10 @@ export class CdkDansingRobotStack extends cdk.Stack {
         s3_bucket: bucketName,
         profile_of_Image_LLMs:JSON.stringify(profile_of_Image_LLMs),
         s3_photo_prefix: s3_photo_prefix,
-        path: 'https://'+domainName+'/',   
+        path: 'https://'+domainName+'/',
       }
     });     
   
-    const photoEnhanced = api.root.addResource("photo-enhanced");
-    photoEnhanced.addMethod('POST', new apiGateway.LambdaIntegration(lambdaPhotoEnhanced, {
-        passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
-        credentialsRole: role,
-        integrationResponses: [{
-            statusCode: '200',
-        }],
-        proxy: true,
-    }), {
-        methodResponses: [
-            {
-                statusCode: '200',
-                responseModels: {
-                    'application/json': apiGateway.Model.EMPTY_MODEL,
-                },
-            }
-        ]
-    });
-    
-    distribution.addBehavior("/photo-enhanced", new origins.RestApiOrigin(api), {
-        cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
-        allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,
-        viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    });
     s3Bucket.grantReadWrite(lambdaPhotoEnhanced);
     lambdaPhotoEnhanced.role?.attachInlinePolicy( // add sagemaker policy
       new iam.Policy(this, 'sagemaker-policy-for-photo-enhanced', {
