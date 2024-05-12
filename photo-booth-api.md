@@ -7,7 +7,7 @@
 아래와 같이 "/photo-api"를 이용하여 이미지 생성을 요청합니다. 파일 이름 기준으로 "_1", "_2", "_3"와 같이 3개의 파일을 생성합니다.
 
 ```python
- POST https://dxt1m1ae24b28.cloudfront.net/photo-api
+POST https://dxt1m1ae24b28.cloudfront.net/photo-api
 {
     "requestId": "a123456abc",
     "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
