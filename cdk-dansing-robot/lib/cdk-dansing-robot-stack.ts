@@ -1301,6 +1301,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
         profile_of_Image_LLMs:JSON.stringify(profile_of_Image_LLMs),
       }
     });
+    s3Bucket.grantReadWrite(lambdaRepresentative);
 
     // POST method - lambdaRepresentative
     const lambdaRepresentative_api = api.root.addResource("representative");

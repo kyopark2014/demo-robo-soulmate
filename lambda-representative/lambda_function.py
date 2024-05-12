@@ -28,7 +28,11 @@ def lambda_handler(event, context):
         resp = dynamodb_client.scan(
             TableName=tableName
         )
-        print('resp: ', resp)
+        print('Items: ', resp["Items"])
+        
+        print('Items[0]: ', resp["Items"][0])
+        
+        
     except Exception as ex:
         err_msg = traceback.format_exc()
         print('err_msg: ', err_msg)
