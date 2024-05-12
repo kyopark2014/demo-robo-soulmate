@@ -13,10 +13,10 @@ Photo Booth에서 방문자의 사진을 찍과 얼굴과 배경을 분리하여
 
 큰 파일을 보낼수 있도록 presigned url을 이용합니다. 
 
-1) Presigned Url 요청합니다. Client에서 바라보는 CloudFront의 주소는 "dxt1m1ae24b28.cloudfront.net" 입니다. (URL 변경될 수 있습니다) 아래와 같은 방식으로 Presigned url을 요청합니다.
+1) Presigned Url 요청합니다. Client에서 바라보는 CloudFront의 주소는 "d1r17qhj4m3dnc.cloudfront.net" 입니다. (URL 변경될 수 있습니다) 아래와 같은 방식으로 Presigned url을 요청합니다.
 
 ```text
-POST https://dxt1m1ae24b28.cloudfront.net/upload
+POST https://d1r17qhj4m3dnc.cloudfront.net/upload
 {
   "type": "photo",
   "filename": "andy_portrait_2.jpg",
@@ -48,7 +48,7 @@ const blob = new Blob([input.files[0]], { type: contentType });
 "id"를 추가하지 않으면 파일명을 기준으로 새로운 이미지들을 생성합니다. 
 
 ```text
-POST  https://dxt1m1ae24b28.cloudfront.net/photo
+POST  https://d1r17qhj4m3dnc.cloudfront.net/photo
 {
     "requestId": "a123456abc",
     "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
@@ -60,8 +60,8 @@ POST  https://dxt1m1ae24b28.cloudfront.net/photo
 
 ```java
 {
-    "url_original": "https://dxt1m1ae24b28.cloudfront.net/photo/face_image.jpg",
-    "url_generated": "[\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_face_image_1.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_face_image_2.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_face_image_3.jpeg\"]",
+    "url_original": "https://d1r17qhj4m3dnc.cloudfront.net/photo/face_image.jpg",
+    "url_generated": "[\"https://d1r17qhj4m3dnc.cloudfront.net/photo/photo_face_image_1.jpeg\", \"https://d1r17qhj4m3dnc.cloudfront.net/photo/photo_face_image_2.jpeg\", \"https://d1r17qhj4m3dnc.cloudfront.net/photo/photo_face_image_3.jpeg\"]",
     "time_taken": "23.401713371276855"
 }
 ```
@@ -71,7 +71,7 @@ POST  https://dxt1m1ae24b28.cloudfront.net/photo
 아래와 같이 요청시 "id"를 추가하면 "id"를 기준으로 새로운 이미지들을 생성합니다. 
    
 ```text   
-POST  https://dxt1m1ae24b28.cloudfront.net/photo
+POST  https://d1r17qhj4m3dnc.cloudfront.net/photo
 {
 	"requestId": "a123456abc",
   "bucket": "storage-for-demo-dansing-robot-533267442321-ap-northeast-2",
@@ -84,8 +84,8 @@ POST  https://dxt1m1ae24b28.cloudfront.net/photo
 
 ```java
 {
-    "url_original": "https://dxt1m1ae24b28.cloudfront.net/photo/face_image.jpg",
-    "url_generated": "[\"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_1.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_2.jpeg\", \"https://dxt1m1ae24b28.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_3.jpeg\"]",
+    "url_original": "https://d1r17qhj4m3dnc.cloudfront.net/photo/face_image.jpg",
+    "url_generated": "[\"https://d1r17qhj4m3dnc.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_1.jpeg\", \"https://d1r17qhj4m3dnc.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_2.jpeg\", \"https://d1r17qhj4m3dnc.cloudfront.net/photo/photo_507ff273-f8df-11ee-8f9b-69f7819ad4a8_3.jpeg\"]",
     "time_taken": "20.885403871536255"
 }
 ```
