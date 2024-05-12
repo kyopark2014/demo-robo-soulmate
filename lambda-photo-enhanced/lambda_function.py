@@ -212,6 +212,7 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
     return img_b64
 
 def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential):  
+    global selected_LLM
     start_time_for_outpainting = time.time()
     
     boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
@@ -231,7 +232,6 @@ def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, ob
             err_msg = traceback.format_exc()
             print('error message: ', err_msg)                
             raise Exception ("Not able to put an object")
-            
     
     print('object_name: ', object_name)    
     url = path+s3_photo_prefix+'/'+parse.quote(object_name)
@@ -240,6 +240,10 @@ def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, ob
     end_time_for_outpainting = time.time()
     time_for_outpainting = end_time_for_outpainting - start_time_for_outpainting
     print('time_for_outpainting: ', time_for_outpainting)
+    
+    selected_LLM = selected_LLM + 1
+    if selected_LLM > len(profile_of_Image_LLMs):
+        selected_LLM = 0
     
     conn.send(url)
     conn.close()
@@ -314,7 +318,7 @@ def detect_object(target_label, val, imgWidth, imgHeight, np_image):
     return np_image
                     
 def lambda_handler(event, context):
-    global selected_credential, selected_LLM
+    global selected_credential
         
     print(event)
     
@@ -490,10 +494,6 @@ def lambda_handler(event, context):
                 
             process = Process(target=parallel_process_for_outpainting, args=(child_conn, object_img, mask_img, text_prompt, object_name, object_key, selected_credential))
             processes.append(process)
-                    
-            selected_LLM = selected_LLM + 1
-            if selected_LLM == len(profile_of_Image_LLMs):
-                selected_LLM = 0
                                 
         for process in processes:
             process.start()
@@ -521,19 +521,19 @@ def lambda_handler(event, context):
             selected_credential = 0
         else:
             selected_credential = selected_credential + 1
+            
+        result = {            
+            "url_original": url_original,
+            "url_generated": json.dumps(generated_urls),
+            "time_taken": str(time_for_photo_generation)
+        }
+        print('result: ', result)
 
     # delete queue
     try:
         sqs_client.delete_message(QueueUrl=sqsUrl, ReceiptHandle=receiptHandle)
     except Exception as e:        
         print('Fail to delete the queue message: ', e)
-                
-    result = {            
-        "url_original": url_original,
-        "url_generated": json.dumps(generated_urls),
-        "time_taken": str(time_for_photo_generation)
-    }
-    print('result: ', result)
         
     return {
         "isBase64Encoded": False,
