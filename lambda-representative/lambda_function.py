@@ -53,6 +53,7 @@ def lambda_handler(event, context):
         )
     )
     
+    k = 1
     modelId = profile['model_id']
     cfgScale = 7.5  # default 8, min: 1.1, max: 10.0 (lower value to introduce more randomness)
     seed = 43
@@ -64,7 +65,7 @@ def lambda_handler(event, context):
             # "negativeText": "string"
         },
         "imageGenerationConfig": {
-            "numberOfImages": 1,
+            "numberOfImages": k,
             "quality": "premium", # standard, premium
             "height": 512,
             "width": 512,
@@ -80,7 +81,7 @@ def lambda_handler(event, context):
             accept="application/json", 
             contentType="application/json"
         )
-        # print('response: ', response)
+        print('image generation response: ', response)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)                    
@@ -93,12 +94,14 @@ def lambda_handler(event, context):
     
     # upload
     s3_client = boto3.client('s3')   
-    key = "key"
+    id = "man"
+    ext = "png"
+    key = f"dashboard/{id}.{ext}"
     try:
         response = s3_client.put_object(
             Bucket=bucketName,
             Key=key,
-            ContentType='image/jpeg',
+            ContentType='image/png',
             Body=base64.b64decode(img_b64)
         )
         # print('response: ', response)
@@ -106,21 +109,9 @@ def lambda_handler(event, context):
             err_msg = traceback.format_exc()
             print('error message: ', err_msg)                
             raise Exception ("Not able to put an object")
-    
-    object_name = "man"
-    print('object_name: ', object_name)    
-    url = path+s3_photo_prefix+'/'+parse.quote(object_name)
-    print('url: ', url)
-    
-    key = object_name+".jpeg"
-    url = path+parse.quote(key)
-    print('url: ', url)
-    
-    id = "man"
-    ext = "png"
-    
+            
     generated_urls = []    
-    for index in range(3):
+    for index in range(k):
         object_name = f'photo_{id}_{index+1}.{ext}'
     
         url = path+'dashboard'+'/'+parse.quote(object_name)
