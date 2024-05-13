@@ -210,6 +210,16 @@ export class CdkDansingRobotStack extends cdk.Stack {
       partitionKey: { name: 'request_id', type: dynamodb.AttributeType.STRING },
     });
 
+    // DynamoDB for word cloud
+    const wordCloudTableName = `db-word-cloud-for-${projectName}`;
+    const wordCloudDataTable = new dynamodb.Table(this, `db-word-cloud-for-${projectName}`, {
+      tableName: wordCloudTableName,
+      partitionKey: { name: 'user_id', type: dynamodb.AttributeType.STRING },
+      // sortKey: { name: 'word', type: dynamodb.AttributeType.STRING }, 
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
     // copy web application files into s3 bucket
     /* new s3Deploy.BucketDeployment(this, `upload-HTML-for-${projectName}`, {
       sources: [s3Deploy.Source.asset("../html/")],
@@ -1286,8 +1296,6 @@ export class CdkDansingRobotStack extends cdk.Stack {
     });
     s3Bucket.grantReadWrite(lambdaGesture);
 
-    // DynamoDB Permission
-
     // lambda for lambdaRepresentative
     const lambdaRepresentative = new lambda.Function(this, `lambda-representative-for-${projectName}`, {
       description: 'lambda for representative',
@@ -1340,6 +1348,47 @@ export class CdkDansingRobotStack extends cdk.Stack {
       description: 'Integration for connect',
       integrationUri: integrationUri,
     });  
+
+    // Lambda - word cloud
+    const lambdaWordCloud = new lambda.DockerImageFunction(this, `lambda-wordcloud-for-${projectName}`, {
+      description: 'lambda for word cloud',
+      functionName: `lambda-wordcloud-for-${projectName}`,
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-wordcloud')),
+      timeout: cdk.Duration.seconds(300),
+      role: roleLambda,
+      environment: {
+        profile_of_LLMs:JSON.stringify(claude3_sonnet),
+      }
+    });     
+    wordCloudDataTable.grantReadWriteData(lambdaWordCloud); // permission for dynamo
+  
+    // POST method - translation
+    const wordcloud = api.root.addResource("wordcloud");
+    wordcloud.addMethod('POST', new apiGateway.LambdaIntegration(lambdaWordCloud, {
+        passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+        credentialsRole: role,
+        integrationResponses: [{
+            statusCode: '200',
+        }],
+        proxy: true,
+    }), {
+        methodResponses: [
+            {
+                statusCode: '200',
+                responseModels: {
+                    'application/json': apiGateway.Model.EMPTY_MODEL,
+                },
+            }
+        ]
+    });
+    
+    distribution.addBehavior("/wordcloud", new origins.RestApiOrigin(api), {
+        cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+        allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });
+    s3Bucket.grantReadWrite(lambdaTranslation);
+
 
     new apigatewayv2.CfnRoute(this, `api-route-for-${projectName}-connect`, {
       apiId: websocketapi.attrApiId,
