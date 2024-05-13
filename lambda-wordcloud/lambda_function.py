@@ -90,21 +90,22 @@ def lambda_handler(event, context):
     jsonBody = json.loads(body)            
     text = jsonBody["text"]
     print('text: ', text)
+    userId = jsonBody["userId"]
+    print('userId: ', userId)
         
     # extract main topics in text
     chat = get_chat(profile_of_LLMs, selected_LLM)    
     topics = json.loads(extract_main_topics(chat, text)) 
     print('topics: ', topics)
     
-    
-    
-    userId = uuid.uuid4()
+    requestId = uuid.uuid4()
     dynamo_client = boto3.client('dynamodb')
     for topic in topics:
         print('topic: ', topic)
         
         item = {
-            'user_id': {'S':str(userId)},
+            'userId': {'S':userId},
+            'requestId': {'S':str(requestId)},
             'topic': {'S':topic}
         }
         

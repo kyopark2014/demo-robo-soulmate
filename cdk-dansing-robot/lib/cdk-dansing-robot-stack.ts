@@ -214,8 +214,8 @@ export class CdkDansingRobotStack extends cdk.Stack {
     const wordCloudTableName = `db-word-cloud-for-${projectName}`;
     const wordCloudDataTable = new dynamodb.Table(this, `db-word-cloud-for-${projectName}`, {
       tableName: wordCloudTableName,
-      partitionKey: { name: 'user_id', type: dynamodb.AttributeType.STRING },
-      // sortKey: { name: 'word', type: dynamodb.AttributeType.STRING }, 
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'requestId', type: dynamodb.AttributeType.STRING }, 
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
