@@ -103,7 +103,7 @@ def lambda_handler(event, context):
     for i, topic in enumerate(topics):
         print('topic: ', topic)
         
-        id = f"{str(requestId)}+'_'+{i}"
+        id = f"{str(requestId)}_{i}"
         item = {
             'userId': {'S':userId},
             'requestId': {'S':id},
