@@ -4,7 +4,7 @@
 
 ## 구현 방안
 
-대화의 내용을 정리후, 게임의 시작/종료시 발생하는 이벤트로 이전 대화의 내용에서 5개의 Topic을 추출합니다. 이후 이를 DyanmoDB에 저장한 후에 QuickSight에서 활용합니다. 관련된 코드는 [workdcloud](./lambda-wordcloud/lambda_function.py) 입니다. 
+대화의 내용을 정리후, 게임의 시작/종료시 발생하는 이벤트로 이전 대화의 내용에서 5개의 Topic을 추출합니다. 이후 이를 DyanmoDB에 저장한 후에 QuickSight에서 활용합니다. 상세한 코드는 [workdcloud](./lambda-wordcloud/lambda_function.py)에서 확인할 수 있습니다. 
 
 대화의 내용을 요약할 때는 아래와 같이 JSON 형태로 결과를 요청한 후에 <result></result> 태그내용을 추출해서 사용합니다.
 
