@@ -20,7 +20,7 @@ tableName = 'EmotionDetailInfo-3d2nq2n4sfcqnfelmjj3n3ycje-dev'
 def upload_image_to_s3(object_name,img_b64):
     s3_client = boto3.client('s3')   
 
-    key = object_name
+    key = 'dashboard/'+object_name
     try:
         response = s3_client.put_object(
             Bucket=bucketName,
@@ -89,7 +89,7 @@ def generatative_image(boto3_bedrock, modelId, k, text_prompt, negative_text, fn
     
     ext = 'png'
     if k==1:
-        object_name = 'dashboard'+fname+'.png'
+        object_name = fname+'.png'
         
         object_name = f'{fname}.{ext}'        
         url = path+'dashboard'+'/'+parse.quote(object_name)
