@@ -7,16 +7,10 @@ import boto3
 import json
 
 from langchain.prompts import PromptTemplate
-from langchain.llms.bedrock import Bedrock
 from botocore.config import Config
-from PIL import Image
-from io import BytesIO
-from urllib import parse
 import traceback
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
-from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_aws import ChatBedrock
 
 bucket = os.environ.get('s3_bucket') # bucket name
@@ -94,10 +88,20 @@ def extract_main_topics(chat, text):
 
     
 def lambda_handler(event, context):
-    print(event)
+    #print(event)
     
     start_time = time.time()
-    text = event["text"]
+    
+    body = event['body']
+    print("body: ", body)
+        
+    jsonBody = json.loads(body)        
+    
+    userId = jsonBody["userId"]
+    print('userId: ', userId)
+    
+    text = jsonBody["text"]
+    print('text: ', text)
         
     # extract main topics in text
     chat = get_chat(profile_of_LLMs, selected_LLM)
