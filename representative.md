@@ -133,7 +133,7 @@ generated_urls = generatative_image(boto3_bedrock, modelId, k, text_prompt, nega
 - 이미지 생성은 bedrock의 image generator를 이용합니다.
 - 이미지는 k개를 생성하여, 방문객이 선호하는 이미지를 선택할 수 있도록 합니다. 
 
-```pytho
+```python
 def generatative_image(boto3_bedrock, modelId, k, text_prompt, negative_text, fname, generated_urls):    
     cfgScale = 7.5  # default 8, min: 1.1, max: 10.0 (lower value to introduce more randomness)
     seed = 43 + get_random_value()
