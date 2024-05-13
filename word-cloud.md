@@ -67,3 +67,36 @@ extract_main_topics()을 이용하여 아래와 같이 주제어(topic)을 추�
             print('error message: ', err_msg)
             raise Exception ("Not able to write into dynamodb")      
 ```
+
+대화내용은 [lambda-chat](./lambda-chat-ws/lambda_function.py)에서 아래와 같이 수집후 전송합니다.
+
+대화가 종료할때 요청과 응답을 dialog에 "Human:"과 "AI:"를 Prefix로 붙여서 저장합니다. 
+
+```python
+dialog = dialog + f"Human: {text}\n"
+dialog = dialog + f"AI: {msg}\n"
+```
+
+이후 아래와 같이 대화내용을 lambda로 전송하여 Topic 추출 및 DynamoDB에 저장작업을 수행합니다.
+
+```python
+if len(dialog)>10:
+    function_name = "lambda-wordcloud-for-demo-dansing-robot"
+    lambda_region = 'ap-northeast-2'
+    try:
+
+        lambda_client = get_lambda_client(region=lambda_region)
+        payload = {
+             "userId": userId,
+             "text": dialog
+         }
+         response = lambda_client.invoke(
+             FunctionName=function_name,
+             Payload=json.dumps(payload),
+         )
+    
+         dialog = ""
+     except Exception:
+         err_msg = traceback.format_exc()
+         print('error message: ', err_msg)
+```
