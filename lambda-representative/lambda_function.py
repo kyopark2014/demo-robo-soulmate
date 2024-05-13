@@ -34,24 +34,42 @@ def upload_image_to_s3(object_name,img_b64):
             print('error message: ', err_msg)                
             raise Exception ("Not able to put an object")
 
-def generatative_image(boto3_bedrock, modelId, k, text_prompt, fname, generated_urls):    
+def generatative_image(boto3_bedrock, modelId, k, text_prompt, negative_text, fname, generated_urls):    
     cfgScale = 7.5  # default 8, min: 1.1, max: 10.0 (lower value to introduce more randomness)
     seed = 43
-    body = json.dumps({
-        "taskType": "TEXT_IMAGE",
-        "textToImageParams": {
-            "text": text_prompt,      
-            # "negativeText": "string"
-        },
-        "imageGenerationConfig": {
-            "numberOfImages": k,
-            "quality": "premium", # standard, premium
-            "height": 512,
-            "width": 512,
-            "cfgScale": cfgScale,
-            "seed": seed
-        }
-    })
+    
+    if negative_text:
+        body = json.dumps({
+            "taskType": "TEXT_IMAGE",
+            "textToImageParams": {
+                "text": text_prompt,      
+                "negativeText": negative_text
+            },
+            "imageGenerationConfig": {
+                "numberOfImages": k,
+                "quality": "premium", # standard, premium
+                "height": 512,
+                "width": 512,
+                "cfgScale": cfgScale,
+                "seed": seed
+            }
+        })
+    else:
+        body = json.dumps({
+            "taskType": "TEXT_IMAGE",
+            "textToImageParams": {
+                "text": text_prompt,      
+                # "negativeText": negative_text
+            },
+            "imageGenerationConfig": {
+                "numberOfImages": k,
+                "quality": "premium", # standard, premium
+                "height": 512,
+                "width": 512,
+                "cfgScale": cfgScale,
+                "seed": seed
+            }
+        })
     
     try: 
         response = boto3_bedrock.invoke_model(
@@ -293,7 +311,9 @@ def lambda_handler(event, context):
     # man    
     age_str = int(avg_age[0])
     smile_str = "smiles," if(smile[0]) == True else ""
-    glass_str = "waring glasses," if(glasses[0]) == True else "not wearing glasses,"
+    glass_str = "waring glasses," if(glasses[0]) == True else ""    
+    negative_text = "glasses," if(glasses[0]) == True else ""
+    
     eyes_str = "eyes open" if(eyesOpen[0]) == True else "eyes close"
     emotion_str = user_emotion[0] + ','
     
@@ -302,12 +322,14 @@ def lambda_handler(event, context):
     print('text_prompt for man: ', text_prompt)
     
     fname = "man"
-    generated_urls = generatative_image(boto3_bedrock, modelId, k, text_prompt, fname, generated_urls)
+    generated_urls = generatative_image(boto3_bedrock, modelId, k, text_prompt, negative_text, fname, generated_urls)
          
     # weman
     age_str = int(avg_age[1])
     smile_str = "smiles," if(smile[1]) == True else ""
-    glass_str = "waring glasses," if(glasses[1]) == True else "not wearing glasses,"
+    glass_str = "waring glasses," if(glasses[1]) == True else ""
+    negative_text = "glasses," if(glasses[1]) == True else ""
+    
     eyes_str = "eyes open" if(eyesOpen[1]) == True else "eyes close"
     emotion_str = user_emotion[1] + ','
     
@@ -316,7 +338,7 @@ def lambda_handler(event, context):
     print('text_prompt for weman: ', text_prompt)
     
     fname = "weman"
-    generated_urls = generatative_image(boto3_bedrock, modelId, k, text_prompt, fname, generated_urls)
+    generated_urls = generatative_image(boto3_bedrock, modelId, k, text_prompt, negative_text, fname, generated_urls)
     
     result = {      
         "request_id": requestId,
