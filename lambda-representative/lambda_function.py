@@ -100,16 +100,172 @@ def lambda_handler(event, context):
     # print('event: ', event)
     
     requestId = str(uuid.uuid1())
-
+    
+    emotion = {
+        "HAPPY": 0,
+        "SURPRISED": 1, 
+        "CALM": 2, 
+        "ANGRY": 3, 
+        "FEAR": 4, 
+        "CONFUSED": 5, 
+        "DISGUSTED": 6, 
+        "SAD": 7
+    }
+    emotion_counter = [
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0]
+    ]
+    
     dynamodb_client = boto3.client('dynamodb')
     try:
         resp = dynamodb_client.scan(
             TableName=tableName
         )
-        print('Items: ', resp["Items"])        
+        # print('Items: ', resp["Items"])        
         print('Items[0]: ', resp["Items"][0])
         
+        age_sum = [0, 0]
+        nglasses = [0, 0]
+        nsmile = [0, 0]
+        neyesOpen = [0, 0]
+        nmouthOpen = [0, 0]
+        nbeard = [0, 0]
+        nmustache = [0, 0]
+        count = [0, 0]
         
+        for item in resp["Items"]:
+            if item["gender"]["S"] == "man":
+                genderType = 0
+            else:
+                genderType = 1
+            count[genderType] = count[genderType] + 1
+            
+            # print('age: ', item["age"]["N"])    
+            age_sum[genderType] = age_sum[genderType] + int(item["age"]["N"])
+            
+            if item["sunglasses"]["BOOL"] == "True" or item["eyeglasses"]["BOOL"] == "True":
+                nglasses[genderType] = nglasses[genderType] + 1
+            
+            if item["smile"]["BOOL"] == "True":
+                nsmile[genderType] = nsmile[genderType] + 1
+            
+            if item["eyesOpen"]["BOOL"] == "True":
+                neyesOpen[genderType] = neyesOpen[genderType] + 1
+            
+            if item["mouthOpen"]["BOOL"] == "True":
+                nmouthOpen[genderType] = nmouthOpen[genderType] + 1
+            
+            if item["beard"]["BOOL"] == "True":
+                nbeard[genderType] = nbeard[genderType] + 1
+            
+            if item["mustache"]["BOOL"] == "True":
+                nmustache[genderType] = nmustache[genderType] + 1
+                
+            emotion_counter[genderType][emotion[item["emotions"]["S"]]] = emotion_counter[genderType][emotion[item["emotions"]["S"]]] + 1
+                
+        avg_age = [30, 25]
+        glasses = [True, True]
+        smile = [True, True]
+        eyesOpen = [True, True]
+        mouthOpen = [True, True]
+        beard = [True, True]
+        mustache = [True, True]
+        user_emotion = ["HAPPY", "HAPPY"]
+        
+        if count[0] > 0:       
+            avg_age[0] = age_sum[0] / count[0]            
+            glasses[0] = True if nglasses[0] > (count[0]/2) else False
+            smile[0] = True if nsmile[0] > (count[0]/2) else False
+            
+            eyesOpen[0] = True if nsmile[0] > (count[0]/2) else False
+            mouthOpen[0] = True if nsmile[0] > (count[0]/2) else False
+            beard[0] = True if nsmile[0] > (count[0]/2) else False
+            mustache[0] = True if nsmile[0] > (count[0]/2) else False
+
+            print('emotion_counter for man: ', emotion_counter[0])            
+            maxValue = 0
+            pos = 0
+            for i, v in enumerate(emotion_counter[0]):
+                if v > maxValue:
+                    maxValue = v
+                    pos = i        
+            print('pos for man: ', pos)
+            
+            if pos == 0:
+                user_emotion[0] = 'HAPPY'
+            elif pos == 1:
+                user_emotion[0] = 'SURPRISED'
+            elif pos == 2:
+                user_emotion[0] = 'CALM'
+            elif pos == 3:
+                user_emotion[0] = 'ANGRY'
+            elif pos == 4:
+                user_emotion[0] = 'FEAR'
+            elif pos == 5:
+                user_emotion[0] = 'CONFUSED'
+            elif pos == 6:
+                user_emotion[0] = 'DISGUSTED'
+            elif pos == 7:
+                user_emotion[0] = 'SAD'
+                                
+        if count[1] > 0:
+            avg_age[1] = age_sum[1] / count[1]
+            glasses[1] = True if nglasses[1] > (count[1]/2) else False
+            smile[1] = True if nsmile[1] > (count[1]/2) else False
+            
+            eyesOpen[1] = True if nsmile[1] > (count[0]/2) else False
+            mouthOpen[1] = True if nsmile[1] > (count[0]/2) else False
+            beard[1] = True if nsmile[1] > (count[0]/2) else False
+            mustache[1] = True if nsmile[1] > (count[0]/2) else False
+            
+            print('emotion_counter for weman: ', emotion_counter[1])
+            maxValue = 0
+            pos = 0
+            for i, v in enumerate(emotion_counter[1]):
+                if v > maxValue:
+                    maxValue = v
+                    pos = i        
+            print('pos for weman: ', pos)
+            
+            if pos == 0:
+                user_emotion[1] = 'HAPPY'
+            elif pos == 1:
+                user_emotion[1] = 'SURPRISED'
+            elif pos == 2:
+                user_emotion[1] = 'CALM'
+            elif pos == 3:
+                user_emotion[1] = 'ANGRY'
+            elif pos == 4:
+                user_emotion[1] = 'FEAR'
+            elif pos == 5:
+                user_emotion[1] = 'CONFUSED'
+            elif pos == 6:
+                user_emotion[1] = 'DISGUSTED'
+            elif pos == 7:
+                user_emotion[1] = 'SAD'
+        
+        print('For man:')    
+        print('counter: ', count[0])
+        print('avg_age: ', int(avg_age[0]))
+        print('glasses: ', glasses[0])
+        print('smile: ', smile[0])        
+        print('eyesOpen: ', eyesOpen[0])
+        print('mouthOpen: ', mouthOpen[0])
+        print('beard: ', beard[0])
+        print('mustache: ', mustache[0])
+        print('emotion: ', user_emotion[0])
+            
+        print('For weman:')    
+        print('avg_age: ', int(avg_age[1]))
+        print('counter: ', count[1])
+        print('glasses: ', glasses[1])
+        print('smile: ', smile[1])
+        print('eyesOpen: ', eyesOpen[1])
+        print('mouthOpen: ', mouthOpen[1])
+        print('beard: ', beard[1])
+        print('mustache: ', mustache[1])
+        print('emotion: ', user_emotion[1])
+                
     except Exception as ex:
         err_msg = traceback.format_exc()
         print('err_msg: ', err_msg)
@@ -134,13 +290,31 @@ def lambda_handler(event, context):
     modelId = profile['model_id']
     generated_urls = []
     
-    # man
-    text_prompt = "The face of a Korean man in his early 30s. A face that smiles 80 percent of the time. No glasses, eyes open, 75 percent of the time. his emotion is mainly Calm. He loves puppy and IT Technology."
+    # man    
+    age_str = int(avg_age[0])
+    smile_str = "smiles," if(smile[0]) == True else ""
+    glass_str = "waring glasses," if(glasses[0]) == True else "not wearing glasses,"
+    eyes_str = "eyes open" if(eyesOpen[0]) == True else "eyes close"
+    emotion_str = user_emotion[0] + ','
+    
+    #text_prompt = f"The face of a Korean man in his early 30s. A face that smiles 80 percent of the time. No glasses, eyes open, 75 percent of the time. his emotion is mainly Calm. He loves puppy and IT Technology."
+    text_prompt = f"The face of a {age_str}-year-old attractive and handsome korean man. A face that {emotion_str} {smile_str} {glass_str} {eyes_str}. He loves puppy and IT Technology."
+    print('text_prompt for man: ', text_prompt)
+    
     fname = "man"
     generated_urls = generatative_image(boto3_bedrock, modelId, k, text_prompt, fname, generated_urls)
          
     # weman
-    text_prompt = "The face of a Korean woman in her early 30s. A face that smiles 80 percent of the time. No glasses, eyes open, 75 percent of the time. her emotion is mainly Calm. She loves puppy and IT Technology and K-beauty."
+    age_str = int(avg_age[1])
+    smile_str = "smiles," if(smile[1]) == True else ""
+    glass_str = "waring glasses," if(glasses[1]) == True else "not wearing glasses,"
+    eyes_str = "eyes open" if(eyesOpen[1]) == True else "eyes close"
+    emotion_str = user_emotion[1] + ','
+    
+    #text_prompt = f"The face of a Korean woman in her early 30s. A face that smiles 80 percent of the time. No glasses, eyes open, 75 percent of the time. her emotion is mainly Calm. She loves puppy and IT Technology and K-beauty."
+    text_prompt = f"The face of a {age_str}-year-old attractive and beautiful korean woman. A face that {emotion_str} {smile_str} {glass_str} {eyes_str}. She loves puppy and IT Technology and K-beauty."
+    print('text_prompt for weman: ', text_prompt)
+    
     fname = "weman"
     generated_urls = generatative_image(boto3_bedrock, modelId, k, text_prompt, fname, generated_urls)
     
