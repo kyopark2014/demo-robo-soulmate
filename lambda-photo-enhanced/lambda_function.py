@@ -325,10 +325,12 @@ def lambda_handler(event, context):
     print(event)
     
     # outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
+    # outpaint_prompt =['sky','building','forest']   # ['desert', 'sea', 'mount']
     outpaint_prompt =[
-        "a breathtaking, surreal background image that combines elements of nature and fantasy. a lush, vibrant forest with towering trees and mystical creatures. Incorporating intricate details like glowing mushrooms, ancient ruins, and a shimmering waterfall cascading into a crystal-clear pond. Let your imagination run wild, and infusing the scene with a sense of wonder and enchantment.",
+        "a breathtaking cosmic landscape, filled with swirling galaxies, nebulae, and stars. Creating a mesmerizing interplay of vibrant colors, from deep indigos and violets to fiery oranges and reds. Incorporating intricate details and a sense of depth, making the viewer feel like they're floating amidst the wonders of the universe.",
+    #    "a breathtaking, surreal background image that combines elements of nature and fantasy. a lush, vibrant forest with towering trees and mystical creatures. Incorporating intricate details like glowing mushrooms, ancient ruins, and a shimmering waterfall cascading into a crystal-clear pond. Let your imagination run wild, and infusing the scene with a sense of wonder and enchantment.",
         "a whimsical and enchanting background featuring a magnificent unicorn. Depicting the mythical creature standing in a lush, verdant meadow surrounded by vibrant wildflowers and towering, twisting willow trees. Incorporate ethereal elements like glittering streams, rainbow-hued butterflies, and beams of warm sunlight filtering through the canopy. Imbuing the scene with a sense of magic and wonder",
-        "A highly detailed digital illustration of a futuristic city on a floating island, with towering skyscrapers made of sleek chrome and glass, hovering above the clouds against a vibrant sunset sky filled with shades of orange, pink, and purple."
+        "A highly detailed digital background image of a futuristic city on a floating island, with towering skyscrapers made of sleek chrome and glass, hovering above the clouds against a vibrant sunset sky filled with shades of orange, pink, and purple."
     #    "A futuristic cityscape , focusing purely on the architecture and technology. The scene shows a skyline dominated by towering skyscrapers", 
     #    "A medieval village with thatched-roof cottages, villagers in period clothing, and a bustling market square during a festival",   
     #    "A panoramic view of a futuristic city by the sea, with a serene waterfront, advanced aquatic transport systems, and shimmering buildings reflecting the setting sun."
