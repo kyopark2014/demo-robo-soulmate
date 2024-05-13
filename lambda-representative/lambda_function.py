@@ -35,7 +35,7 @@ def upload_image_to_s3(object_name,img_b64):
             raise Exception ("Not able to put an object")
 
 def generatative_image(boto3_bedrock, modelId, k, text_prompt, negative_text, fname, generated_urls):    
-    cfgScale = 7.5  # default 8, min: 1.1, max: 10.0 (lower value to introduce more randomness)
+    cfgScale = 3  # default 8, min: 1.1, max: 10.0 (lower value to introduce more randomness)
     seed = 43
     
     if negative_text:
