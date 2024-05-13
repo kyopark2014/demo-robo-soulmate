@@ -169,8 +169,6 @@ def lambda_handler(event, context):
             
             if item["eyesOpen"]["BOOL"] == True:
                 neyesOpen[genderType] = neyesOpen[genderType] + 1
-            else:
-                print('eys is close')  
             
             if item["mouthOpen"]["BOOL"] == True:
                 nmouthOpen[genderType] = nmouthOpen[genderType] + 1
