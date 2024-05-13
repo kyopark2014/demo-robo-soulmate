@@ -211,14 +211,14 @@ export class CdkDansingRobotStack extends cdk.Stack {
     });
 
     // DynamoDB for word cloud
-  /*  const wordCloudTableName = `db-word-cloud-for-${projectName}`;
+    const wordCloudTableName = `db-word-cloud-for-${projectName}`;
     const wordCloudDataTable = new dynamodb.Table(this, `db-word-cloud-for-${projectName}`, {
       tableName: wordCloudTableName,
       partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'requestId', type: dynamodb.AttributeType.STRING }, 
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-    }); */
+    });
 
     // copy web application files into s3 bucket
     /* new s3Deploy.BucketDeployment(this, `upload-HTML-for-${projectName}`, {
@@ -1357,11 +1357,11 @@ export class CdkDansingRobotStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(300),
       role: roleLambda,
       environment: {
-       // tableName: wordCloudTableName,
+        tableName: wordCloudTableName,
         profile_of_LLMs:JSON.stringify(claude3_sonnet),
       }
     });     
-    //wordCloudDataTable.grantReadWriteData(lambdaWordCloud); // permission for dynamo
+    wordCloudDataTable.grantReadWriteData(lambdaWordCloud); // permission for dynamo
   
     // POST method - translation
     const wordcloud = api.root.addResource("wordcloud");
