@@ -1057,7 +1057,14 @@ def extract_text(chat, img_base64):
     return extracted_text
 
 dialog = ""
-        
+
+def get_lambda_client(region):
+    # bedrock
+    return boto3.client(
+        service_name='lambda',
+        region_name=region
+    )
+            
 def getResponse(jsonBody):
     global dialog
     
@@ -1141,6 +1148,29 @@ def getResponse(jsonBody):
                 print('initiate the chat memory!')
                 # msg  = "The chat memory was intialized in this session."
                 msg  = "새로운 대화를 시작합니다."
+                
+                # for word cloud
+                function_name = "lambda-wordcloud"
+                lambda_region = 'ap-northeast-2'
+                try:
+                    lambda_client = get_lambda_client(region=lambda_region)
+                    payload = {
+                        "userId": userId,
+                        "text": dialog
+                    }
+                    response = lambda_client.invoke(
+                        FunctionName=function_name,
+                        Payload=json.dumps(payload),
+                    )
+                    print("Invoked function %s.", function_name)
+                    print("Response: ", response)
+                    
+                    dialog = ""
+                except Exception:
+                    err_msg = traceback.format_exc()
+                    print('error message: ', err_msg)
+                    raise Exception ("Not able to write into dynamodb")    
+                
             else:            
                 if convType == "normal":
                     msg = general_conversation(chat, text)   
@@ -1165,9 +1195,8 @@ def getResponse(jsonBody):
             memory_chain.chat_memory.add_ai_message(msg)
             
             dialog = dialog + f"Human: {text}\n"
-            dialog = dialog + f"AI: {msg}\n"
-            
-            print('dialog: ', dialog)
+            dialog = dialog + f"AI: {msg}\n"            
+            # print('dialog: ', dialog)
                     
         elif type == 'document':
             isTyping()
