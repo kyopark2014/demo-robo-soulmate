@@ -97,21 +97,22 @@ def lambda_handler(event, context):
     print('topics: ', topics)
     
     userId = uuid.uuid4()
+    for topic in topics:
+        print('topic: ', topic)
+        
+        item = {
+            'user_id': {'S':str(userId)},
+            'topic': {'S':topic}
+        }
     
-    topic = "conversation"
-    item = {
-        'user_id': {'S':str(userId)},
-        'topic': {'S':topic}
-    }
-    
-    dynamo_client = boto3.client('dynamodb')
-    try:
-        resp =  dynamo_client.put_item(TableName=tableName, Item=item)
-    except Exception:
-        err_msg = traceback.format_exc()
-        print('error message: ', err_msg)
-        raise Exception ("Not able to write into dynamodb")               
-    
+        dynamo_client = boto3.client('dynamodb')
+        try:
+            resp =  dynamo_client.put_item(TableName=tableName, Item=item)
+        except Exception:
+            err_msg = traceback.format_exc()
+            print('error message: ', err_msg)
+            raise Exception ("Not able to write into dynamodb")               
+        
     end_time = time.time()
     time_for_estimation = end_time - start_time
     print('time_for_estimation: ', time_for_estimation)
