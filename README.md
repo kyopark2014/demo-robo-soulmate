@@ -1,4 +1,4 @@
-# Robo SoulMate의 구현
+# Robo SoulMate 데모
 
 여기에서는 Robo SoulMate 데모를 위한 상세 코드 및 구현 API를 정의합니다. 
 
