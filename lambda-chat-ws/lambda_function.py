@@ -1150,7 +1150,7 @@ def getResponse(jsonBody):
                 msg  = "새로운 대화를 시작합니다."
                 
                 # for word cloud
-                function_name = "lambda-wordcloud"
+                function_name = "lambda-wordcloud-for-demo-dansing-robot"
                 lambda_region = 'ap-northeast-2'
                 try:
                     lambda_client = get_lambda_client(region=lambda_region)
