@@ -31,6 +31,8 @@ def push_game_event(state):
         "AI-Dancing-Robot-006",
         "AI-Dancing-Robot-007",
         "AI-Dancing-Robot-008",
+        "AI-Dancing-Robot-009",
+        "AI-Dancing-Robot-010",
         "AI-Dancing-Robot-998",
         "AI-Dancing-Robot-999",
         "AI-Dancing-Robot-jinseony",
