@@ -1055,6 +1055,8 @@ def extract_text(chat, img_base64):
         raise Exception ("Not able to request to LLM")
     
     return extracted_text
+
+dialog = []
         
 def getResponse(jsonBody):
     print('jsonBody: ', jsonBody)
@@ -1092,7 +1094,7 @@ def getResponse(jsonBody):
     # create memory
     if userId in map_chain:  
         print('memory exist. reuse it!')        
-        memory_chain = map_chain[userId]        
+        memory_chain = map_chain[userId]
     else: 
         print('memory does not exist. create new one!')        
         memory_chain = ConversationBufferWindowMemory(memory_key="chat_history", output_key='answer', return_messages=True, k=2)
@@ -1159,6 +1161,11 @@ def getResponse(jsonBody):
                                         
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
+            
+            dialog[userId] += f"Human: {text}\n"
+            dialog[userId] += f"AI: {msg}\n"
+            
+            print('dialog: ', dialog)
                     
         elif type == 'document':
             isTyping()
