@@ -319,7 +319,7 @@ def general_conversation(chat, query):
         msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
-        print('msg: ', msg)
+        # print('msg: ', msg)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
@@ -353,7 +353,7 @@ def general_conversation_for_english(chat, query):
         msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
-        print('msg: ', msg)
+        # print('msg: ', msg)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
@@ -402,7 +402,7 @@ def ISTJ(chat, query):
         msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
-        print('msg: ', msg)
+        # print('msg: ', msg)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
@@ -501,7 +501,7 @@ def ISTP(chat, query):
         msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
-        print('msg: ', msg)
+        # print('msg: ', msg)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
@@ -599,7 +599,7 @@ def ESFP(chat, query):
         msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
-        print('msg: ', msg)
+        # print('msg: ', msg)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
@@ -696,7 +696,7 @@ def INFJ(chat, query):
         msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
-        print('msg: ', msg)
+        # print('msg: ', msg)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
@@ -801,7 +801,7 @@ def ESTJ(chat, query):
         msg = readStreamMsg(stream.content)    
                             
         msg = stream.content
-        print('msg: ', msg)
+        # print('msg: ', msg)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
@@ -1350,7 +1350,7 @@ def lambda_handler(event, context):
                 requestId  = jsonBody['request_id']
                 try:                    
                     msg = getResponse(jsonBody)
-                    print('msg: ', msg)
+                    # print('msg: ', msg)
                     
                 except Exception:
                     err_msg = traceback.format_exc()
