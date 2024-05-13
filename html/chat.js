@@ -1291,7 +1291,7 @@ function initiate() {
 
     if(langstate=='korean') {
         addNotifyMessage("Amazon Bedrock을 이용하여 채팅을 시작합니다.");
-        addReceivedMessage(uuidv4(), "안녕하세요. Robo SoleMate와 즐거운 대화를 시작합니다.")
+        addReceivedMessage(uuidv4(), "안녕하세요. Robo SoulMate와 즐거운 대화를 시작합니다.")
     }
     else {
         addNotifyMessage("Start chat with Amazon Bedrock");             
