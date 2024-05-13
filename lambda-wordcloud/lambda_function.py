@@ -99,6 +99,7 @@ def lambda_handler(event, context):
     
     
     userId = uuid.uuid4()
+    dynamo_client = boto3.client('dynamodb')
     for topic in topics:
         print('topic: ', topic)
         
@@ -106,10 +107,10 @@ def lambda_handler(event, context):
             'user_id': {'S':str(userId)},
             'topic': {'S':topic}
         }
-    
-        dynamo_client = boto3.client('dynamodb')
+        
         try:
             resp =  dynamo_client.put_item(TableName=tableName, Item=item)
+            print('resp: ', resp)
         except Exception:
             err_msg = traceback.format_exc()
             print('error message: ', err_msg)
