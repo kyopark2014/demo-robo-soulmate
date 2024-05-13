@@ -100,3 +100,23 @@ if len(dialog)>10:
          err_msg = traceback.format_exc()
          print('error message: ', err_msg)
 ```
+
+### 퍼미션
+
+Lambda Invoke를 위한 퍼미션은 아래와 같습니다. invokeLambdaPolicy로 policy를 생성하여 활용합니다.
+
+```java
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Invoke",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:InvokeFunction"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
