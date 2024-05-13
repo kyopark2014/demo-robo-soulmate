@@ -31,9 +31,9 @@ Photo Booth 운영에 필요한 API는 [photo-booth-api.md](./photo-booth-api.md
 
 방문자의 Gesture에 대한 응답은 [gesture-score.md](./gesture-score.md)에 따라 처리합니다.
 
-### Robot Commend의 수행
+### Robot Command의 수행
 
-미리 예약된 명령어에 대해서는 LLM에 대한 질의없이 바로 해당 명령어를 수행합니다. [robot-commend.md](./robot-commend.md)에서는 예약어 등록방법에 대해 설명하고 있습니다.
+미리 예약된 명령어에 대해서는 LLM에 대한 질의없이 바로 해당 명령어를 수행합니다. [robot-command.md](./robot-command.md)에서는 예약어 등록방법에 대해 설명하고 있습니다.
 
 
 ### Game 상태 전달
