@@ -1,6 +1,6 @@
-# AI Dansing Robot 
+# Robo SoulMate의 구현
 
-여기에서는 AI Dansing Robot에 대한 프로젝트를 준비합니다.
+여기에서는 Robo SoulMate 데모를 위한 상세 코드 및 구현 API를 정의합니다. 
 
 전체적인 Architecture는 아래와 같습니다. 
 - Voice interpreter와 IoT Controller는 AWS IoT Greengrass에 Component로 설치되고, AI Controller는 로봇의 Chrome 브라우저에 javascript로 구성됩니다.
