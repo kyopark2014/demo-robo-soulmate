@@ -194,6 +194,13 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
             contentType="application/json"
         )
         # print('response: ', response)
+        
+        # Output processing
+        response_body = json.loads(response.get("body").read())
+        img_b64 = response_body["images"][0]
+        print(f"Output: {img_b64[0:80]}...")
+        
+        return True, img_b64
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)                    
@@ -206,42 +213,39 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
         print('bedrock_region: ', bedrock_region)
         
         # raise Exception ("Not able to request for bedrock")
-                
-    # Output processing
-    response_body = json.loads(response.get("body").read())
-    img_b64 = response_body["images"][0]
-    print(f"Output: {img_b64[0:80]}...")
-    
-    return img_b64
+        return False, ""         
 
 def parallel_process_for_outpainting(conn, object_img, mask_img, text_prompt, object_name, object_key, selected_LLM, selected_credential):  
     start_time_for_outpainting = time.time()
     
     boto3_bedrock, modelId = get_client(profile_of_Image_LLMs, selected_LLM, selected_credential)
     
-    img_b64 = generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
-            
-    # upload
-    try:
-        response = s3_client.put_object(
-            Bucket=s3_bucket,
-            Key=object_key,
-            ContentType='image/jpeg',
-            Body=base64.b64decode(img_b64)
-        )
-        # print('response: ', response)
-    except Exception:
-            err_msg = traceback.format_exc()
-            print('error message: ', err_msg)                
-            raise Exception ("Not able to put an object")
+    result, img_b64 = generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, text_prompt)
     
-    print('object_name: ', object_name)    
-    url = path+s3_photo_prefix+'/'+parse.quote(object_name)
-    print('url: ', url)
+    if result == True:            
+        # upload
+        try:
+            response = s3_client.put_object(
+                Bucket=s3_bucket,
+                Key=object_key,
+                ContentType='image/jpeg',
+                Body=base64.b64decode(img_b64)
+            )
+            # print('response: ', response)
+        except Exception:
+                err_msg = traceback.format_exc()
+                print('error message: ', err_msg)                
+                raise Exception ("Not able to put an object")
         
-    end_time_for_outpainting = time.time()
-    time_for_outpainting = end_time_for_outpainting - start_time_for_outpainting
-    print('time_for_outpainting: ', time_for_outpainting)
+        print('object_name: ', object_name)    
+        url = path+s3_photo_prefix+'/'+parse.quote(object_name)
+        print('url: ', url)
+            
+        end_time_for_outpainting = time.time()
+        time_for_outpainting = end_time_for_outpainting - start_time_for_outpainting
+        print('time_for_outpainting: ', time_for_outpainting)
+    else:
+        url = ""
     
     conn.send(url)
     conn.close()
@@ -502,7 +506,11 @@ def lambda_handler(event, context):
                         
         for parent_conn in parent_connections:
             url = parent_conn.recv()
-            generated_urls.append(url)
+            
+            if url:
+                generated_urls.append(url)
+            else:
+                print('url is empty')
 
         for process in processes:
             process.join()
