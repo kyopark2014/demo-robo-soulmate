@@ -1297,6 +1297,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
     s3Bucket.grantReadWrite(lambdaGesture);
 
     // lambda for lambdaRepresentative
+    /*
     const lambdaRepresentative = new lambda.Function(this, `lambda-representative-for-${projectName}`, {
       description: 'lambda for representative',
       functionName: `lambda-representative-${projectName}`,
@@ -1309,7 +1310,20 @@ export class CdkDansingRobotStack extends cdk.Stack {
         path: 'https://'+domainName+'/',
         profile_of_Image_LLMs:JSON.stringify(profile_of_Image_LLMs),
       }
-    });
+    }); */
+
+    const lambdaRepresentative = new lambda.DockerImageFunction(this, `lambda-representative-for-${projectName}`, {
+      description: 'lambda for representative',
+      functionName: `lambda-representative-for-${projectName}`,
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-representative')),
+      timeout: cdk.Duration.seconds(120),
+      role: roleLambda,
+      environment: {
+        bucketName: s3Bucket.bucketName,
+        path: 'https://'+domainName+'/',
+        profile_of_Image_LLMs:JSON.stringify(profile_of_Image_LLMs),
+      }
+    });    
     s3Bucket.grantReadWrite(lambdaRepresentative);
 
     // POST method - lambdaRepresentative
