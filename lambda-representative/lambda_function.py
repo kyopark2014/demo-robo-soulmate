@@ -89,7 +89,7 @@ def generatative_image(boto3_bedrock, modelId, k, text_prompt, negative_text, fn
     
     ext = 'png'
     if k==1:
-        object_name = fname+'.png'
+        object_name = 'dashboard'+fname+'.png'
         
         object_name = f'{fname}.{ext}'        
         url = path+'dashboard'+'/'+parse.quote(object_name)
