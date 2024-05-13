@@ -1059,6 +1059,8 @@ def extract_text(chat, img_base64):
 dialog = ""
         
 def getResponse(jsonBody):
+    global dialog
+    
     print('jsonBody: ', jsonBody)
     
     userId  = jsonBody['user_id']
