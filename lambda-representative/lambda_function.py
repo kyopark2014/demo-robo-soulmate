@@ -161,22 +161,24 @@ def lambda_handler(event, context):
             # print('age: ', item["age"]["N"])    
             age_sum[genderType] = age_sum[genderType] + int(item["age"]["N"])
             
-            if item["sunglasses"]["BOOL"] == "True" or item["eyeglasses"]["BOOL"] == "True":
+            if item["sunglasses"]["BOOL"] == True or item["eyeglasses"]["BOOL"] == True:
                 nglasses[genderType] = nglasses[genderType] + 1
             
-            if item["smile"]["BOOL"] == "True":
+            if item["smile"]["BOOL"] == True:
                 nsmile[genderType] = nsmile[genderType] + 1
             
-            if item["eyesOpen"]["BOOL"] == "True":
+            if item["eyesOpen"]["BOOL"] == True:
                 neyesOpen[genderType] = neyesOpen[genderType] + 1
+            else:
+                print('eys is close')  
             
-            if item["mouthOpen"]["BOOL"] == "True":
+            if item["mouthOpen"]["BOOL"] == True:
                 nmouthOpen[genderType] = nmouthOpen[genderType] + 1
             
-            if item["beard"]["BOOL"] == "True":
+            if item["beard"]["BOOL"] == True:
                 nbeard[genderType] = nbeard[genderType] + 1
             
-            if item["mustache"]["BOOL"] == "True":
+            if item["mustache"]["BOOL"] == True:
                 nmustache[genderType] = nmustache[genderType] + 1
                 
             emotion_counter[genderType][emotion[item["emotions"]["S"]]] = emotion_counter[genderType][emotion[item["emotions"]["S"]]] + 1
@@ -195,10 +197,10 @@ def lambda_handler(event, context):
             glasses[0] = True if nglasses[0] > (count[0]/2) else False
             smile[0] = True if nsmile[0] > (count[0]/2) else False
             
-            eyesOpen[0] = True if nsmile[0] > (count[0]/2) else False
-            mouthOpen[0] = True if nsmile[0] > (count[0]/2) else False
-            beard[0] = True if nsmile[0] > (count[0]/2) else False
-            mustache[0] = True if nsmile[0] > (count[0]/2) else False
+            eyesOpen[0] = True if neyesOpen[0] > (count[0]/2) else False
+            mouthOpen[0] = True if nmouthOpen[0] > (count[0]/2) else False
+            beard[0] = True if nbeard[0] > (count[0]/2) else False
+            mustache[0] = True if nmustache[0] > (count[0]/2) else False
 
             print('emotion_counter for man: ', emotion_counter[0])            
             maxValue = 0
@@ -231,10 +233,10 @@ def lambda_handler(event, context):
             glasses[1] = True if nglasses[1] > (count[1]/2) else False
             smile[1] = True if nsmile[1] > (count[1]/2) else False
             
-            eyesOpen[1] = True if nsmile[1] > (count[0]/2) else False
-            mouthOpen[1] = True if nsmile[1] > (count[0]/2) else False
-            beard[1] = True if nsmile[1] > (count[0]/2) else False
-            mustache[1] = True if nsmile[1] > (count[0]/2) else False
+            eyesOpen[1] = True if neyesOpen[1] > (count[0]/2) else False
+            mouthOpen[1] = True if nmouthOpen[1] > (count[0]/2) else False
+            beard[1] = True if nbeard[1] > (count[0]/2) else False
+            mustache[1] = True if nmustache[1] > (count[0]/2) else False
             
             print('emotion_counter for weman: ', emotion_counter[1])
             maxValue = 0
