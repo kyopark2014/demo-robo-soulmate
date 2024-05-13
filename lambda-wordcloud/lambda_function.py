@@ -73,7 +73,7 @@ def extract_main_topics(chat, text):
             }
         )
         msg = result.content
-        print('translated text: ', msg)
+        # print('msg: ', msg)
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)                    
