@@ -152,7 +152,7 @@ def lambda_handler(event, context):
         count = [0, 0]
         
         for item in resp["Items"]:
-            if item["gender"]["S"] == "man":
+            if item["gender"]["S"] == "Male":
                 genderType = 0
             else:
                 genderType = 1
