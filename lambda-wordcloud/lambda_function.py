@@ -82,15 +82,21 @@ def extract_main_topics(chat, text):
     return msg[msg.find('<result>')+8:len(msg)-9] # remove <result> tag
     
 def lambda_handler(event, context):
-    #print(event)        
+    print(event)        
     start_time = time.time()    
     
+    """
     body = event['body']
     print("body: ", body)        
     jsonBody = json.loads(body)            
     text = jsonBody["text"]
     print('text: ', text)
     userId = jsonBody["userId"]
+    print('userId: ', userId)
+    """
+    text = event["text"]
+    print('text: ', text)
+    userId = event["userId"]
     print('userId: ', userId)
         
     # extract main topics in text
