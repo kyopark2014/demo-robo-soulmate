@@ -85,15 +85,6 @@ def lambda_handler(event, context):
     print(event)        
     start_time = time.time()    
     
-    """
-    body = event['body']
-    print("body: ", body)        
-    jsonBody = json.loads(body)            
-    text = jsonBody["text"]
-    print('text: ', text)
-    userId = jsonBody["userId"]
-    print('userId: ', userId)
-    """
     text = event["text"]
     print('text: ', text)
     userId = event["userId"]
@@ -113,6 +104,7 @@ def lambda_handler(event, context):
         item = {
             'userId': {'S':userId},
             'requestId': {'S':id},
+            'timestamp': {'S':str(time.time())},
             'topic': {'S':topic}
         }
         
