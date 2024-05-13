@@ -12,20 +12,14 @@ import traceback
 
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
 from langchain_aws import ChatBedrock
+import uuid
 
-bucket = os.environ.get('s3_bucket') # bucket name
-s3_prefix = os.environ.get('s3_prefix')
-historyTableName = os.environ.get('historyTableName')
-speech_prefix = 'speech/'
-
-s3 = boto3.client('s3')
-polly = boto3.client('polly')
+tableName = os.environ.get('tableName') 
+profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
+selected_LLM = 0
    
 HUMAN_PROMPT = "\n\nHuman:"
 AI_PROMPT = "\n\nAssistant:"
-
-selected_LLM = 0
-profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
 
 def get_chat(profile_of_LLMs, selected_LLM):
     profile = profile_of_LLMs[selected_LLM]
@@ -85,32 +79,41 @@ def extract_main_topics(chat, text):
         raise Exception ("Not able to request to LLM")
 
     return msg[msg.find('<result>')+8:len(msg)-9] # remove <result> tag
-
     
 def lambda_handler(event, context):
-    #print(event)
-    
-    start_time = time.time()
+    #print(event)        
+    start_time = time.time()    
     
     body = event['body']
-    print("body: ", body)
-        
-    jsonBody = json.loads(body)        
-    
-    userId = jsonBody["userId"]
-    print('userId: ', userId)
-    
+    print("body: ", body)        
+    jsonBody = json.loads(body)            
     text = jsonBody["text"]
     print('text: ', text)
         
     # extract main topics in text
-    chat = get_chat(profile_of_LLMs, selected_LLM)
-    
-    topics = extract_main_topics(chat, text)
+    chat = get_chat(profile_of_LLMs, selected_LLM)    
+    topics = extract_main_topics(chat, text)    
     print('topics: ', topics)
+    
+    userId = uuid.uuid4()
+    
+    topic = "conversation"
+    item = {
+        'user_id': {'S':str(userId)},
+        'topic': {'S':topic}
+    }
+    
+    dynamo_client = boto3.client('dynamodb')
+    try:
+        resp =  dynamo_client.put_item(TableName=tableName, Item=item)
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)
+        raise Exception ("Not able to write into dynamodb")               
     
     end_time = time.time()
     time_for_estimation = end_time - start_time
+    print('time_for_estimation: ', time_for_estimation)
     
     return {
         "isBase64Encoded": False,

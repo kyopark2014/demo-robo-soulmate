@@ -1357,6 +1357,7 @@ export class CdkDansingRobotStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(300),
       role: roleLambda,
       environment: {
+        tableName: wordCloudTableName,
         profile_of_LLMs:JSON.stringify(claude3_sonnet),
       }
     });     
