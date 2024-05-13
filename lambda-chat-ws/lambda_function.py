@@ -1149,28 +1149,29 @@ def getResponse(jsonBody):
                 # msg  = "The chat memory was intialized in this session."
                 msg  = "새로운 대화를 시작합니다."
                 
-                # for word cloud
-                function_name = "lambda-wordcloud-for-demo-dansing-robot"
-                lambda_region = 'ap-northeast-2'
-                try:
-                    lambda_client = get_lambda_client(region=lambda_region)
-                    payload = {
-                        "userId": userId,
-                        "text": dialog
-                    }
-                    response = lambda_client.invoke(
-                        FunctionName=function_name,
-                        Payload=json.dumps(payload),
-                    )
-                    print("Invoked function %s.", function_name)
-                    print("Response: ", response)
+                if len(dialog)>10:
+                    # for word cloud
+                    function_name = "lambda-wordcloud-for-demo-dansing-robot"
+                    lambda_region = 'ap-northeast-2'
+                    try:
+                        lambda_client = get_lambda_client(region=lambda_region)
+                        payload = {
+                            "userId": userId,
+                            "text": dialog
+                        }
+                        response = lambda_client.invoke(
+                            FunctionName=function_name,
+                            Payload=json.dumps(payload),
+                        )
+                        print("Invoked function %s.", function_name)
+                        print("Response: ", response)
+                        
+                        dialog = ""
+                    except Exception:
+                        err_msg = traceback.format_exc()
+                        print('error message: ', err_msg)
+                        # raise Exception ("Not able to write into dynamodb")    
                     
-                    dialog = ""
-                except Exception:
-                    err_msg = traceback.format_exc()
-                    print('error message: ', err_msg)
-                    raise Exception ("Not able to write into dynamodb")    
-                
             else:            
                 if convType == "normal":
                     msg = general_conversation(chat, text)   
