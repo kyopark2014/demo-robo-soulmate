@@ -34,4 +34,36 @@ def extract_main_topics(chat, text):
     return msg[msg.find('<result>')+8:len(msg)-9] # remove <result> tag
 ```
 
+extract_main_topics()을 이용하여 아래와 같이 주제어(topic)을 추출한 후에 DynamoDB에 저장합니다. 이때, 중복을 방지하기 위하여 Partition key로 userIdㅇ와 requestId를 이용합니다. 
 
+```python
+    # extract main topics in text
+    chat = get_chat(profile_of_LLMs, selected_LLM)    
+    topics = json.loads(extract_main_topics(chat, text)) 
+    print('topics: ', topics)
+    
+    requestId = str(uuid.uuid4())
+    timestamp = str(time.time())
+    print('requestId: ', requestId)
+    print('timestamp: ', timestamp)
+    
+    dynamo_client = boto3.client('dynamodb')
+    for i, topic in enumerate(topics):
+        print('topic: ', topic)
+        
+        id = f"{requestId}_{i}"
+        item = {
+            'userId': {'S':userId},
+            'requestId': {'S':id},
+            'timestamp': {'S':timestamp},
+            'topic': {'S':topic}
+        }
+        
+        try:
+            resp =  dynamo_client.put_item(TableName=tableName, Item=item)
+            print('resp: ', resp)
+        except Exception:
+            err_msg = traceback.format_exc()
+            print('error message: ', err_msg)
+            raise Exception ("Not able to write into dynamodb")      
+```
