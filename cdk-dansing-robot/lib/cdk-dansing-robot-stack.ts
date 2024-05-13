@@ -842,9 +842,9 @@ export class CdkDansingRobotStack extends cdk.Stack {
     // SQS for photo event
     let queue = new sqs.Queue(this, `queue-photo-evnet-for-${projectName}`, {
       visibilityTimeout: cdk.Duration.seconds(600),
-      //queueName: `queue-photo-event-for-${projectName}-.fifo`,  
-      //fifo: true,
-      queueName: `queue-photo-event-for-${projectName}`,  
+      queueName: `queue-photo-event-for-${projectName}-.fifo`,  
+      fifo: true,
+      //queueName: `queue-photo-event-for-${projectName}`,  
       contentBasedDeduplication: false,
       deliveryDelay: cdk.Duration.millis(0),
       retentionPeriod: cdk.Duration.days(2),

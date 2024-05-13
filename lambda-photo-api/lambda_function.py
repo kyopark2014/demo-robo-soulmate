@@ -55,19 +55,19 @@ def lambda_handler(event, context):
     try:
         print('sqsUrl: ', sqsUrl)            
             
-        #sqs_client.send_message(  # fifo
-        #    QueueUrl=sqsUrl, 
-        #    MessageAttributes={},
-        #    MessageDeduplicationId=eventId,
-        #    MessageGroupId="photoApi",
-        #    MessageBody=json.dumps(message)
-        #)
-        sqs_client.send_message(  # standard 
-            DelaySeconds=0,
+        sqs_client.send_message(  # fifo
+            QueueUrl=sqsUrl, 
             MessageAttributes={},
-            MessageBody=json.dumps(message),
-            QueueUrl=sqsUrl
+            MessageDeduplicationId=eventId,
+            MessageGroupId="photoApi",
+            MessageBody=json.dumps(message)
         )
+        #sqs_client.send_message(  # standard 
+        #    DelaySeconds=0,
+        #    MessageAttributes={},
+        #    MessageBody=json.dumps(message),
+        #    QueueUrl=sqsUrl
+        #)
         print('Successfully push the queue message: ', json.dumps(message))
             
     except Exception as e:
