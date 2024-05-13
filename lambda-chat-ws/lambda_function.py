@@ -1195,7 +1195,7 @@ def getResponse(jsonBody):
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
             
-            if text != 'clearMemory':
+            if text != 'clearMemory' and text != "새로운 대화를 시작합니다.":
                 dialog = dialog + f"Human: {text}\n"
                 dialog = dialog + f"AI: {msg}\n"            
                 # print('dialog: ', dialog)
