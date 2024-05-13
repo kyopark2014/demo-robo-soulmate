@@ -177,7 +177,7 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
         },                                                 
         "imageGenerationConfig": {
             "numberOfImages": 1,
-            "quality": "premium",  # standard, premium
+            "quality": "premium",  # standard, premium,
             # "quality": "standard",
             "cfgScale": cfgScale,
             # "height": height,
@@ -205,7 +205,7 @@ def generate_outpainting_image(boto3_bedrock, modelId, object_img, mask_img, tex
         bedrock_region =  profile['bedrock_region']
         print('bedrock_region: ', bedrock_region)
         
-        raise Exception ("Not able to request for bedrock")
+        # raise Exception ("Not able to request for bedrock")
                 
     # Output processing
     response_body = json.loads(response.get("body").read())
