@@ -17,6 +17,10 @@
 
 ![image](./pictures/main-architecture.jpg)
 
+### 로봇에 MBTI 설정하기
+
+대화를 재미있게 하고 게임을 수행하기 위하여 로봇은 8가지의 MBTI를 가질수 있습니다. [mbti.md](./mbti.md)에서 상세한 내용을 확인할 수 있습니다.
+
 ### Controller
 
 사용자의 Reaction에 따른 Robot Controler의 동작은 [robot-controller.md](./robot-controller.md)을 참조합니다. 
