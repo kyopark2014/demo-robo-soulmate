@@ -93,8 +93,10 @@ def lambda_handler(event, context):
         
     # extract main topics in text
     chat = get_chat(profile_of_LLMs, selected_LLM)    
-    topics = extract_main_topics(chat, text)    
+    topics = json.loads(extract_main_topics(chat, text)) 
     print('topics: ', topics)
+    
+    
     
     userId = uuid.uuid4()
     for topic in topics:
