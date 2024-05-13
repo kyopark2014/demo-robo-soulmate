@@ -1195,9 +1195,10 @@ def getResponse(jsonBody):
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
             
-            dialog = dialog + f"Human: {text}\n"
-            dialog = dialog + f"AI: {msg}\n"            
-            # print('dialog: ', dialog)
+            if text != 'clearMemory':
+                dialog = dialog + f"Human: {text}\n"
+                dialog = dialog + f"AI: {msg}\n"            
+                # print('dialog: ', dialog)
                     
         elif type == 'document':
             isTyping()
