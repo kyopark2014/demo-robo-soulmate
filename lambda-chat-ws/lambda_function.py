@@ -1056,7 +1056,7 @@ def extract_text(chat, img_base64):
     
     return extracted_text
 
-#dialog = ""
+dialog = ""
         
 def getResponse(jsonBody):
     print('jsonBody: ', jsonBody)
@@ -1162,10 +1162,10 @@ def getResponse(jsonBody):
             memory_chain.chat_memory.add_user_message(text)
             memory_chain.chat_memory.add_ai_message(msg)
             
-            #dialog += f"Human: {text}\n"
-            #dialog += f"AI: {msg}\n"
+            dialog = dialog + f"Human: {text}\n"
+            dialog = dialog + f"AI: {msg}\n"
             
-            #print('dialog: ', dialog)
+            print('dialog: ', dialog)
                     
         elif type == 'document':
             isTyping()
