@@ -1,8 +1,8 @@
-# Robot Commend
+# Robot Command
 
-여기서는 Rule 방식의 Robot Commend에 대해 정의합니다. LLM을 거치지 않고 예약된 명령어에 따라 로봇이 동작하게 하면, 지연시간을 최소화하면서 원하는 명령어를 수행할 수 있습니다.
+여기서는 Rule 방식의 Robot Command에 대해 정의합니다. LLM을 거치지 않고 예약된 명령어에 따라 로봇이 동작하게 하면, 지연시간을 최소화하면서 원하는 명령어를 수행할 수 있습니다.
 
-## Commend Definition
+## Command Definition
 
 룰베이스 커맨드 예시 (~봐, ~줘, 로 끝나는 내용 동일)
 
@@ -46,14 +46,14 @@
 [chat.js](./html/chat.js)에 아래와 같이 명령어를 등록합니다.
 
 ```java
-function initializeCommend() {
-    reservedCommend.put('짖어', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
-    reservedCommend.put('앉아', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
-    reservedCommend.put('엎드려', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "엎드렸어."}));
-    reservedCommend.put('이리 와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
-    reservedCommend.put('저리가', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));    
+function initializeCommand() {
+    reservedCommand.put('짖어', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
+    reservedCommand.put('앉아', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "앉았어."}));
+    reservedCommand.put('엎드려', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["SIT", "SIT", "SIT", "SIT", "SIT"], "say": "엎드렸어."}));
+    reservedCommand.put('이리 와', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD", "MOVE_FORWARD"], "say": "그쪽으로 갈게!"}));
+    reservedCommand.put('저리가', JSON.stringify({"show": "HAPPY", "move": "seq", "seq":["MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD", "MOVE_BACKWARD"], "say": "멀리 떨어질게!"}));    
 }
-initializeCommend();
+initializeCommand();
 ```
 
 ### 유사 명령어의 등록
@@ -61,9 +61,9 @@ initializeCommend();
 아래와 같이 유사 명령어의 처리를 위하여 '~봐', '~줘'를 포함한 명령어를 추가로 정의합니다.
 
 ```java
-    reservedCommend.put('짖어', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
-    reservedCommend.put('짖어봐', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
-    reservedCommend.put('짖어줘', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
+    reservedCommand.put('짖어', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
+    reservedCommand.put('짖어봐', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
+    reservedCommand.put('짖어줘', JSON.stringify({"show": "SAD", "move": "seq", "seq":["LOOK_UP"], "say": "멍! 멍! "}));
 ```
 
 ### 제한된 명령어의 아이디 지정
@@ -71,9 +71,9 @@ initializeCommend();
 유사 명령어는 1건으로 count하기 위하여 '이리 와', '이리 와봐', '이리 와줘'로 같은 아이디를 갖도록 합니다.
 
 ```java
-    limitedCommendId.put('이리 와', 1)
-    limitedCommendId.put('이리 와봐', 1)
-    limitedCommendId.put('이리 와줘', 1)
+    limitedCommandId.put('이리 와', 1)
+    limitedCommandId.put('이리 와봐', 1)
+    limitedCommandId.put('이리 와줘', 1)
 ```
 
 ### 명령어의 수행
@@ -82,39 +82,39 @@ initializeCommend();
 
 ```java
 let counter = new HashMap();
-function isReservedCommend(requestId, message){
-    console.log('reservedCommend.get('+message+'): '+ reservedCommend.get(message));
+function isReservedCommand(requestId, message){
+    console.log('reservedCommand.get('+message+'): '+ reservedCommand.get(message));
 
-    if(reservedCommend.get(message) == undefined) {        
+    if(reservedCommand.get(message) == undefined) {        
         return false;
     }
     else {
-        let commendId = limitedCommendId.get(message);
-        console.log('commendId: ', commendId);
-        if(commendId == undefined) {
-            console.log('commend: ', message);
-            sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+        let commandId = limitedCommandId.get(message);
+        console.log('commandId: ', commandId);
+        if(commandId == undefined) {
+            console.log('command: ', message);
+            sendControl(userId, "command", "", reservedCommand.get(message), 0, requestId)
 
             addReceivedMessage(requestId, message+' 동작을 수행합니다.')
         }
         else { 
-            let cnt = counter.get(commendId);
-            console.log('commend counter: ', cnt);
+            let cnt = counter.get(commandId);
+            console.log('command counter: ', cnt);
 
             if(cnt == undefined || cnt == 0) {
-                console.log('commend: ', message);
-                sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+                console.log('command: ', message);
+                sendControl(userId, "command", "", reservedCommand.get(message), 0, requestId)
 
                 addReceivedMessage(requestId, message+' 동작을 수행합니다.')
 
-                counter.put(commendId, 1);
+                counter.put(commandId, 1);
             }
             else if (cnt>=1) {
                 console.log(message+' is only allowed for a time.');
 
                 message = '안돼. 그러지마.';
-                console.log('new commend: ', message);
-                sendControl(userId, "commend", "", reservedCommend.get(message), 0, requestId)
+                console.log('new command: ', message);
+                sendControl(userId, "command", "", reservedCommand.get(message), 0, requestId)
 
                 addReceivedMessage(requestId, message)
             }
