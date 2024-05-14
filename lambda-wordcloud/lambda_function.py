@@ -4,14 +4,15 @@ import time
 import datetime
 import boto3
 import json
+import traceback
+import uuid
 
 from langchain.prompts import PromptTemplate
 from botocore.config import Config
-import traceback
-
+from pytz import timezone
+    
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
 from langchain_aws import ChatBedrock
-import uuid
 
 tableName = os.environ.get('tableName') 
 profile_of_LLMs = json.loads(os.environ.get('profile_of_LLMs'))
@@ -102,18 +103,9 @@ def lambda_handler(event, context):
     print('requestId: ', requestId)
     print('timestamp: ', timestamp)
     
-    timestr = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print('timestr2: ', timestr)
-    
-    from pytz import timezone
-    from datetime import datetime
-
-    KST = timezone('Asial/Seoul')
-
-    today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    today = today.astimezone(KST)
-    print('today: ', today)
-        
+    timestr = datetime.datetime.now(timezone('Asia/Seoul')).strftime("%Y-%m-%d %H:%M:%S")
+    print('timestr: ', timestr)
+            
     dynamo_client = boto3.client('dynamodb')
     for i, topic in enumerate(topics):
         print('topic: ', topic)
