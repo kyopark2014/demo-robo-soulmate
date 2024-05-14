@@ -5,7 +5,7 @@ import re
 import base64
 import boto3
 import json
-
+import datetime
 from langchain.prompts import PromptTemplate
 from botocore.config import Config
 import traceback
@@ -103,6 +103,10 @@ def lambda_handler(event, context):
     timestamp = str(time.time())
     timestr = timestamp.strftime("%Y-%m-%d %H:%M:%S")
     print('timestr: ', timestr)
+    
+    # 날짜로 timestamp 만들기
+    timestr2 = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print('timestr2: ', timestr2)
     
     dynamo_client = boto3.client('dynamodb')
     for i, topic in enumerate(topics):
