@@ -100,9 +100,9 @@ def lambda_handler(event, context):
     print('requestId: ', requestId)
     print('timestamp: ', timestamp)
     
-    timestamp = str(time.time())
-    timestr = timestamp.strftime("%Y-%m-%d %H:%M:%S")
-    print('timestr: ', timestr)
+    #timestamp = str(time.time())
+    #timestr = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+    #print('timestr: ', timestr)
     
     # 날짜로 timestamp 만들기
     timestr2 = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
