@@ -100,6 +100,10 @@ def lambda_handler(event, context):
     print('requestId: ', requestId)
     print('timestamp: ', timestamp)
     
+    timestamp = str(time.time())
+    timestr = time.strftime("%Y-%m-%d %H:%M:%S", timestamp)
+    print('timestr: ', timestr)
+    
     dynamo_client = boto3.client('dynamodb')
     for i, topic in enumerate(topics):
         print('topic: ', topic)
