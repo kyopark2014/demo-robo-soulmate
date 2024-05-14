@@ -96,17 +96,13 @@ def lambda_handler(event, context):
     print('topics: ', topics)
     
     requestId = str(uuid.uuid4())
-    timestamp = str(time.time())
     print('requestId: ', requestId)
-    print('timestamp: ', timestamp)
-    
     #timestamp = str(time.time())
-    #timestr = timestamp.strftime("%Y-%m-%d %H:%M:%S")
-    #print('timestr: ', timestr)
+    #print('timestamp: ', timestamp)
     
     # 날짜로 timestamp 만들기
-    timestr2 = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print('timestr2: ', timestr2)
+    timestr = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print('timestr2: ', timestr)
     
     dynamo_client = boto3.client('dynamodb')
     for i, topic in enumerate(topics):
@@ -116,7 +112,7 @@ def lambda_handler(event, context):
         item = {
             'userId': {'S':userId},
             'requestId': {'S':id},
-            'timestamp': {'S':timestamp},
+            'timestamp': {'S':timestr},
             'topic': {'S':topic}
         }
         
