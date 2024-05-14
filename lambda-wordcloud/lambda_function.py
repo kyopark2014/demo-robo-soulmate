@@ -104,6 +104,15 @@ def lambda_handler(event, context):
     
     timestr = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print('timestr2: ', timestr)
+    
+    from pytz import timezone
+    from datetime import datetime
+
+    KST = timezone('Asial/Seoul')
+
+    today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    today = today.astimezone(KST)
+    print('today: ', today)
         
     dynamo_client = boto3.client('dynamodb')
     for i, topic in enumerate(topics):
