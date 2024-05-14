@@ -57,7 +57,7 @@ def get_chat(profile_of_LLMs, selected_LLM):
 def extract_main_topics(chat, text):
     system = (
         #"Summary this conversation in 5 key topics. 5개 토픽을 자바스크립트 리스트에 담아서 보관해줘. Put it in <result> tags."
-"""다음의 <history> tag안의 대화에서 5가지 topic울 추출하여, 아래 <example>과 같이 javascript list로 정리하세요. 또한, 결과는 <result> tag를 붙여주세요. 
+"""<history> tag안에는 Human과 AI의 대화가 있습니다. 여기에서 5가지 topic울 추출하세요. 결과는 <example>과 같이 list로 정리하세요. 또한, 결과는 <result> tag를 붙여주세요. 
 <example>        
 ["좋아하는 음식", "인사와 소개", "여행", "취미 및 관심사", "재미있는 놀이"]
 </example>        
