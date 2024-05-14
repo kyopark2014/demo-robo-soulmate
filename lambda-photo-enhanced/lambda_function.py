@@ -33,8 +33,10 @@ k = 3  # number of generated images
 profile_of_Image_LLMs = json.loads(os.environ.get('profile_of_Image_LLMs'))
 selected_LLM = 0
 
+seed = 43
+cfgScale = 7.5
 
-# random하게 1-30의 사이
+# random하게 1-30의 사이  
 def random_number():
     return np.random.randint(1, 30)
 
