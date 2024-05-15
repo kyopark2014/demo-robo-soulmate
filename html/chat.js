@@ -561,7 +561,7 @@ function connect(endpoint, type) {
                 // console.log('response.msg: ', response.msg);
 
                 // send received message to score board
-                sendMessageToScoreBoard(userId, 'chat', response.msg, response.request_id) 
+                // sendMessageToScoreBoard(userId, 'chat', response.msg, response.request_id) 
 
                 if(enableTTS) {                    
                     // console.log('speechType: ', speechType);
