@@ -195,6 +195,8 @@ def lambda_handler(event, context):
             "type": "MENT",
             "body": text
         }
+        print("Payload: ", payload)
+        
         response = lambda_client.invoke(
             FunctionName=function_name,
             Payload=json.dumps(payload),
