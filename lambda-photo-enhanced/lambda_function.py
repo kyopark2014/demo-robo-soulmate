@@ -498,7 +498,7 @@ def lambda_handler(event, context):
             parent_conn, child_conn = Pipe()
             parent_connections.append(parent_conn)
                                 
-            text_prompt = f'a human with beautifully styled hair, wearing a neat and tidy traditional Korean clothing in {outpaint_prompt[i]}'                    
+            text_prompt = f'a human with beautifully styled hair, wearing a neat and tidy traditional uniform in {outpaint_prompt[i]}'                    
             # text_prompt =  f'a human with a {outpaint_prompt[i]} background'  
             #text_prompt = f'a beautifully styled hair and neat, orderly, well-tailored, stylish suited human in {outpaint_prompt[i]}' #2024_0515_19hr
             #text_prompt = f'a beautifully styled hair and neat, orderly, well-dressed human in {outpaint_prompt[i]}'  # 2024_0516_18hr
