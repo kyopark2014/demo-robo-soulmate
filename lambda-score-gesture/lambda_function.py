@@ -43,8 +43,8 @@ def send_dashboard(userId, score, text, type):
         payload = {
             'userId': userId,
             'score': score,
-            "text": text,
-            "type": type     
+            "type": type,     
+            "body": text
         }
         print("Payload: ", payload)
         
@@ -81,7 +81,7 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps({        
             "userId": userId,
-            "requestId": requestId,
-            "score": score
+            "score": score,
+            "requestId": requestId
         })
     }
