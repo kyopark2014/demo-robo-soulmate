@@ -46,7 +46,7 @@ def send_dashboard(userId, score, text, type):
             "type": type,     
             "body": text
         }
-        print("Payload: ", payload)
+        print("payload: ", payload)
         
         response = lambda_client.invoke(
             FunctionName=function_name,
