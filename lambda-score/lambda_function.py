@@ -187,25 +187,27 @@ def lambda_handler(event, context):
     # 스코어 보드 호출
     function_name = "lambda-score-update-for-demo-dansing-robot"
     lambda_region = 'ap-northeast-2'
-    try:
-        lambda_client = get_lambda_client(region=lambda_region)
-        payload = {
-            "userId": user_id,
-            "score": result['score'],
-            "type": "MENT",
-            "body": text
-        }
-        print("Payload: ", payload)
-        
-        response = lambda_client.invoke(
-            FunctionName=function_name,
-            Payload=json.dumps(payload),
-        )
-        print("Invoked function %s.", function_name)
-        print("Response: ", response)
-    except ClientError:
-        print("Couldn't invoke function %s.", function_name)
-        raise
+    
+    if text:
+        try:
+            lambda_client = get_lambda_client(region=lambda_region)
+            payload = {
+                "userId": user_id,
+                "score": result['score'],
+                "type": "MENT",
+                "body": text
+            }
+            print("Payload: ", payload)
+            
+            response = lambda_client.invoke(
+                FunctionName=function_name,
+                Payload=json.dumps(payload),
+            )
+            print("Invoked function %s.", function_name)
+            print("Response: ", response)
+        except ClientError:
+            print("Couldn't invoke function %s.", function_name)
+            raise
 
     end_time_for_greeting = time.time()
     time_for_greeting = end_time_for_greeting - start_time_for_greeting
