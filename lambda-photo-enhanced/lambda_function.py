@@ -499,7 +499,8 @@ def lambda_handler(event, context):
             parent_connections.append(parent_conn)
                                 
             # text_prompt =  f'a human with a {outpaint_prompt[i]} background'
-            text_prompt = f'a neatly and well-dressed human with yellow cute robot dog in {outpaint_prompt[i]}'
+            text_prompt = f'a beautifully styled hair and neat, orderly, well-dressed human in {outpaint_prompt[i]}'
+            #text_prompt = f'a neatly and well-dressed human with yellow cute robot dog in {outpaint_prompt[i]}'    # 2024_0516_18hr
                     
             object_name = f'photo_{id}_{i+1}.{ext}'
             object_key = f'{s3_photo_prefix}/{object_name}'  
