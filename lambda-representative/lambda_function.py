@@ -173,8 +173,13 @@ def lambda_handler(event, context):
                 ageNum = item["age"]["N"]
             else:
                 ageNum = int(item["age"]["N"])
+            
+            if str.isdigit(age_sum[genderType]):
+                age_sum_num = age_sum[genderType]
+            else:
+                age_sum_num = int(age_sum[genderType])
                 
-            age_sum[genderType] = age_sum[genderType] + ageNum
+            age_sum[genderType] = age_sum_num + ageNum
             
             if item["sunglasses"]["BOOL"] == True or item["eyeglasses"]["BOOL"] == True:
                 nglasses[genderType] = nglasses[genderType] + 1
