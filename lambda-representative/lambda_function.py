@@ -165,9 +165,10 @@ def lambda_handler(event, context):
             
             print('age: ', item["age"]["N"])    
             print('age_sum[genderType]: ', age_sum[genderType])
-            print('int(age): ', int(item["age"]["N"]))
+            # print('int(age): ', int(item["age"]["N"]))
             
-            age_sum[genderType] = age_sum[genderType] + int(item["age"]["N"])
+            # age_sum[genderType] = age_sum[genderType] + int(item["age"]["N"])
+            age_sum[genderType] = age_sum[genderType] + item["age"]["N"]
             
             if item["sunglasses"]["BOOL"] == True or item["eyeglasses"]["BOOL"] == True:
                 nglasses[genderType] = nglasses[genderType] + 1
