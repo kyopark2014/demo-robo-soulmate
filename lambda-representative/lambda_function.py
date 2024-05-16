@@ -269,7 +269,7 @@ def lambda_handler(event, context):
         
         print('For man:')    
         print('counter: ', count[0])
-        print('avg_age: ', int(avg_age[0]))
+        print('avg_age: ', str(avg_age[0]))
         print('glasses: ', glasses[0])
         print('smile: ', smile[0])        
         print('eyesOpen: ', eyesOpen[0])
@@ -279,7 +279,7 @@ def lambda_handler(event, context):
         print('emotion: ', user_emotion[0])
             
         print('For weman:')    
-        print('avg_age: ', int(avg_age[1]))
+        print('avg_age: ', str(avg_age[1]))
         print('counter: ', count[1])
         print('glasses: ', glasses[1])
         print('smile: ', smile[1])
@@ -314,7 +314,7 @@ def lambda_handler(event, context):
     generated_urls = []
     
     # man    
-    age_str = int(avg_age[0])
+    age_str = str(avg_age[0])
     smile_str = "smiles," if(smile[0]) == True else ""
     glass_str = "waring glasses," if(glasses[0]) == True else ""    
     negative_text = "glasses," if(glasses[0]) == True else ""
@@ -330,7 +330,7 @@ def lambda_handler(event, context):
     generated_urls = generatative_image(boto3_bedrock, modelId, k, text_prompt, negative_text, fname, generated_urls)
          
     # weman
-    age_str = int(avg_age[1])
+    age_str = str(avg_age[1])
     smile_str = "smiles," if(smile[1]) == True else ""
     glass_str = "waring glasses," if(glasses[1]) == True else ""
     negative_text = "glasses," if(glasses[1]) == True else ""
