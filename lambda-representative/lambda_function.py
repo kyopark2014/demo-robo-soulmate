@@ -147,7 +147,7 @@ def lambda_handler(event, context):
         # print('Items: ', resp["Items"])        
         print('Items[0]: ', resp["Items"][0])
         
-        age_sum = [0, 0]
+        age_sum = [0.0, 0.0]
         nglasses = [0, 0]
         nsmile = [0, 0]
         neyesOpen = [0, 0]
@@ -161,14 +161,10 @@ def lambda_handler(event, context):
                 genderType = 0
             else:
                 genderType = 1
-            print('genderType: ', genderType)
-            
             count[genderType] = count[genderType] + 1
             
-            print('age: ', item["age"]["N"])    
-            print('int(age): ', int(item["age"]["N"]))
-            
-            age_sum[genderType] = age_sum[genderType] + int(item["age"]["N"])
+            # print('age: ', item["age"]["N"])    
+            age_sum[genderType] = age_sum[genderType] + float(item["age"]["N"])
             
             if item["sunglasses"]["BOOL"] == True or item["eyeglasses"]["BOOL"] == True:
                 nglasses[genderType] = nglasses[genderType] + 1
