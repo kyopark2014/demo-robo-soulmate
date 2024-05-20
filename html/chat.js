@@ -1245,9 +1245,9 @@ if(conversationType=="") {
 console.log('conversationType: ', conversationType);
 
 let isGame = true;
-if(conversationType=='normal' || conversationType=='english') {
-    isGame = false;
-}
+//if(conversationType=='normal' || conversationType=='english') {
+//    isGame = false;
+//}
 console.log('isGame: ', isGame);
 
 initiate();
