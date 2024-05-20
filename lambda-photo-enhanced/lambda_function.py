@@ -25,8 +25,7 @@ path = os.environ.get('path')
 sqs_client = boto3.client('sqs')
 
 list_of_endpoints = [
-    "sam-endpoint-2024-04-10-01-35-30",
-    "sam-endpoint-2024-04-30-06-08-55"
+    "sam-endpoint-2024-04-10-01-35-30"
 ]
 k = 3  # number of generated images 
         
