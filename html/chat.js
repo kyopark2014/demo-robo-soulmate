@@ -434,7 +434,6 @@ function actionforReservedCommand(requestId, message) {
         }
     }
 
-    // speek
     if(enableTTS && speech) {
         console.log('speech: ', speech);
         
