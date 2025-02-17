@@ -1303,7 +1303,9 @@ def getResponse(jsonBody):
                 if convType == "normal":
                     msg = general_conversation(chat, text)   
                 elif convType == "english":
-                    msg = general_conversation_for_english(chat, text)   
+                    msg = general_conversation_for_english(chat, text)
+                elif convType == "sni_bot":
+                    msg = sni_bot(chat, text)
                 elif convType == "ISTJ":
                     msg = ISTJ(chat, text)
                 elif convType == "ISTP":
