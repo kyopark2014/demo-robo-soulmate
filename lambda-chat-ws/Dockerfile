@@ -15,7 +15,7 @@ RUN /var/lang/bin/python3 -m pip install langchain-aws
 RUN /var/lang/bin/python3 -m pip install unstructured
 RUN /var/lang/bin/python3 -m pip install anthropic
 RUN yum update -y && yum install -y swig
-RUN /var/lang/bin/python3 -m pip install faiss-cpu
+RUN /var/lang/bin/python3 -m pip install faiss-cpu==1.7.2
 RUN /var/lang/bin/python3 -m pip install python-pptx
 RUN /var/lang/bin/python3 -m pip install python-docx
 RUN /var/lang/bin/python3 -m pip install pillow
