@@ -1,6 +1,8 @@
 import os
 import boto3
 import json
+import zipfile
+import time 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(script_dir, "config.json")
@@ -17,8 +19,9 @@ current_folder_name = current_path.split('/')[-1]
 targetname = current_folder_name
 projectName = config.get('projectName')
 region = config.get('region')
+accountId = config.get('accountId')
 
-def create_user_pool(user_pool_name):
+def create_user_pool(user_pool_name: str):
     cognito_client = boto3.client('cognito-idp', region_name=region)   
 
     print("Creating new Cognito User Pool...")
@@ -168,6 +171,325 @@ def get_cognito_config(cognito_config):
 
     return cognito_config
 
+def create_lambda_function_policy(lambda_function_name):
+    """Create IAM policy for Lambda function access"""
+    
+    policy_name = "LambdaFunctionPolicy"+"For"+lambda_function_name
+    policy_description = f"Policy for accessing Lambda function endpoints"
+    
+    policy_document = {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "AmazonBedrockAgentCoreGatewayLambdaProd",
+                "Effect": "Allow",
+                "Action": [
+                    "lambda:*"
+                ],
+                "Resource": f"arn:aws:lambda:{region}:{accountId}:function:*"
+            },
+            {
+                "Sid": "GetGateway",
+                "Effect": "Allow",
+                "Action": [
+                    "bedrock-agentcore:*"
+                ],
+                "Resource": f"arn:aws:bedrock-agentcore:{region}:{accountId}:gateway/*"
+            },
+            {
+                "Sid": "SecretsManagerAccess",
+                "Effect": "Allow",
+                "Action": [
+                    "secretsmanager:GetSecretValue",
+                    "secretsmanager:DescribeSecret",
+                    "secretsmanager:UpdateSecret"
+                ],
+                "Resource": [
+                    f"arn:aws:secretsmanager:{region}:*:secret:{projectName}/cognito/credentials*"
+                ]
+            },
+            {
+                "Sid": "CognitoAccess",
+                "Effect": "Allow",
+                "Action": [
+                    "cognito-idp:*"
+                ],
+                "Resource": "*"
+            },
+            {
+                "Sid": "ECRAccess",
+                "Effect": "Allow",
+                "Action": [
+                    "ecr:GetAuthorizationToken",
+                    "ecr:BatchGetImage",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:DescribeRepositories",
+                    "ecr:ListImages",
+                    "ecr:DescribeImages"
+                ],
+                "Resource": "*"
+            },
+            {
+                "Sid": "LogsAccess",
+                "Effect": "Allow",
+                "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                    "logs:DescribeLogGroups",
+                    "logs:DescribeLogStreams"
+                ],
+                "Resource": [
+                    f"arn:aws:logs:{region}:*:log-group:/aws/bedrock-agentcore/*",
+                    f"arn:aws:logs:{region}:*:log-group:/aws/bedrock-agentcore/*:log-stream:*"
+                ]
+            },
+            {
+                "Sid": "CloudWatchAccess",
+                "Effect": "Allow",
+                "Action": [
+                    'cloudwatch:ListMetrics', 
+                    'cloudwatch:GetMetricData',
+                    'cloudwatch:GetMetricStatistics',
+                    'cloudwatch:GetMetricWidgetImage',
+                    'cloudwatch:GetMetricData',
+                    'cloudwatch:GetMetricData',
+                    'xray:PutTraceSegments',
+                    'xray:PutTelemetryRecords',
+                    'xray:PutAttributes',
+                    'xray:GetTraceSummaries',
+                    'logs:CreateLogGroup',
+                    'logs:DescribeLogStreams', 
+                    'logs:DescribeLogGroups', 
+                    'logs:CreateLogStream', 
+                    'logs:PutLogEvents'
+                ],
+                "Resource": "*"
+            },
+            {
+                "Sid": "S3Access",
+                "Effect": "Allow",
+                "Action": [
+                    "s3:*",
+                    "bedrock:*"
+                ],
+                "Resource": "*"
+            },
+            {
+                "Sid": "EC2Access",
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:*"
+                ],
+                "Resource": "*"
+            },
+            {
+                "Sid": "IoTAccess",
+                "Effect": "Allow",
+                "Action": [
+                    "iot:*"
+                ],
+                "Resource": "*"
+            }
+        ]
+    }
+    
+    try:
+        iam_client = boto3.client('iam')
+        
+        # Check if policy already exists
+        try:
+            existing_policy = iam_client.get_policy(PolicyArn=f"arn:aws:iam::{accountId}:policy/{policy_name}")
+            print(f"Existing policy found: {existing_policy['Policy']['Arn']}")
+            
+            # List all policy versions
+            versions_response = iam_client.list_policy_versions(PolicyArn=existing_policy['Policy']['Arn'])
+            versions = versions_response['Versions']
+            
+            # If we have 5 versions, delete the oldest non-default version
+            if len(versions) >= 5:
+                print(f"Policy has {len(versions)} versions, cleaning up old versions...")
+                
+                # Find non-default versions to delete
+                non_default_versions = [v for v in versions if not v['IsDefaultVersion']]
+                
+                if non_default_versions:
+                    # Delete the oldest non-default version
+                    oldest_version = non_default_versions[0]
+                    iam_client.delete_policy_version(
+                        PolicyArn=existing_policy['Policy']['Arn'],
+                        VersionId=oldest_version['VersionId']
+                    )
+                    print(f"✓ Deleted old policy version: {oldest_version['VersionId']}")
+                else:
+                    # If all versions are default, we need to set a different version as default first
+                    for version in versions[1:]:  # Skip the current default
+                        try:
+                            iam_client.set_default_policy_version(
+                                PolicyArn=existing_policy['Policy']['Arn'],
+                                VersionId=version['VersionId']
+                            )
+                            # Now delete the old default
+                            iam_client.delete_policy_version(
+                                PolicyArn=existing_policy['Policy']['Arn'],
+                                VersionId=versions[0]['VersionId']
+                            )
+                            print(f"✓ Switched default version and deleted old version: {versions[0]['VersionId']}")
+                            break
+                        except Exception as e:
+                            print(f"Failed to switch version {version['VersionId']}: {e}")
+                            continue
+            
+            # Create policy version
+            response = iam_client.create_policy_version(
+                PolicyArn=existing_policy['Policy']['Arn'],
+                PolicyDocument=json.dumps(policy_document),
+                SetAsDefault=True
+            )
+            print(f"✓ Policy update completed: {response['PolicyVersion']['VersionId']}")
+            return existing_policy['Policy']['Arn']
+            
+        except iam_client.exceptions.NoSuchEntityException:
+            # Create new policy
+            response = iam_client.create_policy(
+                PolicyName=policy_name,
+                PolicyDocument=json.dumps(policy_document),
+                Description=policy_description
+            )
+            print(f"✓ New policy created: {response['Policy']['Arn']}")
+            return response['Policy']['Arn']
+            
+    except Exception as e:
+        print(f"Policy creation failed: {e}")
+        return None
+
+def create_dummpy_lambda_function(lambda_function_path: str):
+    body = """import json
+import boto3
+import os
+
+def lambda_handler(event, context):
+    print(f"event: {event}")
+    print(f"context: {context}")
+
+    toolName = context.client_context.custom['bedrockAgentCoreToolName']
+    print(f"context.client_context: {context.client_context}")
+    print(f"Original toolName: {toolName}")
+    
+    delimiter = "___"
+    if delimiter in toolName:
+        toolName = toolName[toolName.index(delimiter) + len(delimiter):]
+    print(f"Converted toolName: {toolName}")
+
+    keyword = event.get('keyword')
+    print(f"keyword: {keyword}")
+
+    if toolName == 'retrieve':
+        return {
+            'statusCode': 200, 
+            'body': f"{toolName} is supported"
+        }
+    else:
+        return {
+            'statusCode': 200, 
+            'body': f"{toolName} is not supported"
+        }"""
+    
+    with open(os.path.join(lambda_function_path, 'lambda_function.py'), 'w') as f:
+        f.write(body)    
+
+def create_trust_policy_for_lambda():
+    """Create trust policy for Bedrock AgentCore"""
+    
+    trust_policy = {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": ["lambda.amazonaws.com", "bedrock.amazonaws.com"]
+                },
+                "Action": "sts:AssumeRole"
+            },
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "AWS": f"arn:aws:iam::{accountId}:root"
+                },
+                "Action": "sts:AssumeRole"
+            }
+        ]
+    }    
+    return trust_policy
+
+def attach_policy_to_role(role_name, policy_arn):
+    """Attach policy to IAM role"""
+    try:
+        iam_client = boto3.client('iam')
+        
+        # Attach policy to role
+        response = iam_client.attach_role_policy(
+            RoleName=role_name,
+            PolicyArn=policy_arn
+        )
+        print(f"✓ Policy attached successfully: {policy_arn}")
+        return True
+        
+    except Exception as e:
+        print(f"Policy attachment failed: {e}")
+        return False
+    
+def create_lambda_function_role(lambda_function_name):
+    """Create IAM role for Lambda function access"""
+    
+    role_name = "LambdaFunctionRole"+"For"+lambda_function_name
+    policy_arn = create_lambda_function_policy(lambda_function_name)
+    
+    if not policy_arn:
+        print("Role creation aborted due to policy creation failure")
+        return None
+    
+    try:
+        iam_client = boto3.client('iam')
+        
+        # Check if role already exists
+        try:
+            existing_role = iam_client.get_role(RoleName=role_name)
+            print(f"Existing role found: {existing_role['Role']['Arn']}")
+            
+            # Update trust policy
+            trust_policy = create_trust_policy_for_lambda()
+            iam_client.update_assume_role_policy(
+                RoleName=role_name,
+                PolicyDocument=json.dumps(trust_policy)
+            )
+            print("✓ Trust policy updated successfully")
+            
+            # Attach policy
+            attach_policy_to_role(role_name, policy_arn)
+            
+            return existing_role['Role']['Arn']
+            
+        except iam_client.exceptions.NoSuchEntityException:
+            # Create new role
+            trust_policy = create_trust_policy_for_lambda()
+            
+            response = iam_client.create_role(
+                RoleName=role_name,
+                AssumeRolePolicyDocument=json.dumps(trust_policy),
+                Description="Role for Bedrock AgentCore MCP access"
+            )
+            print(f"✓ New role created: {response['Role']['Arn']}")
+            
+            # Attach policy
+            attach_policy_to_role(role_name, policy_arn)
+            
+            return response['Role']['Arn']
+            
+    except Exception as e:
+        print(f"Role creation failed: {e}")
+        return None
+
 # get config of cognito
 cognito_config = config.get('cognito', {})
 if not cognito_config:
@@ -185,22 +507,147 @@ user_pool_id = cognito_config.get('user_pool_id')
 username = cognito_config.get('test_username')
 password = cognito_config.get('test_password')
 
-lambda_function_arn = config.get('lambda_function_arn')
-if not lambda_function_arn:
+def update_lambda_function_arn():
+    # zip lambda
     lambda_function_name = 'lambda-' + current_folder_name + '-for-' + config['projectName']
-    print(f"No lambda function arn found in config, using default lambda function name: {lambda_function_name}")
-    
-    lambda_client = boto3.client('lambda', region_name=region)
-    response = lambda_client.list_functions()
-    for function in response['Functions']:
-        if function['FunctionName'] == lambda_function_name:
-            lambda_function_arn = function['FunctionArn']
-            print(f"Found lambda function: {lambda_function_arn}")
-            break
-    config['lambda_function_arn'] = lambda_function_arn
+    lambda_function_zip_path = os.path.join(script_dir, lambda_function_name, "lambda_function.zip")
+    lambda_dir = os.path.join(script_dir, lambda_function_name)
+    # Create zip with all files and folders recursively
+    try:
+        with zipfile.ZipFile(lambda_function_zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:            
+            for root, dirs, files in os.walk(lambda_dir):
+                for file in files:
+                    if file == 'lambda_function.zip':
+                        continue
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, lambda_dir)
+                    zip_file.write(file_path, arcname)
+        print(f"✓ Lambda function zip created successfully: {lambda_function_zip_path}")
+    except Exception as e:
+        print(f"Failed to create Lambda function zip: {e}")
 
-    with open(config_path, "w", encoding="utf-8") as f:
-        json.dump(config, f, indent=2)
+        # initiate lambda_function.py
+        lambda_function_path = os.path.join(script_dir, lambda_function_name)
+        if not os.path.exists(lambda_function_path):
+            print(f"Lambda function path not found, creating new lambda function path: {lambda_function_path}")
+            os.makedirs(lambda_function_path)
+
+            create_dummpy_lambda_function(lambda_function_path)
+            print(f"✓ Lambda function path created successfully: {lambda_function_path}")
+
+            with zipfile.ZipFile(lambda_function_zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:     
+                for root, dirs, files in os.walk(lambda_dir):
+                    for file in files:
+                        if file == 'lambda_function.zip':
+                            continue
+                        file_path = os.path.join(root, file)
+                        arcname = os.path.relpath(file_path, lambda_dir)
+                        zip_file.write(file_path, arcname)
+            print(f"✓ Lambda function zip created successfully: {lambda_function_zip_path}")
+        pass
+
+    lambda_function_arn = config.get('lambda_function_arn')    
+    lambda_client = boto3.client('lambda', region_name=region)
+    
+    need_update = True
+    if not lambda_function_arn:        
+        print(f"search lambda function name: {lambda_function_name}")
+                
+        response = lambda_client.list_functions()
+        for function in response['Functions']:
+            if function['FunctionName'] == lambda_function_name:
+                lambda_function_arn = function['FunctionArn']
+                print(f"Lambda function found: {lambda_function_arn}")
+                break
+
+        if not lambda_function_arn:
+            print(f"Lambda function not found, creating new lambda function")
+            # create lambda function role
+            lambda_function_role = create_lambda_function_role(lambda_function_name)
+            
+            if not lambda_function_role:
+                print(f"Failed to create IAM role for Lambda function: {lambda_function_name}")
+                return None
+
+            # create lambda function
+            need_update = False
+            try:
+                # Set environment variables
+                environment_variables = {}
+                # environment_variables['KNOWLEDGE_BASE_ID'] = config.get('knowledge_base_id', "")
+                
+                response = lambda_client.create_function(
+                    FunctionName=lambda_function_name,
+                    Runtime='python3.13',
+                    Handler='lambda_function.lambda_handler',
+                    Role=lambda_function_role,
+                    Description=f'Lambda function for {lambda_function_name}',
+                    Timeout=60,
+                    # Environment={
+                    #     'Variables': environment_variables
+                    # },
+                    Code={
+                        'ZipFile': open(lambda_function_zip_path, 'rb').read()
+                    }
+                )
+                lambda_function_arn = response['FunctionArn']
+                print(f"✓ Lambda function created successfully: {lambda_function_arn}")
+
+                print("Waiting for Lambda function code creation to complete...")
+                time.sleep(5)
+            except Exception as e:
+                print(f"Failed to create Lambda function: {e}")
+                return None
+    
+    if need_update:
+        # update lambda code
+        response = lambda_client.update_function_code(
+            FunctionName=lambda_function_name,
+            ZipFile=open(lambda_function_zip_path, 'rb').read()
+        )
+        lambda_function_arn = response['FunctionArn']
+        print(f"✓ Lambda function code updated successfully: {lambda_function_arn}")
+        
+        # Wait for code update to complete before updating configuration
+        print("Waiting for Lambda function code update to complete...")
+        time.sleep(5)
+        
+        # update lambda configuration (timeout and environment variables)
+        max_retries = 3
+        retry_count = 0
+        
+        while retry_count < max_retries:
+            try:
+                # Set environment variables
+                environment_variables = {}
+                environment_variables['KNOWLEDGE_BASE_ID'] = config.get('knowledge_base_id', "")
+                
+                lambda_client.update_function_configuration(
+                    FunctionName=lambda_function_name,
+                    Timeout=60,
+                    Environment={
+                        'Variables': environment_variables
+                    }
+                )
+                print(f"✓ Lambda function timeout and environment variables updated")
+                break
+            except Exception as e:
+                retry_count += 1
+                if "ResourceConflictException" in str(e) and retry_count < max_retries:
+                    print(f"Lambda function is still updating, waiting 10 seconds before retry {retry_count}/{max_retries}...")
+                    time.sleep(10)
+                else:
+                    print(f"Warning: Failed to update Lambda configuration after {retry_count} attempts: {e}")
+                    break
+
+    # update config
+    if lambda_function_arn:
+        config['lambda_function_arn'] = lambda_function_arn
+
+        with open(config_path, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=2)
+
+    return lambda_function_arn
 
 def get_bearer_token(secret_name):
     try:
@@ -371,9 +818,12 @@ def main():
 
     print(f"Gateway ID: {gateway_id}")
     
-    print("3. Getting or creating lambda target...")
+    print("3. updating lambda function...")
+    lambda_function_arn = update_lambda_function_arn()
+    print(f"lambda_function_arn: {lambda_function_arn}")
 
-    target_id = config.get('target_id')
+    print("4. Getting or creating lambda target...")
+    target_id = config.get('target_id', "")
     if not target_id:
         response = gateway_client.list_gateway_targets(
             gatewayIdentifier=gateway_id,
@@ -387,29 +837,16 @@ def main():
                 print(f"Target already exists.")
                 target_id = target['targetId']
                 break
-
-        if not target_id:
+        
+        if not target_id:       
+            TOOL_SPEC = json.load(open(os.path.join(script_dir, "tool_spec.json")))     
             print("Creating lambda target...")
             lambda_target_config = {
                 "mcp": {
                     "lambda": {
                         "lambdaArn": lambda_function_arn, 
                         "toolSchema": {
-                            "inlinePayload": [
-                                {
-                                    "name": "retrieve",
-                                    "description": "keyword to retrieve the knowledge base",
-                                    "inputSchema": {
-                                        "type": "object",
-                                        "properties": {
-                                            "keyword": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": ["keyword"]
-                                    }
-                                }
-                            ]
+                            "inlinePayload": [TOOL_SPEC]
                         }
                     }
                 }
@@ -423,7 +860,7 @@ def main():
             response = gateway_client.create_gateway_target(
                 gatewayIdentifier=gateway_id,
                 name=targetname,
-                description='Knowledge Base Retriever',
+                description=f'{targetname} for {projectName}',
                 targetConfiguration=lambda_target_config,
                 credentialProviderConfigurations=credential_config)
             print(f"response: {response}")
@@ -442,6 +879,7 @@ def main():
 
     # save gateway_url
     config['gateway_url'] = gateway_url
+    config['target_name'] = targetname
     config['target_id'] = target_id
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=2)

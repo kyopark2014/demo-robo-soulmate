@@ -280,15 +280,15 @@ async def main():
                 # Test retrieve function
                 print("\n=== Testing retrieve function ===")
                 params = {
-                    "keyword": "보일러 에러 코드"
+                    "action": "HAPPY"
                 }
                 
                 try:
                     targret_name = config['target_name']
-                    tool_name = f"{targret_name}___retrieve"
+                    tool_name = f"{targret_name}___command"
 
                     result = await asyncio.wait_for(session.call_tool(tool_name, params), timeout=30)
-                    print(f"retrieve result: {result}")
+                    print(f"command result: {result}")
                     
                     if hasattr(result, 'content') and result.content:
                         for content in result.content:
