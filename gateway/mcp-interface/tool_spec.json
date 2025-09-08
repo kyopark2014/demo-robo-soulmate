@@ -1,0 +1,13 @@
+{
+    "name": "command",
+    "description": "command to execute robot",
+    "inputSchema": {
+        "type": "object",
+        "properties": {
+            "keyword": {
+                "type": "string"
+            }
+        },
+        "required": ["action"]
+    }
+}
